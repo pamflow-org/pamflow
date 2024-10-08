@@ -1,0 +1,3 @@
+acoustic_indices@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/acoustic_indices/acoustic_indices.csv

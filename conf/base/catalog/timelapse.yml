@@ -1,0 +1,5 @@
+timelapse@PartitionedAudio:
+  type: partitions.PartitionedDataset
+  path: data/output/timelapse/
+  dataset: kedro_pamflow.datasets.audio_dataset.SoundDataset
+  filename_suffix: ".WAV"

@@ -1,0 +1,52 @@
+DEVICES_ROOT_DIRECTORY: "C:\\Users\\nicolas.betancourt\\Documents\\SONABIO"
+# Basic settings
+preprocessing:
+  sample_length: 5  # length of sample to build timelapse
+  sample_period: '30min'
+
+  
+timelapse_selected_date: ''
+
+
+acoustic_indices:
+  target_fs: 48000  # sampling rate for analysis
+  filter_type: 'bandpass'
+  filter_cut: [300, 16000]
+  filter_order: 3
+  group_by_site: True
+  n_jobs: -1
+
+graphical_soundscape_parameters:
+  target_fs: 48000  # target sampling frequency
+  nperseg: 256  # window size to compute the spectrogram
+  noverlap: 0  # overlap between windows to compute the spectrogram
+  db_range: 80  # dB range for the spectrogram
+  min_distance: 5  # minimum distance between peaks
+  threshold_abs: -55  # threshold for detecting peaks
+  group_by_site: True
+  n_jobs: -1
+
+plot:
+  nperseg: 1024
+  noverlap: 0.5
+  flims: [0, 24000]
+  fig_height: 4
+  fig_width: 15
+  db_range: 80
+  colormap: 'viridis'  # 'grey', 'viridis', 'plasma', 'inferno', 'cvidis'
+
+formato_migracion_parameters:
+  device_id: 'CODIGO_GRABADORA'
+  latitude_col: 'LATITUD'
+  longitude_col: 'LONGITUD'
+
+birdnet_parameters:
+  n_jobs: -1
+  minimum_observations: 100
+  segment_size: 100
+  manual_annotations_file_name: 'species_manual_annotations'
+data_science_parameters:
+  correct_column: positive  
+  n_jobs: -1
+  probability: 0.95
+  

@@ -1,0 +1,20 @@
+[tool.kedro]
+package_name = "kedro_pamflow"
+project_name = "Kedro PamFlow"
+kedro_init_version = "0.19.5"
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+addopts = """
+--cov-report term-missing \
+--cov src/kedro_pamflow -ra"""
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+
+[tool.kedro_telemetry]
+project_id = "5a88f4c090294f4598d637c111ade416"

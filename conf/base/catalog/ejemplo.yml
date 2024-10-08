@@ -1,0 +1,15 @@
+cortado:
+  type: kedro_pamflow.datasets.audio_dataset.SoundDataset
+  filepath: data/ejemplo/cortado.wav
+
+sin_cortar:
+  type: kedro_pamflow.datasets.audio_dataset.SoundDataset
+  filepath: data/ejemplo/sin_cortar.wav
+
+
+
+
+
+
+
+

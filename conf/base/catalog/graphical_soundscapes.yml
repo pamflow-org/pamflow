@@ -1,0 +1,3 @@
+graphical_soundscape@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/graphical_soundscape/graphical_soundscape.csv

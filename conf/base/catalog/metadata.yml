@@ -1,0 +1,15 @@
+audio_metadata@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/metadata/audio_metadata.csv
+
+audio_metadata_summary@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/metadata/audio_metadata_summary.csv
+
+sensor_deployment_data@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/metadata/sensor_deployment_data.csv
+
+formato_migracion@pandas:
+  type: pandas.CSVDataset
+  filepath: data/input/formato_migracion/sensor_location.csv

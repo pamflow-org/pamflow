@@ -1,0 +1,29 @@
+unfiltered_detected_species@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/birdnet/unfiltered_detected_species.csv
+especies_de_interes@pandas:
+  type: pandas.CSVDataset
+  filepath: data/input/especies_de_interes/especies_de_interes.csv
+detected_species@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/birdnet/detected_species.csv
+segments@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/birdnet/segments.csv
+
+segments_audio_folder@AudioFolderDataset:
+  type: kedro_pamflow.datasets.audio_folder_dataset.AudioFolderDataset
+  main_folder_path: data/output/birdnet/segments
+
+
+manual_annotations@PartitionedDataset:
+  type: partitions.PartitionedDataset
+  path: data/input/manual_annotation
+  dataset: 
+    type: pandas.ExcelDataset
+    save_args:
+      sheet_name: Sheet1
+    load_args:
+      sheet_name: Sheet1
+  filename_suffix: ".xlsx"
+    

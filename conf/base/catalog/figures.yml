@@ -1,0 +1,18 @@
+sensor_deployment_figure@matplotlib:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/output/figures/sensor_deployment.png
+  save_args:
+    format: png
+
+sensor_location@matplotlib:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/output/figures/sensor_location.png
+  save_args:
+    format: png
+
+timelapse_spectrograms@PartitionedImage:
+  type: partitions.PartitionedDataset
+  path: data/output/figures/timelapse/
+  dataset: matplotlib.MatplotlibWriter
+  filename_suffix: ".png"
+
