@@ -14,6 +14,7 @@ from .nodes import (
 def create_pipeline(**kwargs):
     return Pipeline(
         [
+          
             node( # Log
                 func=get_audio_metadata,
                 inputs=[ 'params:DEVICES_ROOT_DIRECTORY'],

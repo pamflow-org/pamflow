@@ -1,12 +1,8 @@
 import os
-import concurrent.futures
-import matplotlib.pyplot as plt
-import pandas as pd
-from maad import sound, features, util
+from maad import sound
 from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
-import itertools as it
-import numpy as np
+
 
 
 def species_detection_single_file(wav_file_path,

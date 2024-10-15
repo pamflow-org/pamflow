@@ -1,10 +1,6 @@
 import os
 import concurrent.futures
-import matplotlib.pyplot as plt
 import pandas as pd
-from maad import sound, features, util
-from birdnetlib import Recording
-from birdnetlib.analyzer import Analyzer
 import itertools as it
 import numpy as np
 from kedro_pamflow.pipelines.birdnet.utils import (
@@ -82,12 +78,9 @@ def species_detection_parallel(metadata,
     df_out=pd.DataFrame(resultados_por_carpeta_unchained)
     return df_out
 
-def filter_detections(detected_species,especies_de_interes, minimum_observations):
+def filter_detections(detected_species,especies_de_interes,minimum_observations):
     especies_de_interes=especies_de_interes.drop_duplicates()
-    detected_species_filtered=detected_species.merge(especies_de_interes,
-                        on='scientific_name',
-                        how='right'
-                        )
+    detected_species_filtered=detected_species[detected_species['scientific_name'].isin(especies_de_interes['scientific_name'])]
 
 
     detected_species_filtered=detected_species_filtered[detected_species_filtered.groupby('scientific_name').transform('size')>=minimum_observations]
@@ -118,7 +111,7 @@ def create_segments_folder_paralell(df_segments,n_jobs,segment_size):
     if n_jobs == -1:
         n_jobs = int(os.cpu_count()*4/5)
 
-    print(f"""Creating {segment_size} segments for {df_segments['scientific_name'].nunique()} species""")
+    print(f"""Creating {segment_size} segments for {df_segments['scientific_name'].nunique()} species using {n_jobs} cores""")
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
         

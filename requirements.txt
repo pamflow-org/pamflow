@@ -4,6 +4,7 @@ fsspec==2024.9.0
 geopandas==1.0.1
 kedro==0.19.8
 kedro_datasets==4.1.0
+librosa==0.10.2
 matplotlib==3.6.2
 numpy==1.23.5
 pandas==2.2.3
@@ -12,3 +13,4 @@ PyYAML==6.0.2
 scikit-maad==1.4.1
 seaborn==0.13.2
 statsmodels==0.14.4
+tflite-runtime==2.14.0

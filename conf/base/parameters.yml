@@ -1,4 +1,4 @@
-DEVICES_ROOT_DIRECTORY: "C:\\Users\\nicolas.betancourt\\Documents\\SONABIO"
+DEVICES_ROOT_DIRECTORY: "/mnt/nas/SONABIO"
 # Basic settings
 preprocessing:
   sample_length: 5  # length of sample to build timelapse

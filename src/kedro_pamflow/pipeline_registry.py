@@ -32,8 +32,8 @@ def register_pipelines() -> Dict[str, Pipeline]:
 
     
     return {
-        "__default__":pamflow_pipeline+data_science_pipeline,
-        "pamflow": pamflow_pipeline,#+birdnet_pipeline+acousti...,
+        "__default__":pamflow_pipeline,
+        "pamflow": pamflow_pipeline+data_science_pipeline,#+birdnet_pipeline+acousti...,
         "preprocess": preprocess_pipeline,
         "graphical_soundscape":graphical_soundscape_pipeline,
         "acoustic_indices":acoustic_indices_pipeline,
