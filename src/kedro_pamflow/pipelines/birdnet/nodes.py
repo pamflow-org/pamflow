@@ -6,7 +6,7 @@ import numpy as np
 from kedro_pamflow.pipelines.birdnet.utils import (
     species_detection_single_file,
     trim_audio,
-    create_segments_single_species
+    create_segments_single_species_paralell
     )
 
 
@@ -104,38 +104,31 @@ def create_segments(detected_species,segment_size):
 
     return segments
 
+def create_segments_folder(df_segments,n_jobs,segment_size):
 
-def create_segments_folder_paralell(df_segments,n_jobs,segment_size):
+    #df_segments['ngroup']=df_segments.groupby('scientific_name').ngroup()
 
+    #df_segments['ngroup']=df_segments.groupby('scientific_name')['ngroup'].transform(np.random.permutation)
 
-    if n_jobs == -1:
-        n_jobs = int(os.cpu_count()*4/5)
+    #df_segments=df_segments[df_segments['ngroup']<=19]
+    
+    results = [create_segments_single_species_paralell(
+                                df_segments[df_segments['scientific_name']==species] ,
+                                species,
+                                n_jobs
+                                ) 
+                for species in df_segments['scientific_name'].unique()
+                ]
 
-    print(f"""Creating {segment_size} segments for {df_segments['scientific_name'].nunique()} species using {n_jobs} cores""")
+    
+    
+    
+    # Build audio_folder_dataset with results
+    audio_folder_dataset={ k:v  for diccionario in results for k,v in diccionario.items() }
+    
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
-        
-        # Use submit for each task
-        results = executor.map(create_segments_single_species,
-                                    [df_segments[df_segments['scientific_name']==species]
-                                     for species in df_segments['scientific_name'].unique()
-                                    ]
-                                   )
-                                                     
-        # Get results when tasks are completed
-        audio_folder_dataset = {}
-        
-        i=0
-        for species,result in zip(df_segments['scientific_name'].unique(),results):
-            try:
-                #result = future.result()
-                #print(species)
-                audio_folder_dataset['_'.join(species.split())]=result
-            
-            except Exception as e:
-                i+=1
-                print(f"Error processing the {i}th species {species}: files {e}")
     return audio_folder_dataset
+
 
 def create_manual_annotation_formats(segments,segments_audio_folder,manual_annotations_file_name):
     excel_formats_file_names={'_'.join(species.split()): manual_annotations_file_name.replace('species','_'.join(species.split()))

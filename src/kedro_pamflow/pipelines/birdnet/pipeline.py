@@ -3,8 +3,9 @@ from .nodes import (
     species_detection_parallel,
     filter_detections,
     create_segments,
-    create_segments_folder_paralell,
-    create_manual_annotation_formats
+    create_segments_folder,
+    create_manual_annotation_formats,
+    create_segments_folder
     )
 
 
@@ -35,7 +36,7 @@ def create_pipeline(**kwargs):
                 name="create_segments_node",
             ),
             node( # Log
-                func=create_segments_folder_paralell,
+                func=create_segments_folder,
                 inputs=[ "segments@pandas",'params:birdnet_parameters.n_jobs','params:birdnet_parameters.segment_size'],
                 outputs="segments_audio_folder@AudioFolderDataset",
                 name="create_segments_folder_node",
