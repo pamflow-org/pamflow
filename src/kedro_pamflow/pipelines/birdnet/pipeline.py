@@ -43,7 +43,7 @@ def create_pipeline(**kwargs):
             ),
             node( # Log
                 func=create_manual_annotation_formats,
-                inputs=[ 'segments@pandas','segments_audio_folder@AudioFolderDataset','params:birdnet_parameters.manual_annotations_file_name'],
+                inputs=[ 'segments@pandas','params:birdnet_parameters.manual_annotations_file_name'],
                 outputs="manual_annotations@PartitionedDataset",
                 name="create_manual_annotation_formats_node",
             )

@@ -1,3 +1,13 @@
 species_thresholds@pandas:
   type: pandas.CSVDataset
   filepath: data/output/data_science/species_threshold.csv
+
+
+train_spectrograms@ImageFolderDataset:
+  type: kedro_pamflow.datasets.image_folder_dataset.ImageFolderDataset
+  main_folder_path: data/output/data_science/train_spectrograms
+
+  
+test_spectrograms@ImageFolderDataset:
+  type: kedro_pamflow.datasets.image_folder_dataset.ImageFolderDataset
+  main_folder_path: data/output/data_science/test_spectrograms

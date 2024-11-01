@@ -106,11 +106,7 @@ def create_segments(detected_species,segment_size):
 
 def create_segments_folder(df_segments,n_jobs,segment_size):
 
-    #df_segments['ngroup']=df_segments.groupby('scientific_name').ngroup()
-
-    #df_segments['ngroup']=df_segments.groupby('scientific_name')['ngroup'].transform(np.random.permutation)
-
-    #df_segments=df_segments[df_segments['ngroup']<=19]
+    
     
     results = [create_segments_single_species_paralell(
                                 df_segments[df_segments['scientific_name']==species] ,
@@ -124,15 +120,20 @@ def create_segments_folder(df_segments,n_jobs,segment_size):
     
     
     # Build audio_folder_dataset with results
+    # {Genus_species: {segment_file_name: (np.array,sr),...,segment_file_name: (np.array,sr)},
+    #  ...
+    #  Genus_species: {segment_file_name: (np.array,sr),...,segment_file_name: (np.array,sr)}
+    #}
     audio_folder_dataset={ k:v  for diccionario in results for k,v in diccionario.items() }
     
 
     return audio_folder_dataset
 
 
-def create_manual_annotation_formats(segments,segments_audio_folder,manual_annotations_file_name):
+def create_manual_annotation_formats(segments,manual_annotations_file_name):
+    #Dictionary of the form {'Genus_species': 'generic_file_name_for_Genus_species'}
     excel_formats_file_names={'_'.join(species.split()): manual_annotations_file_name.replace('species','_'.join(species.split()))
-                        for species in segments_audio_folder.keys()
+                        for species in segments['scientific_name'].unique()
                             }
 
     excel_generic_format=segments[['segments_file_name',
@@ -144,10 +145,7 @@ def create_manual_annotation_formats(segments,segments_audio_folder,manual_annot
         ]]
 
 
-    excel_generic_format['positive']=np.random.choice([False,True],
-                                                    excel_generic_format.shape[0],
-                                                    replace=True
-                                                    )
+    excel_generic_format['positive']=np.where(excel_generic_format['confidence']>=0.5,True,False)
 
     excel_generic_format['detected_species']=np.where(excel_generic_format['positive'],
                                                     excel_generic_format['scientific_name'],

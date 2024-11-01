@@ -38,7 +38,7 @@ def trim_audio(audio_array,
 def trim_audio_enhanced(start_time, end_time,path_audio,segments_file_name):
     audio_array, sr=sound.load(path_audio)
     trimmed_audio=audio_array[int(start_time*sr):int(end_time*sr)]
-    return (segments_file_name,(trimmed_audio,sr))
+    return (segments_file_name[0:-4],(trimmed_audio,sr))
 
 
 

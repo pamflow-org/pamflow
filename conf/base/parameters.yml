@@ -28,7 +28,7 @@ graphical_soundscape_parameters:
 
 plot:
   nperseg: 1024
-  noverlap: 0.5
+  noverlap: 0
   flims: [0, 24000]
   fig_height: 4
   fig_width: 15
@@ -49,4 +49,5 @@ data_science_parameters:
   correct_column: positive  
   n_jobs: -1
   probability: 0.95
+  train_size: 0.7
   
