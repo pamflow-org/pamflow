@@ -8,14 +8,19 @@ preprocessing:
 timelapse_selected_date: ''
 
 
+#The parameters in acoustic_indices correspond to the arguments
+#of the scikitmaad.sound function select_bandwith 
+#(see https://scikit-maad.github.io/generated/maad.sound.select_bandwidth.html)
 acoustic_indices:
   target_fs: 48000  # sampling rate for analysis
   filter_type: 'bandpass'
   filter_cut: [300, 16000]
   filter_order: 3
-  group_by_site: True
-  n_jobs: -1
+  n_jobs: -1 #este es para la parelización del proceso de calcular índices: -1 utiliza todos los núcleos del computador. Otro número indica cuántos nucleos usar
 
+#The parameters in acoustic_indices correspond to the arguments
+#of the scikitmaad.features function graphical_soundscape
+#(see https://scikit-maad.github.io/generated/maad.features.graphical_soundscape.html)
 graphical_soundscape_parameters:
   target_fs: 48000  # target sampling frequency
   nperseg: 256  # window size to compute the spectrogram
@@ -23,9 +28,12 @@ graphical_soundscape_parameters:
   db_range: 80  # dB range for the spectrogram
   min_distance: 5  # minimum distance between peaks
   threshold_abs: -55  # threshold for detecting peaks
-  group_by_site: True
   n_jobs: -1
 
+#matplotlib key word arguments for consistent plotin
+#througout the project. 
+#It is used mainly for spectrograms
+# (See https://scikit-maad.github.io/generated/maad.sound.spectrogram.html)
 plot:
   nperseg: 1024
   noverlap: 0
@@ -40,14 +48,16 @@ formato_migracion_parameters:
   latitude_col: 'LATITUD'
   longitude_col: 'LONGITUD'
 
+# Parameters used in birdnet pipeline
 birdnet_parameters:
-  n_jobs: -1
-  minimum_observations: 100
-  segment_size: 100
-  manual_annotations_file_name: 'species_manual_annotations'
+  n_jobs: -1 #este es para la parelización del proceso de detectar especies: -1 utiliza todos los núcleos del computador. Otro número indica cuántos nucleos usar
+  minimum_observations: 100 #mínimo número de detecciones para una especie para ser considerada
+  segment_size: 100 #número de segmentos con que se construye la carpeta de segmentos de cada especie
+  manual_annotations_file_name: 'species_manual_annotations' #prefijo en el nombre de archivo de anotaciones manuales: el nombre del archivo será {manual_annotations_file_name}_{species}
+#Parameters used in data_science pipeline
 data_science_parameters:
-  correct_column: positive  
-  n_jobs: -1
-  probability: 0.95
-  train_size: 0.7
+  correct_column: positive  #nombre de la columna que indica si la identificación en un segmento es correcta
+  n_jobs: -1 #este es para la parelización: -1 utiliza todos los núcleos del computador. Otro número indica cuántos nucleos usar
+  probability: 0.95 #probabilidad para ajustar el confidence model en la definición del threshold de cada especie
+  train_size: 0.7 #Proporción para dividir los segmentos identificados correctamente en entrenamiento y prueba
   

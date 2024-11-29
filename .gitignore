@@ -4,7 +4,7 @@
 # ignore all local configuration
 conf/local/**
 !conf/local/.gitkeep
-.telemetry
+
 
 # ignore potentially sensitive credentials files
 conf/**/*credentials*
@@ -17,6 +17,14 @@ notebooks/**
 # except their sub-folders
 !data/**/
 !logs/**/
+# Ignore files inside the immediate subfolders in 'data'
+data/*/*
+
+# Do not ignore sub-subfolders in 'data'
+!data/*/*/
+
+# Ignore files inside sub-subfolders in 'data'
+data/*/*/*
 
 # also keep all .gitkeep files
 !.gitkeep

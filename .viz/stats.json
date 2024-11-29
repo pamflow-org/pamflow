@@ -1,1 +1,1 @@
-{"detected_species": {"rows": 276025, "columns": 8, "file_size": 43251113}, "segments": {"rows": 4600, "columns": 11, "file_size": 1106980}}
+{"species_thresholds": {"rows": 50, "columns": 2, "file_size": 1971}}
