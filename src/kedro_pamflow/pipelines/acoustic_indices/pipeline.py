@@ -12,7 +12,7 @@ def create_pipeline(**kwargs):
         [
             node( # Log
                 func=compute_indices,
-                inputs=['audio_metadata@pandas' ,'params:acoustic_indices'],
+                inputs=['media@pandas' ,'params:acoustic_indices'],
                 outputs="acoustic_indices@pandas",
                 name="compute_indices_node",
             )

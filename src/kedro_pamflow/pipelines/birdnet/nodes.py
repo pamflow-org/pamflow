@@ -14,13 +14,13 @@ from kedro_pamflow.pipelines.birdnet.utils import (
 def species_detection_parallel(metadata, 
                                formato_de_migracion,
                              n_jobs,
-                             formato_migracion_parameters
+                             deployment_parameters
                             
                              ):
     
-    device_id=formato_migracion_parameters['device_id']
-    latitude_col=formato_migracion_parameters['latitude_col']
-    longitude_col=formato_migracion_parameters['longitude_col']
+    device_id=deployment_parameters['device_id']
+    latitude_col=deployment_parameters['latitude_col']
+    longitude_col=deployment_parameters['longitude_col']
 
     formato_de_migracion=formato_de_migracion[[device_id,latitude_col,longitude_col]]
 

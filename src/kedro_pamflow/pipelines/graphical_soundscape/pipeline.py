@@ -12,7 +12,7 @@ def create_pipeline(**kwargs):
         [
             node( # Log
                 func=graphical_soundscape_pamflow,
-                inputs=[ "audio_metadata@pandas",'params:graphical_soundscape_parameters'],
+                inputs=[ "media@pandas",'params:graphical_soundscape_parameters'],
                 outputs="graphical_soundscape@pandas",
                 name="graphical_soundscape_node"
             ),

@@ -19,7 +19,7 @@ def create_pipeline(**kwargs):
         [
             node( # Log
                 func=species_detection_parallel,
-                inputs=[ "audio_metadata@pandas",'formato_migracion@pandas','params:birdnet_parameters.n_jobs','params:formato_migracion_parameters'],
+                inputs=[ "media@pandas",'deployment@pandas','params:birdnet_parameters.n_jobs','params:deployment_parameters'],
                 outputs="unfiltered_detected_species@pandas",
                 name="species_detection_node",
             ),

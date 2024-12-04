@@ -26,9 +26,25 @@ import datetime
 #if args.operation == "get_audio_metadata":
 def get_audio_metadata(input_path #,output
 ):
-    df = util.get_metadata_dir(input_path, False)
-    df.dropna(inplace=True)  # remove problematic files
-    return df#df.to_csv(output, index=False)
+    metadata = util.get_metadata_dir(input_path, False)
+    metadata.dropna(inplace=True)  # remove problematic files
+    columns_names_dict={
+        'path_audio':'filePath',
+        'fname':'mediaID',
+        #'sample_rate':,
+        #'channels':,
+        #'bits':,
+        #'samples':,
+        #'length':,
+        #'fsize':,
+        'sensor_name':'deploymentID',
+        'date':'timestamp',
+        #'time':,
+    }
+    media=metadata.rename(columns=columns_names_dict)
+    media['fileName']=media['filePath']
+    media['fileMediatype']='WAV'
+    return media#df.to_csv(output, index=False)
 #elif args.operation == "metadata_summary":
 def metadata_summary(df):
     """ Get a summary of a metadata dataframe of the acoustic sampling
@@ -120,14 +136,19 @@ def plot_sensor_deployment(df):
     return fig, df_out
 
 
-def plot_sensor_location(metadata,metadata_summary,sensor_location,plot_parameters,formato_migracion_parameters):
-    device_id=   formato_migracion_parameters['device_id']
-    latitude_col=formato_migracion_parameters['latitude_col']
-    longitude_col=formato_migracion_parameters['longitude_col'] 
+def plot_sensor_location(metadata,
+                         metadata_summary,
+                         sensor_location,
+                         plot_parameters,
+                         deployment_parameters
+                         ):
+    device_id=   deployment_parameters['device_id']
+    latitude_col=deployment_parameters['latitude_col']
+    longitude_col=deployment_parameters['longitude_col'] 
 
 
-    sensor_location[latitude_col]=sensor_location[latitude_col].str.replace(',','.')
-    sensor_location[longitude_col]=sensor_location[longitude_col].str.replace(',','.')
+    #sensor_location[latitude_col]=sensor_location[latitude_col].str.replace(',','.')
+    #sensor_location[longitude_col]=sensor_location[longitude_col].str.replace(',','.')
     geo_info_microfonos = gpd.GeoDataFrame(
         sensor_location[[device_id, latitude_col, longitude_col]], 
         geometry=gpd.points_from_xy(sensor_location[longitude_col],sensor_location[latitude_col], ), crs="EPSG:4326"
@@ -234,6 +255,56 @@ def get_timelapse(sensor_deployment_data,
         timelapse_dict[file_name]=(long_wav, fs)
         spectrograms_dict[file_name]=fig
     return timelapse_dict, spectrograms_dict
+
+
+def plantilla_usuario_to_deployment(plantilla_usuario):
+    plantilla_usuario['Nombre del instalador+Apellido  del instalador']=plantilla_usuario['Nombre del instalador']+plantilla_usuario['Apellido  del instalador']
+
+    columns_names_map={
+        #'Nombre de la carpeta proyecto (NOMBRE_AÑO)':,
+        'Indicador de evento':'deploymentID',
+        'Fecha inicial':'deploymentStart',
+        'Fecha final':'deploymentEnd',
+        #'País':,
+        #'Departamento':,
+        #'Municipio':,
+        #'Localidad':,
+        #'Latitud':,
+        #'Longitud':,
+        #'Numero de archivos':,
+        #'Nombre del responsable + Apellido  del responsable':'setupBy',
+        'Equipo de grabación':'recorderModel',
+        #'Definiciones!D17':,
+        #'Elevación':,
+            #'Calidad de grabación':,
+        #'Nombre del proyecto':,
+        'Comentario de sonido':'deploymentComments',
+        #'Duración de cada grabación':,
+        #'Configuración de muestreo':,
+        'Hábitat':'habitat',
+        #'Área Natural Protegida':,
+        'Nombre del instalador+Apellido  del instalador':'setupBy',
+        #'Apellido  del instalador':,
+        #'Publicado':,
+        #'Estrato de Vegetación':,
+    }
+
+    #'locationID'
+    #'locationName'
+    deployment=plantilla_usuario[columns_names_map.keys()].rename(columns=columns_names_map)
+
+    schema={
+        'deploymentID':str,
+        'deploymentStart':'datetime64[ns]',
+        'deploymentEnd'  :'datetime64[ns]',
+        'recorderModel':str,
+        'deploymentComments':str,
+        'habitat':str,
+        'setupBy':str,
+
+    }
+    deployment=deployment.astype(schema)    
+    return deployment
 
 
     

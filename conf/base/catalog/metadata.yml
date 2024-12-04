@@ -1,4 +1,4 @@
-audio_metadata@pandas:
+media@pandas:
   type: pandas.CSVDataset
   filepath: data/output/metadata/audio_metadata.csv
 
@@ -10,6 +10,16 @@ sensor_deployment_data@pandas:
   type: pandas.CSVDataset
   filepath: data/output/metadata/sensor_deployment_data.csv
 
-formato_migracion@pandas:
+plantilla_usuario_fdm@pandas:
+  type: pandas.ExcelDataset
+  filepath: data/input/plantilla_usuario_fdm /FDM2024.xlsx
+  save_args:
+    sheet_name: Plantilla Usuario
+    header: 3
+  load_args:
+    sheet_name: Plantilla Usuario
+    header: 3
+
+deployment@pandas:
   type: pandas.CSVDataset
-  filepath: data/input/formato_migracion/sensor_location.csv
+  filepath: data/output/metadata/deployment.csv

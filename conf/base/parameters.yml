@@ -30,7 +30,7 @@ graphical_soundscape_parameters:
   threshold_abs: -55  # threshold for detecting peaks
   n_jobs: -1
 
-#matplotlib key word arguments for consistent plotin
+#matplotlib key word arguments for consistent ploting
 #througout the project. 
 #It is used mainly for spectrograms
 # (See https://scikit-maad.github.io/generated/maad.sound.spectrogram.html)
@@ -42,12 +42,12 @@ plot:
   fig_width: 15
   db_range: 80
   colormap: 'viridis'  # 'grey', 'viridis', 'plasma', 'inferno', 'cvidis'
-
-formato_migracion_parameters:
-  device_id: 'CODIGO_GRABADORA'
-  latitude_col: 'LATITUD'
-  longitude_col: 'LONGITUD'
-
+#Parameters used to rename important columns 
+#in the catalog entry 'formato_de_migracion@pandas'
+deployment_parameters:
+  device_id: 'Indicador de evento' #columna donde se almacena el id de la grabadora
+  latitude_col: 'Latitud'
+  longitude_col: 'Longitud'
 # Parameters used in birdnet pipeline
 birdnet_parameters:
   n_jobs: -1 #este es para la parelización del proceso de detectar especies: -1 utiliza todos los núcleos del computador. Otro número indica cuántos nucleos usar

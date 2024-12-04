@@ -4,7 +4,8 @@ from .nodes import (
     metadata_summary,
     plot_sensor_deployment,
     plot_sensor_location,
-    get_timelapse
+    get_timelapse,
+    plantilla_usuario_to_deployment
     )
 
 
@@ -18,36 +19,42 @@ def create_pipeline(**kwargs):
             node( # Log
                 func=get_audio_metadata,
                 inputs=[ 'params:DEVICES_ROOT_DIRECTORY'],
-                outputs="audio_metadata@pandas",
+                outputs="media@pandas",
                 name="get_audio_metadata_node",
             ),
 
             node( # Log
                 func=metadata_summary,
-                inputs=[ "audio_metadata@pandas"],
+                inputs=[ "media@pandas"],
                 outputs="audio_metadata_summary@pandas",
                 name="metadata_summary_node",
             ),
             node( # Log
                 func=plot_sensor_deployment,
-                inputs=[ "audio_metadata@pandas"],
+                inputs=[ "media@pandas"],
                 outputs=["sensor_deployment_figure@matplotlib","sensor_deployment_data@pandas"],
                 name="plot_sensor_deployment_node",
             ),
             node( # Log
+                func=plantilla_usuario_to_deployment,
+                inputs=[ 'plantilla_usuario_fdm@pandas'],
+                outputs="deployment@pandas",
+                name="plantilla_usuario_to_deployment_node",
+            ),
+            node( # Log
                 func=plot_sensor_location,
-                inputs=[ "audio_metadata@pandas",
+                inputs=[ "media@pandas",
                 "audio_metadata_summary@pandas", 
-                "formato_migracion@pandas",
+                "deployment@pandas",
                 "params:plot",
-                "params:formato_migracion_parameters"],
+                "params:deployment_parameters"],
                 outputs="sensor_location@matplotlib",
                 name="plot_sensor_location_node",
             ),
             node(
                 func=get_timelapse,
                 inputs=['sensor_deployment_data@pandas',
-                        'audio_metadata@pandas',             
+                        'media@pandas',             
                         'params:preprocessing.sample_length',
                         'params:preprocessing.sample_period',
                         'params:plot'                            
