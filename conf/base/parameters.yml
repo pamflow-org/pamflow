@@ -45,9 +45,9 @@ plot:
 #Parameters used to rename important columns 
 #in the catalog entry 'formato_de_migracion@pandas'
 deployment_parameters:
-  device_id: 'Indicador de evento' #columna donde se almacena el id de la grabadora
-  latitude_col: 'Latitud'
-  longitude_col: 'Longitud'
+  device_id: 'deploymentID' #columna donde se almacena el id de la grabadora
+  latitude_col: 'latitude'
+  longitude_col: 'longitude'
 # Parameters used in birdnet pipeline
 birdnet_parameters:
   n_jobs: -1 #este es para la parelización del proceso de detectar especies: -1 utiliza todos los núcleos del computador. Otro número indica cuántos nucleos usar

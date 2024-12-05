@@ -20,18 +20,18 @@ def create_pipeline(**kwargs):
             node( # Log
                 func=species_detection_parallel,
                 inputs=[ "media@pandas",'deployment@pandas','params:birdnet_parameters.n_jobs','params:deployment_parameters'],
-                outputs="unfiltered_detected_species@pandas",
+                outputs="unfiltered_observation@pandas",
                 name="species_detection_node",
             ),
             node( # Log
                 func=filter_detections,
-                inputs=[ 'unfiltered_detected_species@pandas','especies_de_interes@pandas','params:birdnet_parameters.minimum_observations'],
-                outputs="detected_species@pandas",
+                inputs=[ 'unfiltered_observation@pandas','especies_de_interes@pandas','params:birdnet_parameters.minimum_observations'],
+                outputs="observation@pandas",
                 name="filter_detections_node",
             ),
              node( # Log
                 func=create_segments,
-                inputs=[ 'detected_species@pandas','params:birdnet_parameters.segment_size'],
+                inputs=[ 'observation@pandas','params:birdnet_parameters.segment_size'],
                 outputs="segments@pandas",
                 name="create_segments_node",
             ),

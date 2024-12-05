@@ -1,12 +1,12 @@
-unfiltered_detected_species@pandas:
+unfiltered_observation@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/birdnet/unfiltered_detected_species.csv
+  filepath: data/output/birdnet/unfiltered_observation.csv
 especies_de_interes@pandas:
   type: pandas.CSVDataset
   filepath: data/input/especies_de_interes/especies_de_interes.csv
-detected_species@pandas:
+observation@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/birdnet/detected_species.csv
+  filepath: data/output/birdnet/observation.csv
 segments@pandas:
   type: pandas.CSVDataset
   filepath: data/output/birdnet/segments.csv

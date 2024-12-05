@@ -24,18 +24,18 @@ def species_detection_parallel(metadata,
 
     formato_de_migracion=formato_de_migracion[[device_id,latitude_col,longitude_col]]
 
-    formato_de_migracion=formato_de_migracion.rename(columns={device_id:'sensor_name',
+    formato_de_migracion=formato_de_migracion.rename(columns={device_id:'deploymentID',
                                                             latitude_col:  "latitud" ,
                                                             longitude_col: "longitud"
                                                             }
                                                     )
 
-    formato_de_migracion["latitud" ]=formato_de_migracion["latitud" ].str.replace(',','.').astype('float64')
-    formato_de_migracion["longitud"]=formato_de_migracion["longitud"].str.replace(',','.').astype('float64')
+    #formato_de_migracion["latitud" ]=formato_de_migracion["latitud" ].str.replace(',','.').astype('float64')
+    #qformato_de_migracion["longitud"]=formato_de_migracion["longitud"].str.replace(',','.').astype('float64')
 
 
     df=metadata.merge(formato_de_migracion,
-                on='sensor_name',
+                on='deploymentID',
                 how='left'
                 )
     
@@ -51,10 +51,10 @@ def species_detection_parallel(metadata,
         
         # Use submit for each task
         futures = [executor.submit(species_detection_single_file, 
-                                                                row['path_audio'] ,
+                                                                row['filePath'] ,
                                                                 row['latitud'] ,
                                                                 row['longitud'],
-                                                                row['sensor_name']
+                                                                row['deploymentID']
                                                             ) 
                     for idx,row in df.iterrows()
                   ]
@@ -76,14 +76,30 @@ def species_detection_parallel(metadata,
     # Build dataframe with results
     resultados_por_carpeta_unchained=list(it.chain.from_iterable(results))
     df_out=pd.DataFrame(resultados_por_carpeta_unchained)
-    return df_out
+    column_names_dict={
+    #'common_name':,
+    'scientific_name':'scientificName',
+    'start_time':'eventStart',
+    'end_time':'eventEnd',
+    'confidence':'classificationProbability',
+    #'label':,
+    'path_audio':'filePath',
+    'deploymentID':'deploymentID',
+    }
+
+    observation=df_out.rename(columns=column_names_dict)
+
+    observation['observationID' ]=observation.index
+
+    observation['mediaID']=observation['filePath'].str.split(os.sep).str[-1]
+    return observation
 
 def filter_detections(detected_species,especies_de_interes,minimum_observations):
     especies_de_interes=especies_de_interes.drop_duplicates()
-    detected_species_filtered=detected_species[detected_species['scientific_name'].isin(especies_de_interes['scientific_name'])]
+    detected_species_filtered=detected_species[detected_species['scientificName'].isin(especies_de_interes['scientificName'])]
 
 
-    detected_species_filtered=detected_species_filtered[detected_species_filtered.groupby('scientific_name').transform('size')>=minimum_observations]
+    detected_species_filtered=detected_species_filtered[detected_species_filtered.groupby('scientificName').transform('size')>=minimum_observations]
     return detected_species_filtered
 
 def create_segments(detected_species,segment_size):
@@ -93,14 +109,14 @@ def create_segments(detected_species,segment_size):
 
     samples_per_interval=segment_size/num_intervals
 
-    detected_species['discrete_confidence']=detected_species.groupby(['scientific_name'])['confidence'].transform(
+    detected_species['discrete_confidence']=detected_species.groupby(['scientificName'])['classificationProbability'].transform(
                         lambda x: pd.qcut(x, num_intervals, labels=range(1,num_intervals+1)))
 
-    segments=detected_species.groupby(['scientific_name','discrete_confidence']).apply(lambda x: x.sample(int(samples_per_interval))).reset_index(drop=True)
+    segments=detected_species.groupby(['scientificName','discrete_confidence']).apply(lambda x: x.sample(int(samples_per_interval))).reset_index(drop=True)
 
-    segments['original_file_name']=segments['path_audio'].apply(os.path.normpath).str.split(os.sep).str[-1]
+    segments['original_file_name']=segments['filePath'].apply(os.path.normpath).str.split(os.sep).str[-1]
 
-    segments['segments_file_name']=segments.apply(lambda x: f"{x['confidence']:.3}_{x['original_file_name']}_{x['start_time']}_{x['end_time']}.WAV" , axis=1)
+    segments['segments_file_name']=segments.apply(lambda x: f"{x['classificationProbability']:.3}_{x['original_file_name']}_{x['eventStart']}_{x['eventEnd']}.WAV" , axis=1)
 
     return segments
 
@@ -109,11 +125,11 @@ def create_segments_folder(df_segments,n_jobs,segment_size):
     
     
     results = [create_segments_single_species_paralell(
-                                df_segments[df_segments['scientific_name']==species] ,
+                                df_segments[df_segments['scientificName']==species] ,
                                 species,
                                 n_jobs
                                 ) 
-                for species in df_segments['scientific_name'].unique()
+                for species in df_segments['scientificName'].unique()
                 ]
 
     
@@ -133,30 +149,30 @@ def create_segments_folder(df_segments,n_jobs,segment_size):
 def create_manual_annotation_formats(segments,manual_annotations_file_name):
     #Dictionary of the form {'Genus_species': 'generic_file_name_for_Genus_species'}
     excel_formats_file_names={'_'.join(species.split()): manual_annotations_file_name.replace('species','_'.join(species.split()))
-                        for species in segments['scientific_name'].unique()
+                        for species in segments['scientificName'].unique()
                             }
 
     excel_generic_format=segments[['segments_file_name',
-                               'confidence',
+                               'classificationProbability',
                                'original_file_name', 
-                               'start_time', 
-                               'end_time',
-                               'scientific_name', 
+                               'eventStart', 
+                               'eventEnd',
+                               'scientificName', 
         ]]
 
 
-    excel_generic_format['positive']=np.where(excel_generic_format['confidence']>=0.5,True,False)
+    excel_generic_format['positive']=np.where(excel_generic_format['classificationProbability']>=0.5,True,False)
 
     excel_generic_format['detected_species']=np.where(excel_generic_format['positive'],
-                                                    excel_generic_format['scientific_name'],
+                                                    excel_generic_format['scientificName'],
                                                     'other'
                                                     )
 
     manual_annotations_partitioned_dataset={excel_formats_file_names['_'.join(species.split())]:
-                                            excel_generic_format[excel_generic_format['scientific_name']==species
+                                            excel_generic_format[excel_generic_format['scientificName']==species
                                             ].sort_values(by='segments_file_name',ascending=False)
                                             
-                                            for species in segments['scientific_name'].unique()
+                                            for species in segments['scientificName'].unique()
                                             if '_'.join(species.split()) in excel_formats_file_names.keys()
                             }
     return manual_annotations_partitioned_dataset
