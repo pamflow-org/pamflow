@@ -270,8 +270,10 @@ def add_file_prefix(folder_name: str, recursive:bool=False, verbose:bool=False) 
         prefix = fname.parent.name
         new_fname = fname.with_name(f'{prefix}_{fname.name}')
         try:
-            fname.rename(new_fname)
+            #fname.rename(new_fname)
+            os.rename(str(fname), str(new_fname))
             flist_changed.append(str(new_fname))
+
         except Exception as e:
             print(f"Error occurred while renaming {fname}: {e}")
     

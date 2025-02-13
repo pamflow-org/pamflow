@@ -27,7 +27,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     birdnet_pipeline = birdnet.create_pipeline()
     data_science_pipeline     = data_science.create_pipeline()
     
-
+    
     pamflow_pipeline=preprocess_pipeline + graphical_soundscape_pipeline+acoustic_indices_pipeline+birdnet_pipeline #no incluir data_science
 
     
@@ -38,6 +38,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "graphical_soundscape":graphical_soundscape_pipeline,
         "acoustic_indices":acoustic_indices_pipeline,
         "birdnet": birdnet_pipeline,
-        "data_science": data_science_pipeline
+        "data_science": data_science_pipeline,
+        
         
     }

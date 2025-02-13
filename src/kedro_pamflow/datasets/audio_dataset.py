@@ -48,6 +48,11 @@ class SoundDataset(AbstractDataset[np.ndarray, np.ndarray]):
     def _save(self, data: np.ndarray) -> None:
         """Saves audio data to the specified filepath."""
         save_path = get_filepath_str(self._filepath, self._protocol)
+        
+        if not os.path.isdir(os.path.split(save_path)[0]):
+            os.mkdir(os.path.split(save_path)[0])
+        
+            
         audio,sr=data
         with self._fs.open(save_path, mode="wb") as f:
             write(f, 

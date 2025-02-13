@@ -12,9 +12,11 @@ segments@pandas:
   filepath: data/output/birdnet/segments.csv
 
 segments_audio_folder@AudioFolderDataset:
-  type: kedro_pamflow.datasets.audio_folder_dataset.AudioFolderDataset
-  main_folder_path: data/output/birdnet/segments
-
+  type: partitions.PartitionedDataset
+  path: data/output/birdnet/segments
+  dataset:
+    type: kedro_pamflow.datasets.audio_dataset.SoundDataset
+  filename_suffix: ".WAV"
 
 manual_annotations@PartitionedDataset:
   type: partitions.PartitionedDataset

@@ -5,8 +5,7 @@ import itertools as it
 import numpy as np
 from kedro_pamflow.pipelines.birdnet.utils import (
     species_detection_single_file,
-    trim_audio,
-    create_segments_single_species_paralell
+    trim_audio
     )
 
 
@@ -121,29 +120,13 @@ def create_segments(detected_species,segment_size):
     return segments
 
 def create_segments_folder(df_segments,n_jobs,segment_size):
-
-    
-    
-    results = [create_segments_single_species_paralell(
-                                df_segments[df_segments['scientificName']==species] ,
-                                species,
-                                n_jobs
-                                ) 
-                for species in df_segments['scientificName'].unique()
-                ]
-
-    
-    
-    
-    # Build audio_folder_dataset with results
-    # {Genus_species: {segment_file_name: (np.array,sr),...,segment_file_name: (np.array,sr)},
-    #  ...
-    #  Genus_species: {segment_file_name: (np.array,sr),...,segment_file_name: (np.array,sr)}
-    #}
-    audio_folder_dataset={ k:v  for diccionario in results for k,v in diccionario.items() }
-    
-
-    return audio_folder_dataset
+    for index, row in df_segments.iterrows():
+        result=trim_audio(row['eventStart'],
+                            row['eventEnd'],
+                            row['filePath'],
+                            row['segments_file_name']
+                            )
+        yield {f"{'_'.join(row['scientificName'].split())}/{result[0]}":result[1]}
 
 
 def create_manual_annotation_formats(segments,manual_annotations_file_name):
@@ -161,12 +144,9 @@ def create_manual_annotation_formats(segments,manual_annotations_file_name):
         ]]
 
 
-    excel_generic_format['positive']=np.where(excel_generic_format['classificationProbability']>=0.5,True,False)
+    excel_generic_format['positive']=''
 
-    excel_generic_format['detected_species']=np.where(excel_generic_format['positive'],
-                                                    excel_generic_format['scientificName'],
-                                                    'other'
-                                                    )
+    excel_generic_format['detected_species']=''
 
     manual_annotations_partitioned_dataset={excel_formats_file_names['_'.join(species.split())]:
                                             excel_generic_format[excel_generic_format['scientificName']==species

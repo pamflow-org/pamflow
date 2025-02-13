@@ -85,3 +85,5 @@ class AudioFolderDataset(AbstractDataset[Dict[str, Any], Dict[str, Any]]):
     def _describe(self):
         """Returns a dict that describes the attributes of the dataset."""
         return dict(mainfolderpath=self._mainfolderpath, protocol=self._protocol)
+
+

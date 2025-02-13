@@ -27,15 +27,7 @@ def species_detection_single_file(wav_file_path,
                                   ]
     return species_detections_extra_keys
 
-def trim_audio(audio_array, 
-               sr,
-               start_time, 
-               end_time):
-    
-    trimmed_audio=audio_array[int(start_time*sr):int(end_time*sr)]
-    return trimmed_audio, sr
-
-def trim_audio_enhanced(start_time, end_time,path_audio,segments_file_name):
+def trim_audio(start_time, end_time,path_audio,segments_file_name):
     audio_array, sr=sound.load(path_audio)
     trimmed_audio=audio_array[int(start_time*sr):int(end_time*sr)]
     return (segments_file_name[0:-4],(trimmed_audio,sr))
@@ -52,9 +44,9 @@ def create_segments_single_species_paralell(df,species,n_jobs):
         
         # Use submit for each task
         futures = [executor.submit(trim_audio_enhanced, 
-                                   row['start_time'],
-                                   row['end_time'],
-                                   row['path_audio'],
+                                   row['eventStart'],
+                                   row['eventEnd'],
+                                   row['filePath'],
                                    row['segments_file_name']
                                     
                                     ) 

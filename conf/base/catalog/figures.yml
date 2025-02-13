@@ -13,6 +13,7 @@ sensor_location@matplotlib:
 timelapse_spectrograms@PartitionedImage:
   type: partitions.PartitionedDataset
   path: data/output/figures/timelapse/
-  dataset: matplotlib.MatplotlibWriter
+  dataset:
+    type: matplotlib.MatplotlibWriter
   filename_suffix: ".png"
 
