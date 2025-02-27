@@ -9,9 +9,11 @@ import argparse
 import matplotlib.pyplot as plt
 from maad import sound, util
 import pandas as pd
+import numpy as np
 import geopandas as gpd
 import contextily as cx
-import seaborn as sns
+import matplotlib.dates as mdates
+import matplotlib as mpl
 from kedro_pamflow.pipelines.preprocess.utils import (
     load_config, 
     metadata_summary, 
@@ -102,41 +104,63 @@ def plot_sensor_deployment(df):
     matplotlib.figure
         If axes are not provided, a figure is created and figure handles are returned.
     """
-    # Function argument validation
-
 
     # Group recordings by day
     df['timestamp'] = pd.to_datetime(df['timestamp']).dt.date
     df_out = df.groupby(['deploymentID', 'timestamp']).size().reset_index(name='count')
     df_out.sort_values(by=['deploymentID', 'timestamp'], inplace=True)
 
-    # Reorder sites according to first recording
-    # Calculate the first date for each site
-    #first_date_per_site = df_out.groupby('sensor_name')['date'].min().reset_index()
-    #first_date_per_site = first_date_per_site.rename(columns={'date': 'first_date_'})
-
-    df_out['first_date']=df_out.groupby('deploymentID')['timestamp'].transform('min')
     # Sort the DataFrame based on the first date
+    df_out['first_date']=df_out.groupby('deploymentID')['timestamp'].transform('min')
     df_out = df_out.sort_values(by='first_date')
 
-    fig, ax = plt.subplots(figsize=[8,5])
+    # Plot settings
+    # Dynamically adjust figure size
+    unique_sensors = df_out['deploymentID'].nunique()
+    unique_dates = df_out['timestamp'].nunique()
+    width = min(max(6, unique_dates * 0.3), 12)  
+    height = min(max(4, unique_sensors * 0.3), 9)  
+    
+    # Define scatter plot sizes based on 'count' (ensuring they match actual sizes)
+    sizes = (df_out['count'] - df_out['count'].min() + 1) * 3  # Example scaling
 
+    # Create a modified version of the 'Blues' colormap
+    Blues_mod = mpl.colors.LinearSegmentedColormap.from_list("Blues_mod", 
+                                                              ["#b0c4de", "#08306b"])
+    x='timestamp'
+    y='deploymentID'
+    
+    # Draw scatterplot
+    fig, ax = plt.subplots(figsize=[width, height])
+    scatter = ax.scatter(
+        df_out[x], df_out[y], s=sizes, c=df_out['count'], cmap=Blues_mod, alpha=0.9)
 
-    x='deploymentID'
-    y='timestamp'
-    sns.scatterplot(y=y, x=x, size='count', hue='count', data=df_out, ax=ax)
-    sns.scatterplot(y=y, x=x, size='count', hue='count', data=df_out, ax=ax,
-                        hue_norm=(0, df_out['count'].max()),
-                        size_norm=(0, df_out['count'].max()))
+    # Format date
+    ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))  # Every 7 days
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+
+    # Add title and set grid
     ax.grid(alpha=0.2)
-    ax.set_title(
-        f'Sensor Deployment: {df.deploymentID.unique().shape[0]} sites | {df.shape[0]} files')
+    ax.set_title(f'Sensor Deployment: {df.deploymentID.nunique()} sites | {df.shape[0]} files')
+    
+    # Create legend handles
+    legend_values = np.linspace(df_out['count'].min(), df_out['count'].max(), num=4).astype(int)
+    legend_handles = [
+        plt.scatter([], [], s=(val - df_out['count'].min() + 1) * 3, 
+                    color=Blues_mod((val - df_out['count'].min()) / (df_out['count'].max() - df_out['count'].min())),
+                    label=f'{int(val)}') 
+        for val in legend_values
+    ]
+    # Adjust spines
+    for spine in ax.spines.values():
+        spine.set_linewidth(0.5)  # Adjust the thickness
+        spine.set_color("gray")   # Change color to lighter gray
 
-    ax.tick_params(axis='x',labelrotation=90)
-
-    ax.legend(
-        bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0, title='N. Rec')
-    fig.tight_layout()
+    # Add legend outside the plot
+    ax.legend(handles=legend_handles, title="N. Rec", loc='upper left', bbox_to_anchor=(1, 1))
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    
     return fig, df_out
 
 
