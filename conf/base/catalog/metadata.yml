@@ -1,5 +1,5 @@
-media@pandas:
-  type: pandas.CSVDataset
+media@pamDP:
+  type:  kedro_pamflow.datasets.media.Media
   filepath: data/output/metadata/audio_metadata.csv
 
 audio_metadata_summary@pandas:

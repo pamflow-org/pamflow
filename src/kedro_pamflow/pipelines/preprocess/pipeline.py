@@ -19,19 +19,19 @@ def create_pipeline(**kwargs):
             node( # Log
                 func=get_audio_metadata,
                 inputs=[ 'params:DEVICES_ROOT_DIRECTORY'],
-                outputs="media@pandas",
+                outputs="media@pamDP",
                 name="get_audio_metadata_node",
             ),
 
             node( # Log
                 func=metadata_summary,
-                inputs=[ "media@pandas"],
+                inputs=[ "media@pamDP"],
                 outputs="audio_metadata_summary@pandas",
                 name="metadata_summary_node",
             ),
             node( # Log
                 func=plot_sensor_deployment,
-                inputs=[ "media@pandas"],
+                inputs=[ "media@pamDP"],
                 outputs=["sensor_deployment_figure@matplotlib","sensor_deployment_data@pandas"],
                 name="plot_sensor_deployment_node",
             ),
@@ -43,7 +43,7 @@ def create_pipeline(**kwargs):
             ),
             node( # Log
                 func=plot_sensor_location,
-                inputs=[ "media@pandas",
+                inputs=[ "media@pamDP",
                 "audio_metadata_summary@pandas", 
                 "deployment@pandas",
                 "params:plot",
@@ -54,7 +54,7 @@ def create_pipeline(**kwargs):
             node(
                 func=get_timelapse,
                 inputs=['sensor_deployment_data@pandas',
-                        'media@pandas',             
+                        'media@pamDP',             
                         'params:preprocessing.sample_length',
                         'params:preprocessing.sample_period',
                         'params:plot'                            

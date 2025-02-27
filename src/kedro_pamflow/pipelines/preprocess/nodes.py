@@ -159,7 +159,6 @@ def plot_sensor_location(metadata,
     )
 
     geo_info_microfonos=geo_info_microfonos.rename(columns={device_id:'deploymentID'})
-    geo_info_microfonos['deploymentID']=geo_info_microfonos['deploymentID'].str.split(' | ').str[0]
     geo_info_microfonos =geo_info_microfonos.merge(metadata_summary,
                        on='deploymentID',
                        how='left'
