@@ -14,16 +14,16 @@ from kedro_pamflow.pipelines.acoustic_indices.utils import (
     compute_indices_parallel
     )
 
-def compute_indices(data, acoustic_indices_parameters):
+def compute_indices(media, acoustic_indices_parameters):
     target_fs=acoustic_indices_parameters['target_fs']
     filter_type=acoustic_indices_parameters['filter_type']
     filter_cut=acoustic_indices_parameters['filter_cut']
     filter_order=acoustic_indices_parameters['filter_order']
     n_jobs=acoustic_indices_parameters['n_jobs']
 
-    data=data[data['length']>0]    
+    media=media[media['length']>0]    
     df_out = compute_indices_parallel(
-            data, target_fs, filter_type, filter_cut, filter_order, n_jobs)
+            media, target_fs, filter_type, filter_cut, filter_order, n_jobs)
     return df_out
 
     

@@ -1,4 +1,4 @@
-DEVICES_ROOT_DIRECTORY: "/kedroPamflow/sample_data"
+DEVICES_ROOT_DIRECTORY: "/home/s0nabio/kedroPamflow/sample_data"
 # Basic settings
 preprocessing:
   sample_length: 5  # length of sample to build timelapse

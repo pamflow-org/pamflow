@@ -1,8 +1,9 @@
 media@pamDP:
-  type:  kedro_pamflow.datasets.media.Media
-  filepath: data/output/metadata/audio_metadata.csv
+  type:  kedro_pamflow.datasets.pamDP.media.Media
+  filepath: data/output/metadata/media.csv
 
-audio_metadata_summary@pandas:
+
+media_summary@pandas:
   type: pandas.CSVDataset
   filepath: data/output/metadata/audio_metadata_summary.csv
 
@@ -20,6 +21,6 @@ plantilla_usuario_fdm@pandas:
     sheet_name: Plantilla Usuario
     header: 3
 
-deployment@pandas:
-  type: pandas.CSVDataset
+deployment@pamDP:
+  type: kedro_pamflow.datasets.pamDP.deployments.Deployments
   filepath: data/output/metadata/deployment.csv
