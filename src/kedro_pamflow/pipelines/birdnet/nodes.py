@@ -10,30 +10,19 @@ from kedro_pamflow.pipelines.birdnet.utils import (
 
 
 
-def species_detection_parallel(metadata, 
-                               formato_de_migracion,
-                             n_jobs,
-                             deployment_parameters
+def species_detection_parallel(media, 
+                               deployments,
+                             n_jobs
                             
                              ):
     
-    device_id=deployment_parameters['device_id']
-    latitude_col=deployment_parameters['latitude_col']
-    longitude_col=deployment_parameters['longitude_col']
+    
 
-    formato_de_migracion=formato_de_migracion[[device_id,latitude_col,longitude_col]]
-
-    formato_de_migracion=formato_de_migracion.rename(columns={device_id:'deploymentID',
-                                                            latitude_col:  "latitud" ,
-                                                            longitude_col: "longitud"
-                                                            }
-                                                    )
-
-    #formato_de_migracion["latitud" ]=formato_de_migracion["latitud" ].str.replace(',','.').astype('float64')
-    #qformato_de_migracion["longitud"]=formato_de_migracion["longitud"].str.replace(',','.').astype('float64')
+    deployments=deployments[['deploymentID','latitude','longitude']]
 
 
-    df=metadata.merge(formato_de_migracion,
+
+    df=media.merge(deployments,
                 on='deploymentID',
                 how='left'
                 )
@@ -44,15 +33,15 @@ def species_detection_parallel(metadata,
         n_jobs = os.cpu_count()
 
     print(f'Automatic detection of species for {df.shape[0]} files with {n_jobs} threads')
-    
     # Use concurrent.futures for parelell execution
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
         
         # Use submit for each task
         futures = [executor.submit(species_detection_single_file, 
                                                                 row['filePath'] ,
-                                                                row['latitud'] ,
-                                                                row['longitud'],
+                                                                row['latitude'] ,
+                                                                row['longitude'],
+                                                                row['mediaID'],
                                                                 row['deploymentID']
                                                             ) 
                     for idx,row in df.iterrows()
@@ -76,55 +65,75 @@ def species_detection_parallel(metadata,
     resultados_por_carpeta_unchained=list(it.chain.from_iterable(results))
     df_out=pd.DataFrame(resultados_por_carpeta_unchained)
     column_names_dict={
-    #'common_name':,
     'scientific_name':'scientificName',
-    'start_time':'eventStart',
-    'end_time':'eventEnd',
+    'start_time':'bboxTime',
+    'end_time':'bboxDuration',
     'confidence':'classificationProbability',
-    #'label':,
-    'path_audio':'filePath',
-    'deploymentID':'deploymentID',
     }
+    #'common_name', 'scientific_name', 'start_time', 'end_time', 'confidence', 'label'
+    observations=df_out.rename(columns=column_names_dict)
 
-    observation=df_out.rename(columns=column_names_dict)
+    observations['observationID' ]=observations.index
+    observations['classificationTimestamp']=pd.to_datetime('today')
+    observations['observationType']='animal'
+    observations['classificationMethod']='machine'
 
-    observation['observationID' ]=observation.index
+    observations['eventID']=None
+    observations['observationComments']=None
+    observations['bboxFrequency']=None
+    observations[ 'bboxBandwidth']=None
 
-    observation['mediaID']=observation['filePath'].str.split(os.sep).str[-1]
-    return observation
+    #observations['mediaID']=observations['filePath'].str.split(os.sep).str[-1]
+    observations=observations.drop(columns=['common_name','label'])
+    return observations
 
-def filter_detections(detected_species,especies_de_interes,minimum_observations):
-    especies_de_interes=especies_de_interes.drop_duplicates()
-    detected_species_filtered=detected_species[detected_species['scientificName'].isin(especies_de_interes['scientificName'])]
+def filter_observations(observations,target_species,minimum_observations, segment_size):
+    if segment_size> minimum_observations:
+        raise ValueError(f"""Number of segments per species ({segment_size}) is greater than minimum number of observations per species ({minimum_observations}).\n 
+                             Change the values of these parameters in conf/base/paramteres.yml  to fix this issue. 
+        """)
 
 
-    detected_species_filtered=detected_species_filtered[detected_species_filtered.groupby('scientificName').transform('size')>=minimum_observations]
-    return detected_species_filtered
+    target_species=target_species.drop_duplicates()
+    observations=observations[observations['scientificName'].isin(target_species['scientificName'])]
+    if observations.shape[0]==0:
+        raise ValueError(f"""None of the {target_species.shape[0]} species in data/input/target_species/target_species.csv are among the detected species in 
+                            data/output/birdnet/unfiltered_observations.csv. \n
+                            This caused the observations file to be empty which is incompatible with the rest of the pipeline \n 
+                            Include more or different species in data/input/target_species/target_species.csv to fix this issue.
+         """)
 
-def create_segments(detected_species,segment_size):
-    num_intervals=max(i for i in range(1, int(segment_size**(1/2))+1)  
-                    if segment_size % i == 0
-                    )
 
-    samples_per_interval=segment_size/num_intervals
+    observations=observations[observations.groupby('scientificName').transform('size')>=minimum_observations]
+    if observations.shape[0]==0:
+        raise ValueError(f"""None of the {target_species.shape[0]} species in data/input/target_species/target_species.csv have as many observations as requested  in params:birdnet_parameters.minimum_observations ({minimum_observations}). \n 
+                            This caused the observations file to be empty which is incompatible with the rest of the pipeline \n 
+                            Include more or different species in data/input/target_species/target_species.csv or decrease  params:birdnet_parameters.minimum_observations to fix this issue.
+         """)
+    return observations
 
-    detected_species['discrete_confidence']=detected_species.groupby(['scientificName'])['classificationProbability'].transform(
-                        lambda x: pd.qcut(x, num_intervals, labels=range(1,num_intervals+1)))
+def create_segments(observations, media,segment_size):
+    
+    #Sample segment_size rows per each species in observations
+    observations=observations.merge(media[['mediaID', 'filePath']],
+                                on='mediaID',
+                                how='left'
+)
+    segments=observations.groupby(['scientificName']).apply(lambda x: x.sample(int(segment_size))).reset_index(drop=True)
 
-    segments=detected_species.groupby(['scientificName','discrete_confidence']).apply(lambda x: x.sample(int(samples_per_interval))).reset_index(drop=True)
+    segments['classificationProbabilityRounded']=segments['classificationProbability'].round(3).astype(str).str.ljust(5,'0')
 
-    segments['original_file_name']=segments['filePath'].apply(os.path.normpath).str.split(os.sep).str[-1]
 
-    segments['segments_file_name']=segments.apply(lambda x: f"{x['classificationProbability']:.3}_{x['original_file_name']}_{x['eventStart']}_{x['eventEnd']}.WAV" , axis=1)
+    segments['segmentsFilePath']=segments.apply(lambda x: f"{x['classificationProbabilityRounded']}_{x['mediaID'].replace('.WAV','')}_{x['bboxTime']}_{x['bboxDuration']}.WAV" , axis=1)
 
     return segments
 
-def create_segments_folder(df_segments,n_jobs,segment_size):
-    for index, row in df_segments.iterrows():
-        result=trim_audio(row['eventStart'],
-                            row['eventEnd'],
+def create_segments_folder(segments,n_jobs,segment_size):
+    for index, row in segments.iterrows():
+        result=trim_audio(row['bboxTime'],
+                            row['bboxDuration'],
                             row['filePath'],
-                            row['segments_file_name']
+                            row['segmentsFilePath']
                             )
         yield {f"{'_'.join(row['scientificName'].split())}/{result[0]}":result[1]}
 
@@ -135,22 +144,22 @@ def create_manual_annotation_formats(segments,manual_annotations_file_name):
                         for species in segments['scientificName'].unique()
                             }
 
-    excel_generic_format=segments[['segments_file_name',
+    excel_generic_format=segments[['segmentsFilePath',
+                                'filePath',
                                'classificationProbability',
-                               'original_file_name', 
-                               'eventStart', 
-                               'eventEnd',
+                               'bboxTime', 
+                               'bboxDuration',
                                'scientificName', 
         ]]
 
 
     excel_generic_format['positive']=''
 
-    excel_generic_format['detected_species']=''
+    excel_generic_format['detectedSpecies']=''
 
     manual_annotations_partitioned_dataset={excel_formats_file_names['_'.join(species.split())]:
                                             excel_generic_format[excel_generic_format['scientificName']==species
-                                            ].sort_values(by='segments_file_name',ascending=False)
+                                            ].sort_values(by='segmentsFilePath',ascending=False)
                                             
                                             for species in segments['scientificName'].unique()
                                             if '_'.join(species.split()) in excel_formats_file_names.keys()

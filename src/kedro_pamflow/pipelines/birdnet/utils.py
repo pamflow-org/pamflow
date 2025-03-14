@@ -9,7 +9,8 @@ import concurrent.futures
 def species_detection_single_file(wav_file_path,
                                   lat,
                                   lon,
-                                  sensor_name
+                                  mediaID,
+                                  deploymentID
                                  ):
     # Load and initialize the BirdNET-Analyzer models.
     analyzer = Analyzer()
@@ -21,8 +22,14 @@ def species_detection_single_file(wav_file_path,
         
     )
     recording.analyze()
-    species_detections=recording.detections 
-    species_detections_extra_keys=[ {**detection_dict,**{'path_audio':wav_file_path,'sensor_name':sensor_name}}  
+    # species_detections is a list of dictionaries.
+    # One  dictionary for each detection having the following keys:
+    # dict_keys(['common_name', 'scientific_name', 'start_time', 'end_time', 'confidence', 'label'])
+    species_detections=recording.detections
+
+    # Four keys are added to each dictionary:
+    # mediaID, deploymentID, classifiedBy
+    species_detections_extra_keys=[ {**detection_dict,**{'mediaID':mediaID,'deploymentID':deploymentID, 'classifiedBy':f'Birdnet {analyzer.version}'}}  
                                    for detection_dict in species_detections
                                   ]
     return species_detections_extra_keys

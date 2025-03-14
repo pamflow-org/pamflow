@@ -16,7 +16,7 @@ acoustic_indices:
   filter_type: 'bandpass'
   filter_cut: [300, 16000]
   filter_order: 3
-  n_jobs: -1 #este es para la parelización del proceso de calcular índices: -1 utiliza todos los núcleos del computador. Otro número indica cuántos nucleos usar
+  n_jobs: -1 #Number of cores used in parallelization: -1 forces to use all the cores available.
 
 #The parameters in acoustic_indices correspond to the arguments
 #of the scikitmaad.features function graphical_soundscape
@@ -28,7 +28,7 @@ graphical_soundscape_parameters:
   db_range: 80  # dB range for the spectrogram
   min_distance: 5  # minimum distance between peaks
   threshold_abs: -55  # threshold for detecting peaks
-  n_jobs: -1
+  n_jobs: -1 #Number of cores used in parallelization: -1 forces to use all the cores available.
 
 #matplotlib key word arguments for consistent ploting
 #througout the project. 
@@ -45,14 +45,14 @@ plot:
 #Parameters used to rename important columns 
 #in the catalog entry 'formato_de_migracion@pandas'
 deployment_parameters:
-  device_id: 'deploymentID' #columna donde se almacena el id de la grabadora
+  device_id: 'deploymentID' 
   latitude_col: 'latitude'
   longitude_col: 'longitude'
 # Parameters used in birdnet pipeline
 birdnet_parameters:
-  n_jobs: -1 #este es para la parelización del proceso de detectar especies: -1 utiliza todos los núcleos del computador. Otro número indica cuántos nucleos usar
-  minimum_observations: 100 #mínimo número de detecciones para una especie para ser considerada
-  segment_size: 100 #número de segmentos con que se construye la carpeta de segmentos de cada especie
+  n_jobs: -1 #Number of cores used in parallelization: -1 forces to use all the cores available.
+  minimum_observations: 20 #Minimum number of detections for a species to be considered  in the observations format
+  segment_size: 20 #Number of sample segments per species,
   manual_annotations_file_name: 'species_manual_annotations' #prefijo en el nombre de archivo de anotaciones manuales: el nombre del archivo será {manual_annotations_file_name}_{species}
 #Parameters used in data_science pipeline
 data_science_parameters:

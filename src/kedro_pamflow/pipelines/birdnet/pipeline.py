@@ -1,7 +1,7 @@
 from kedro.pipeline import Pipeline, node, pipeline
 from .nodes import (
     species_detection_parallel,
-    filter_detections,
+    filter_observations,
     create_segments,
     create_segments_folder,
     create_manual_annotation_formats,
@@ -19,19 +19,19 @@ def create_pipeline(**kwargs):
         [
             node( # Log
                 func=species_detection_parallel,
-                inputs=[ "media@pamDP",'deployment@pamDP','params:birdnet_parameters.n_jobs','params:deployment_parameters'],
-                outputs="unfiltered_observation@pandas",
+                inputs=[ "media@pamDP",'deployment@pamDP','params:birdnet_parameters.n_jobs'],
+                outputs="unfiltered_observations@pamDP",
                 name="species_detection_node",
             ),
             node( # Log
-                func=filter_detections,
-                inputs=[ 'unfiltered_observation@pandas','especies_de_interes@pandas','params:birdnet_parameters.minimum_observations'],
-                outputs="observation@pandas",
-                name="filter_detections_node",
+                func=filter_observations,
+                inputs=[ 'unfiltered_observations@pamDP','target_species@pandas','params:birdnet_parameters.minimum_observations', 'params:birdnet_parameters.segment_size'],
+                outputs="observations@pamDP",
+                name="filter_observations_node",
             ),
              node( # Log
                 func=create_segments,
-                inputs=[ 'observation@pandas','params:birdnet_parameters.segment_size'],
+                inputs=[ 'observations@pamDP', "media@pamDP",'params:birdnet_parameters.segment_size'],
                 outputs="segments@pandas",
                 name="create_segments_node",
             ),

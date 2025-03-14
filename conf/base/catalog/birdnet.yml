@@ -1,12 +1,12 @@
-unfiltered_observation@pandas:
+unfiltered_observations@pamDP:
+  type: kedro_pamflow.datasets.pamDP.observations.Observations
+  filepath: data/output/birdnet/unfiltered_observations.csv
+target_species@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/birdnet/unfiltered_observation.csv
-especies_de_interes@pandas:
-  type: pandas.CSVDataset
-  filepath: data/input/especies_de_interes/especies_de_interes.csv
-observation@pandas:
-  type: pandas.CSVDataset
-  filepath: data/output/birdnet/observation.csv
+  filepath: data/input/target_species/target_species.csv
+observations@pamDP:
+  type: kedro_pamflow.datasets.pamDP.observations.Observations
+  filepath: data/output/birdnet/observations.csv
 segments@pandas:
   type: pandas.CSVDataset
   filepath: data/output/birdnet/segments.csv

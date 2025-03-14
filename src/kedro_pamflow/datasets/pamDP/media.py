@@ -81,6 +81,11 @@ media_unique_dictionary={
 'mediaComments':False
 }
 
+media_enum_dictionary={
+    'captureMethod':['activityDetection', 'timeLapse'],
+    'favorite': [True,False]
+}
+
 
 class Media(CSVPamDP):
     def __init__(self, 
@@ -97,6 +102,7 @@ class Media(CSVPamDP):
             required_dictionary=media_required_dictionary,
             schema_dictionary=media_schema_dictionary,
             unique_dictionary=media_unique_dictionary,
+            enum_dictionary=media_enum_dictionary,
             filepath=filepath, 
             load_args=load_args, 
             save_args=save_args,
