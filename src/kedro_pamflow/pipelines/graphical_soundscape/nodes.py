@@ -18,20 +18,28 @@ from maad.features import graphical_soundscape as graphical_soundscape_maad
 
 
 def graphical_soundscape_pamflow(media,graphical_soundscape_parameters):
+  media['date'] = pd.to_datetime(media.timestamp)
+  media['time'] = media.date.dt.hour
 
-    media['date'] = pd.to_datetime(df.date)
-    media['time'] = media.date.dt.hour
-    
-    threshold_abs=graphical_soundscape_parameters['threshold_abs']
-    target_fs=graphical_soundscape_parameters['target_fs']
-    nperseg=graphical_soundscape_parameters['nperseg']
-    noverlap=graphical_soundscape_parameters['noverlap']
-    db_range =graphical_soundscape_parameters['db_range']
-    min_distance=graphical_soundscape_parameters['min_distance']
-    n_jobs=graphical_soundscape_parameters['n_jobs']
+  threshold_abs=graphical_soundscape_parameters['threshold_abs']
+  target_fs=graphical_soundscape_parameters['target_fs']
+  nperseg=graphical_soundscape_parameters['nperseg']
+  noverlap=graphical_soundscape_parameters['noverlap']
+  db_range =graphical_soundscape_parameters['db_range']
+  min_distance=graphical_soundscape_parameters['min_distance']
+  n_jobs=graphical_soundscape_parameters['n_jobs']
 
-    df_out = graphical_soundscape_maad(
-        media[media['length']>0], threshold_abs, 'path_audio', 'time', target_fs, nperseg, 
-        noverlap, db_range, min_distance, n_jobs)
-    return df_out 
+  df_out = graphical_soundscape_maad(
+      media[media['fileLength']>0], #A Pandas DataFrame containing information about the audio files.
+      threshold_abs, 
+    'filePath', #Column name where the full path of audio is provided.
+      'time', #Column name where the time is provided as a string using the format ‘HHMMSS’.
+      target_fs, 
+      nperseg, 
+      noverlap, 
+      db_range, 
+      min_distance, 
+      n_jobs
+      )
+  return df_out 
 

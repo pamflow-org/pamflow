@@ -21,7 +21,7 @@ def compute_indices(media, acoustic_indices_parameters):
     filter_order=acoustic_indices_parameters['filter_order']
     n_jobs=acoustic_indices_parameters['n_jobs']
 
-    media=media[media['length']>0]    
+    media=media[media['fileLength']>0]    
     df_out = compute_indices_parallel(
             media, target_fs, filter_type, filter_cut, filter_order, n_jobs)
     return df_out

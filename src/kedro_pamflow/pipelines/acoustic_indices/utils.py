@@ -117,7 +117,7 @@ def compute_indices_parallel(data, target_fs, filter_type, filter_cut, filter_or
     print(f'Computing acoustic indices for {data.shape[0]} files with {n_jobs} threads')
     
     # Use concurrent.futures for parelell execution
-    files = data.path_audio.to_list()
+    files = data['filePath'].to_list()
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
         
         # Use submit for each task
@@ -129,7 +129,7 @@ def compute_indices_parallel(data, target_fs, filter_type, filter_cut, filter_or
             file_path = futures[future]
             try:
                 result = future.result()
-                result['fname'] = os.path.basename(file_path)
+                result['filePath'] = os.path.basename(file_path)
                 results.append(result)
             
             except Exception as e:
