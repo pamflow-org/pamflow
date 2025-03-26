@@ -9,6 +9,7 @@ from kedro_pamflow.pipelines.graphical_soundscape import pipeline as graphical_s
 from kedro_pamflow.pipelines.acoustic_indices import pipeline as acoustic_indices
 from kedro_pamflow.pipelines.birdnet import pipeline as birdnet
 from kedro_pamflow.pipelines.data_science import pipeline as data_science
+from kedro_pamflow.pipelines.export import pipeline as export
 
 
 
@@ -26,9 +27,10 @@ def register_pipelines() -> Dict[str, Pipeline]:
     acoustic_indices_pipeline = acoustic_indices.create_pipeline()
     birdnet_pipeline = birdnet.create_pipeline()
     data_science_pipeline     = data_science.create_pipeline()
+    export_pipeline     = export.create_pipeline()
     
     
-    pamflow_pipeline=preprocess_pipeline + graphical_soundscape_pipeline+acoustic_indices_pipeline+birdnet_pipeline #no incluir data_science
+    pamflow_pipeline=preprocess_pipeline + graphical_soundscape_pipeline+acoustic_indices_pipeline+birdnet_pipeline+export_pipeline #no incluir data_science
 
     
     return {
@@ -39,6 +41,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "acoustic_indices":acoustic_indices_pipeline,
         "birdnet": birdnet_pipeline,
         "data_science": data_science_pipeline,
+        'export': export_pipeline
         
         
     }

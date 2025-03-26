@@ -81,12 +81,13 @@ class CSVPamDP(CSVDataset):
             if df[col].duplicated().any() and unique_constraint:
                 raise ValueError(f"Column {col} has duplicate values but should be unique.")
         # 5. Check categorical data constraints
-        for col, enum_values in self.enum_dictionary.items():
-           if not set(df[df[col].notna()][col].unique()).issubset(set(enum_values)):
-                raise ValueError(f"""Expected unique values for  {col}: {enum_values}. \n
-                                     The values {set(df[df[col].notna()][col].unique())-set(enum_values)}
-                                     are not allowed for this field. 
-                """)
+        if self.enum_dictionary is not None:
+            for col, enum_values in self.enum_dictionary.items():
+                if not set(df[df[col].notna()][col].unique()).issubset(set(enum_values)):
+                        raise ValueError(f"""Expected unique values for  {col}: {enum_values}. \n
+                                            The values {set(df[df[col].notna()][col].unique())-set(enum_values)}
+                                            are not allowed for this field. 
+                        """)
         
         return df[self.pamdp_columns]
     def _save(self,df):

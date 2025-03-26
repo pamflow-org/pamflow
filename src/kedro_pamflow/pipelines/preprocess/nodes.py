@@ -121,6 +121,9 @@ def plot_sensor_deployment(media):
     x='timestamp'
     y='deploymentID'
     
+    #Order dataframe to get ordered vertical axis
+    media_out=media_out.sort_values(by=y, ascending=False)
+
     # Draw scatterplot
     fig, ax = plt.subplots(figsize=[width, height])
     scatter = ax.scatter(
