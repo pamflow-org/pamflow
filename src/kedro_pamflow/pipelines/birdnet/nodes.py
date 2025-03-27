@@ -15,6 +15,35 @@ def species_detection_parallel(media,
                              n_jobs
                             
                              ):
+    """Detects species in media files using parallel processing.
+
+    This node processes media files and deployment metadata to perform species 
+    detection in parallel. The inputs correspond to the catalog entries 
+    `media@pamDP` and `deployments@pamDP`. The output is stored in the catalog 
+    as `unfiltered_observations@pamDP`.
+
+    Parameters
+    ----------
+    media : pandas.DataFrame
+        A DataFrame containing metadata of media files, following the pamDP.media format. 
+        Loaded from the catalog entry `media@pamDP`.
+
+    deployments : pandas.DataFrame
+        A DataFrame containing deployment metadata, including sensor locations 
+        (latitude and longitude). Loaded from the catalog entry `deployments@pamDP`.
+
+    n_jobs : int
+        The number of parallel jobs to use for species detection. Passed as 
+        `params:birdnet_parameters.n_jobs`. If set to -1, the number of jobs will 
+        be equal to the number of CPU cores. 
+
+    Returns
+    -------
+    pandas.DataFrame
+        A DataFrame containing the detected species observations. Stored in the catalog 
+        as `unfiltered_observations@pamDP`. 
+        The DataFrame follows the pamDP.observations format.
+    """
     
     
 
@@ -88,6 +117,37 @@ def species_detection_parallel(media,
     return observations
 
 def filter_observations(observations,target_species,minimum_observations, segment_size):
+    """Filters species observations based on target species and minimum observation criteria.
+
+    This node processes species observations to retain only those that match the target 
+    species and meet the minimum number of observations required. The inputs correspond 
+    to the catalog entries `unfiltered_observations@pamDP` and `target_species@pandas`. 
+    The output is stored in the catalog as `observations@pamDP`.
+
+    Parameters
+    ----------
+    observations : pandas.DataFrame
+        A DataFrame containing unfiltered species observations. Loaded from the catalog 
+        entry `unfiltered_observations@pamDP`. 
+        The DataFrame follows the pamDP.observations format.
+
+    target_species : pandas.DataFrame
+        A DataFrame containing the list of target species to filter. Loaded from the catalog 
+        entry `target_species@pandas`.
+
+    minimum_observations : int
+        The minimum number of observations required for each species. Passed as 
+        `params:birdnet_parameters.minimum_observations`.
+
+    segment_size : int
+        The number of segments per species. Passed as `params:birdnet_parameters.segment_size`.
+
+    Returns
+    -------
+    pandas.DataFrame
+        A DataFrame containing the filtered species observations. Stored in the catalog 
+        as `observations@pamDP`. The DataFrame follows the pamDP.observations format.
+    """
     if segment_size> minimum_observations:
         raise ValueError(f"""Number of segments per species ({segment_size}) is greater than minimum number of observations per species ({minimum_observations}).\n 
                              Change the values of these parameters in conf/base/paramteres.yml  to fix this issue. 
@@ -113,12 +173,40 @@ def filter_observations(observations,target_species,minimum_observations, segmen
     return observations
 
 def create_segments(observations, media,segment_size):
+    """Creates audio segments for species observations.
+
+    This node processes filtered species observations and media metadata to generate 
+    audio segments for each species (time segments from media files where an animal 
+    is persumed to be present). The inputs correspond to the catalog entries 
+    `observations@pamDP` and `media@pamDP`. The output is a DataFrame containing the 
+    generated segments.
+
+    Parameters
+    ----------
+    observations : pandas.DataFrame
+        A DataFrame containing filtered species observations. Loaded from the catalog 
+        entry `observations@pamDP`. The DataFrame follows the pamDP.observations format.
+
+    media : pandas.DataFrame
+        A DataFrame containing metadata of media files. Loaded from the catalog entry 
+        `media@pamDP`. The DataFrame follows the pamDP.media format.
+
+    segment_size : int
+        The number of segments to sample per species. Passed as 
+        `params:birdnet_parameters.segment_size`.
+
+    Returns
+    -------
+    pandas.DataFrame
+        A DataFrame containing the generated audio segments. Each row represents a segment 
+        with its associated metadata, including file paths and classification probabilities.
+        Stored in the catalog as `segments@pandas`.
+    """
     
     #Sample segment_size rows per each species in observations
     observations=observations.merge(media[['mediaID', 'filePath']],
                                 on='mediaID',
-                                how='left'
-)
+                                how='left')
     segments=observations.groupby(['scientificName']).apply(lambda x: x.sample(int(segment_size))).reset_index(drop=True)
 
     segments['classificationProbabilityRounded']=segments['classificationProbability'].round(3).astype(str).str.ljust(5,'0')
@@ -129,6 +217,35 @@ def create_segments(observations, media,segment_size):
     return segments
 
 def create_segments_folder(segments,n_jobs,segment_size):
+    """Creates audio segment files for species observations.
+
+    This node processes the generated audio segments and creates individual audio (.WAV) files 
+    for each segment. The input corresponds to the catalog entry `segments@pandas`. 
+    The output is stored in the catalog as `segments_audio_folder@AudioFolderDataset`
+    in separated folder for each species. The file naming format is the following:
+    "classificationProbability_mediaID_bboxTime_bboxDuration.WAV"
+
+    Parameters
+    ----------
+    segments : pandas.DataFrame
+        A DataFrame containing the generated audio segments. Loaded from the catalog 
+        entry `segments@pandas`.
+
+    n_jobs : int
+        The number of parallel jobs to use for creating audio segment files. Passed as 
+        `params:birdnet_parameters.n_jobs`.
+
+    segment_size : int
+        The number of segments to sample per species. Passed as 
+        `params:birdnet_parameters.segment_size`.
+
+    Yields
+    ------
+    dict
+        A dictionary where the keys are the file paths of the generated audio segment files 
+        (organized by species) and the values are the corresponding audio data. Stored in 
+        the catalog as `segments_audio_folder@AudioFolderDataset`.
+    """
     for index, row in segments.iterrows():
         result=trim_audio(row['bboxTime'],
                             row['bboxDuration'],
@@ -139,7 +256,33 @@ def create_segments_folder(segments,n_jobs,segment_size):
 
 
 def create_manual_annotation_formats(segments,manual_annotations_file_name):
-    #Dictionary of the form {'Genus_species': 'generic_file_name_for_Genus_species'}
+    """Creates formats for manual annotation of species observations.
+
+    This node processes the generated audio segments to create manual annotation 
+    files in a partitioned dataset format. The input corresponds to the catalog 
+    entry `segments@pandas`. The output is stored in the catalog as 
+    `manual_annotations@PartitionedDataset`.
+
+    Parameters
+    ----------
+    segments : pandas.DataFrame
+        A DataFrame containing the generated audio segments. Loaded from the catalog 
+        entry `segments@pandas`.
+
+    manual_annotations_file_name : str
+        A generic file name template for the manual annotation files. Passed as 
+        `params:birdnet_parameters.manual_annotations_file_name`. The file name 
+        will be customized for each species.
+
+    Returns
+    -------
+    PartitionedDataset
+        A dictionary where the keys are the file names for each species and the values 
+        are the corresponding DataFrames containing the manual annotation data. Stored 
+        in the catalog as `manual_annotations@PartitionedDataset`.
+    """
+    #Dictionary following the format
+    # {'Genus_species': 'generic_file_name_for_Genus_species'}
     excel_formats_file_names={'_'.join(species.split()): manual_annotations_file_name.replace('species','_'.join(species.split()))
                         for species in segments['scientificName'].unique()
                             }

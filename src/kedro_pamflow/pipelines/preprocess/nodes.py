@@ -23,7 +23,24 @@ import datetime
 
 def get_media_file(input_path 
 ):
+    """Retrieves and processes metadata from media files in the given directory.
 
+    Parameters
+    ----------
+    input_path : str
+        Path to the directory containing a folder for each sensor
+        and the corresponding wav files. Specified in parameters.yml
+        as DEVICES_ROOT_DIRECTORY.
+
+
+    Returns
+    -------
+    media : pandas DataFrame
+        Processed metadata of media files with standardized column names.
+        The DataFrame follows the pamDP.media format. Stored in catalog as
+        media@pamDP.
+    """
+    
     #add_file_prefix(folder_name=input_path, 
     #                recursive=True
     #                )
@@ -51,16 +68,24 @@ def get_media_file(input_path
 
     return media.drop(columns=['time','fsize','samples'])
 def get_media_summary(media):
-    """ Get a summary of a metadata dataframe of the acoustic sampling
+    """Summarizes metadata of acoustic sampling for each deployment.
+
+    This node processes a metadata DataFrame following the pamDP.media data standards
+    and generates a summary for each deployment. The input corresponds to the catalog
+    entry `media@pamDP`, and the output is stored in the catalog as `media_summary@pandas`.
 
     Parameters
     ----------
-    df : A dataframe following pamDP.media data standards.
+    media : pandas.DataFrame
+        A DataFrame containing metadata of media files, following the pamDP.media format.
+        This is typically loaded from the catalog entry `media@pamDP`.
 
     Returns
     -------
-    pandas DataFrame
-    A summary of each site
+    pandas.DataFrame
+        A summary DataFrame for each deployment, including the start and end dates,
+        number of recordings, median time difference between recordings, and other
+        statistics. This is stored in the catalog as `media_summary@pandas`.
     """
 
     media['timestamp'] = pd.to_datetime(media.timestamp,  format='%Y-%m-%d %H:%M:%S')
@@ -81,19 +106,28 @@ def get_media_summary(media):
 
 
 def plot_sensor_deployment(media):
-    """ Plot sensor deployment to have an overview of the sampling
+    """Plots sensor deployment to provide an overview of the sampling effort.
+
+    This node visualizes the number of recordings per deployment over time. 
+    The input corresponds to the catalog entry `media@pamDP`, and the outputs 
+    are stored as a matplotlib figure summarizing the deployment activity and 
+    a processed DataFrame summarizing the number of recordings per deployment 
+    and day. The outputs are stored in the catalog as `sensor_deployment_plot@matplotlib` 
+    and `sensor_deployment_data@pandas`.
 
     Parameters
     ----------
-    media : pandas DataFrame
-        A dataframe following pamDP.media data standards.
-    ax : matplotlib.axes, optional
-        Matplotlib axes fot the figure, by default None
+    media : pandas.DataFrame
+        A DataFrame containing metadata of media files, following the pamDP.media format.
+        This is loaded from the catalog entry `media@pamDP`. 
 
     Returns
     -------
-    matplotlib.figure
-        If axes are not provided, a figure is created and figure handles are returned.
+    tuple
+        - matplotlib.figure: A figure showing the deployment activity over time. 
+          This is stored in the catalog as `sensor_deployment_plot@matplotlib`.
+        - pandas.DataFrame: A processed DataFrame summarizing the number of recordings 
+          per deployment and day. This is stored in the catalog as `sensor_deployment_data@pandas`.
     """
 
     # Group recordings by day
@@ -162,6 +196,33 @@ def plot_sensor_location(media_summary,
                          deployments,
                          plot_parameters
                          ):
+    """Plots the geographic location of sensors and their recording activity.
+
+    The inputs correspond to the catalog entries `media_summary@pandas` and 
+    `deployments@pamDP`. The output is stored in the catalog as 
+    `sensor_location_plot@matplotlib`.
+
+    Parameters
+    ----------
+    media_summary : pandas.DataFrame
+        A summary DataFrame for each deployment, including the start and end dates,
+        number of recordings, and other statistics. Loaded from the catalog entry 
+        `media_summary@pandas`.
+
+    deployments : pandas.DataFrame
+        A DataFrame containing deployment metadata, including sensor locations 
+        (latitude and longitude). Loaded from the catalog entry `deployments@pamDP`.
+        The DataFrame follows the pamDP.mdeployments format.
+
+    plot_parameters : dict
+        A dictionary containing parameters for the plot, such as colormap and figure size.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        A figure showing the geographic distribution of sensors and their recording activity.
+        Stored in the catalog as `sensor_location_plot@matplotlib`.
+    """
     geo_info_microfonos = gpd.GeoDataFrame(
     deployments[['deploymentID', 'latitude', 'longitude']], 
     geometry=gpd.points_from_xy(deployments['longitude'],deployments['latitude'], ), crs="EPSG:4326"
@@ -209,6 +270,46 @@ def get_timelapse(sensor_deployment_data,
                   sample_len,
                   sample_period, 
                   plot_params ):
+    """Generates audio timelapse spectrograms for each sensor deployment.
+
+    This node processes media files and deployment data to create spectrograms 
+    summarizing the acoustic activity for a selected date. The inputs correspond 
+    to the catalog entries `sensor_deployment_data@pandas`, `media@pamDP`, 
+    `sample_len@int`, `sample_period@str`, and `plot_params@dict`. The outputs 
+    are stored as audio files and spectrogram figures in the catalog as 
+    `timelapse_audio@PartitionedAudio` and `timelapse_plot@matplotlib`.
+
+    Parameters
+    ----------
+    sensor_deployment_data : pandas.DataFrame
+        A DataFrame summarizing the number of recordings per deployment and day. 
+        Loaded from the catalog entry `sensor_deployment_data@pandas`.
+
+    media : pandas.DataFrame
+        A DataFrame containing metadata of media files, following the pamDP.media format. 
+        Loaded from the catalog entry `media@pamDP`.
+
+    sample_len : int
+        The length of each audio sample in seconds. Loaded from the catalog entry 
+        `sample_len@int`.
+
+    sample_period : str
+        The resampling period for the timelapse (e.g., '1T' for 1 minute). Loaded 
+        from the catalog entry `sample_period@str`.
+
+    plot_params : dict
+        A dictionary containing parameters for the spectrogram plot, such as 
+        `nperseg`, `noverlap`, `db_range`, `fig_width`, and `fig_height`. Loaded 
+        from the catalog entry `plot_params@dict`.
+
+    Yields
+    ------
+    tuple
+        - dict: A dictionary containing audio data for each deployment, stored in the catalog 
+          as `timelapse_audio@PartitionedAudio`.
+        - dict: A dictionary containing spectrogram figures for each deployment, stored in the 
+          catalog as `timelapse_plot@matplotlib`.
+    """
     #get selected date for calculating timelapse
     sensor_deployment_data['num_recordings_mean']=sensor_deployment_data.groupby('timestamp')['count'].transform('mean')
 
@@ -259,17 +360,6 @@ def get_timelapse(sensor_deployment_data,
                                         colorbar=False
                                         )
 
-
-
-        print('='*20)
-        print('='*20)
-        print('='*20)
-        print(f'long_wav {site}',sys.getsizeof(long_wav)/10**9)
-        print(f'fig {site}',sys.getsizeof(fig)/10**9)
-        print('='*20)
-        print('='*20)
-        print('='*20)
-
         file_name=f'{site}_timelapse_{selected_date}'
         yield {file_name:(long_wav, fs)},{file_name:fig}
         
@@ -278,6 +368,29 @@ def get_timelapse(sensor_deployment_data,
 
 
 def plantilla_usuario_to_deployment(plantilla_usuario, media_summary):
+    """Converts user-provided deployment templates into a standardized deployment DataFrame.
+
+    This node processes a user-provided template and combines it with media summary data 
+    to generate a deployment DataFrame following the pamDP.deployment format. The inputs 
+    correspond to the catalog entries `plantilla_usuario@pandas` and `media_summary@pandas`. 
+    The output is stored in the catalog as `deployment@pamDP`.
+
+    Parameters
+    ----------
+    plantilla_usuario : pandas.DataFrame
+        A DataFrame containing user-provided deployment information. Loaded from the catalog 
+        entry `plantilla_usuario@pandas`.
+
+    media_summary : pandas.DataFrame
+        A DataFrame summarizing metadata of acoustic sampling for each deployment. Loaded from 
+        the catalog entry `media_summary@pandas`.
+
+    Returns
+    -------
+    pandas.DataFrame
+        A standardized deployment DataFrame following the pamDP.deployment format. Stored in 
+        the catalog as `deployment@pamDP`.
+    """
     plantilla_usuario['Nombre del instalador+Apellido  del instalador']=plantilla_usuario['Nombre del instalador']+plantilla_usuario['Apellido  del instalador']
 
     columns_names_map={
@@ -293,6 +406,7 @@ def plantilla_usuario_to_deployment(plantilla_usuario, media_summary):
         'Configuración de muestreo':'recorderConfiguration',
         'Hábitat':'habitat',
         'Nombre del instalador+Apellido  del instalador':'setupBy',
+        'Altura de la grabadora respecto al suelo':'recorderHeight'
     }
       
     
@@ -306,15 +420,8 @@ def plantilla_usuario_to_deployment(plantilla_usuario, media_summary):
     
     deployment['recorderID']=None
     deployment['locationID']=deployment['locationName']
-    deployment['recorderHeight']=None 
     deployment['coordinateUncertainty'] =None
     deployment['deploymentGroups']=None 
-
-    #Fill missing values in required columns
-    deployment=deployment.fillna({'recorderConfiguration':'record 1 minute every 29 minutes, internal microphone',
-                    'recorderModel':'Audiomoth - 1.2',
-                    
-                    })
 
     media_summary=media_summary[['deploymentID','date_ini','date_end']]
 

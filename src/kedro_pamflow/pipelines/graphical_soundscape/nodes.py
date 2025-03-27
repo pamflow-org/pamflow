@@ -18,6 +18,30 @@ from maad.features import graphical_soundscape as graphical_soundscape_maad
 
 
 def graphical_soundscape_pamflow(media,graphical_soundscape_parameters):
+  """Generates graphical soundscapes based on spectrogram peaks for acoustic analysis.
+
+    This node processes media files to compute graphical soundscapes using spectrogram 
+    peaks. The input corresponds to the catalog entry `media@pamDP`, and the parameters 
+    are passed as `params:graphical_soundscape_parameters`. The output is stored in the 
+    catalog as `graphical_soundscape@pandas`.
+
+    Parameters
+    ----------
+    media : pandas.DataFrame
+        A DataFrame containing metadata of media files, following the pamDP.media format. 
+        Loaded from the catalog entry `media@pamDP`.
+
+    graphical_soundscape_parameters : dict
+        A dictionary containing parameters for generating graphical soundscapes, such as 
+        `threshold_abs`, `target_fs`, `nperseg`, `noverlap`, `db_range`, `min_distance`, 
+        and `n_jobs`. Passed as `params:graphical_soundscape_parameters`.
+
+    Returns
+    -------
+    pandas.DataFrame
+        A DataFrame containing the computed graphical soundscape data. Stored in the catalog 
+        as `graphical_soundscape@pandas`.
+    """
   media['date'] = pd.to_datetime(media.timestamp)
   media['time'] = media.date.dt.hour
 

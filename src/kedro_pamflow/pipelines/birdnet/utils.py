@@ -12,6 +12,38 @@ def species_detection_single_file(wav_file_path,
                                   mediaID,
                                   deploymentID
                                  ):
+    """Performs species detection on a single media file.
+
+    This utility function processes a single media file to detect species based on 
+    its audio content. The function uses the file's metadata, including geographic 
+    location and deployment information, to enhance detection accuracy. The output 
+    is a list of detected species observations for the given file. The detections 
+    are performed using birdnetlib, a Python library for BirdNET-Analyzer.
+
+    Parameters
+    ----------
+    file_path : str
+        The path to the media file to be processed.
+
+    latitude : float
+        The latitude of the deployment location where the media file was recorded.
+
+    longitude : float
+        The longitude of the deployment location where the media file was recorded.
+
+    media_id : str
+        A unique identifier for the media file.
+
+    deployment_id : str
+        A unique identifier for the deployment associated with the media file.
+
+    Returns
+    -------
+    list
+        A list of dictionaries, where each dictionary represents a detected species 
+        observation. Each observation includes details such as scientific name, 
+        start time, end time, confidence score, and other relevant metadata.
+    """
     # Load and initialize the BirdNET-Analyzer models.
     analyzer = Analyzer()
     recording=Recording(
@@ -35,44 +67,37 @@ def species_detection_single_file(wav_file_path,
     return species_detections_extra_keys
 
 def trim_audio(start_time, end_time,path_audio,segments_file_name):
+    """Trims an audio file to create a segment based on the specified start and end times.
+
+    This utility function extracts a segment from an audio file based on the provided 
+    start and end times. The trimmed audio segment is returned along with its sample rate 
+    and a modified file name for the segment.
+
+    Parameters
+    ----------
+    start_time : float
+        The start time (in seconds) of the audio segment to be extracted.
+
+    end_time : float
+        The end time (in seconds) of the audio segment to be extracted.
+
+    path_audio : str
+        The file path to the original audio file.
+
+    segments_file_name : str
+        The file name to be used for the trimmed audio segment. The file name will be 
+        customized to exclude the file extension.
+
+    Returns
+    -------
+    tuple
+        A tuple containing:
+        - str: The modified file name for the audio segment (without the file extension).
+        - tuple: A tuple containing the trimmed audio numpy array and its sample rate.
+    """
     audio_array, sr=sound.load(path_audio)
     trimmed_audio=audio_array[int(start_time*sr):int(end_time*sr)]
     return (segments_file_name[0:-4],(trimmed_audio,sr))
 
 
 
-
-def create_segments_single_species_paralell(df,species,n_jobs):
-    if n_jobs == -1:
-        n_jobs = int(os.cpu_count()*4/5)
-    audio_list=[]
-    
-    with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
-        
-        # Use submit for each task
-        futures = [executor.submit(trim_audio_enhanced, 
-                                   row['eventStart'],
-                                   row['eventEnd'],
-                                   row['filePath'],
-                                   row['segments_file_name']
-                                    
-                                    ) 
-                    for index, row in df.iterrows()
-                    ]
-
-        # Get results when tasks are completed
-        audio_list = []
-        
-        i=0
-        
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                result = future.result()
-                
-                audio_list.append(result)
-            
-            except Exception as e:
-                i+=1
-                print(f"Error processing the {i}th segment for species {species}: {e}")
-    
-    return {'_'.join(species.split()):dict(audio_list)}

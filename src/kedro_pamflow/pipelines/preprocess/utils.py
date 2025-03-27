@@ -38,6 +38,11 @@ def concat_audio(flist, sample_len=1, verbose=False):
     
     Return
     ------
+    long_wav : Numpy array 
+         All concatenated numpy arrays corresponding to the wav
+         files in flist
+    fs : float
+       Sample frequency of long_wav
     """
     
     # Compute long wav
