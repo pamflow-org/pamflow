@@ -7,6 +7,7 @@ References:
   - Furumo, P.R., Aide, T.M., 2019. Using soundscapes to assess biodiversity in Neotropical oil palm landscapes. Landscape Ecology 34, 911–923.
   - Campos-Cerqueira, M., Aide, T.M., 2017. Changes in the acoustic structure and composition along a tropical elevational gradient. JEA 1, 1–1. https://doi.org/10.22261/JEA.PNCO7I
 """
+
 import os
 import argparse
 import pandas as pd
@@ -17,53 +18,54 @@ from maad.rois import spectrogram_local_max
 from maad.features import graphical_soundscape as graphical_soundscape_maad
 
 
-def graphical_soundscape_pamflow(media,graphical_soundscape_parameters):
-  """Generates graphical soundscapes based on spectrogram peaks for acoustic analysis.
+def graphical_soundscape_pamflow(media, graphical_soundscape_parameters):
+    """Generates graphical soundscapes based on spectrogram peaks for acoustic analysis.
 
-    This node processes media files to compute graphical soundscapes using spectrogram 
-    peaks. The input corresponds to the catalog entry `media@pamDP`, and the parameters 
-    are passed as `params:graphical_soundscape_parameters`. The output is stored in the 
+    This node processes media files to compute graphical soundscapes using spectrogram
+    peaks. The input corresponds to the catalog entry `media@pamDP`, and the parameters
+    are passed as `params:graphical_soundscape_parameters`. The output is stored in the
     catalog as `graphical_soundscape@pandas`.
 
     Parameters
     ----------
     media : pandas.DataFrame
-        A DataFrame containing metadata of media files, following the pamDP.media format. 
+        A DataFrame containing metadata of media files, following the pamDP.media format.
         Loaded from the catalog entry `media@pamDP`.
 
     graphical_soundscape_parameters : dict
-        A dictionary containing parameters for generating graphical soundscapes, such as 
-        `threshold_abs`, `target_fs`, `nperseg`, `noverlap`, `db_range`, `min_distance`, 
+        A dictionary containing parameters for generating graphical soundscapes, such as
+        `threshold_abs`, `target_fs`, `nperseg`, `noverlap`, `db_range`, `min_distance`,
         and `n_jobs`. Passed as `params:graphical_soundscape_parameters`.
 
     Returns
     -------
     pandas.DataFrame
-        A DataFrame containing the computed graphical soundscape data. Stored in the catalog 
+        A DataFrame containing the computed graphical soundscape data. Stored in the catalog
         as `graphical_soundscape@pandas`.
     """
-  media['date'] = pd.to_datetime(media.timestamp)
-  media['time'] = media.date.dt.hour
+    media["date"] = pd.to_datetime(media.timestamp)
+    media["time"] = media.date.dt.hour
 
-  threshold_abs=graphical_soundscape_parameters['threshold_abs']
-  target_fs=graphical_soundscape_parameters['target_fs']
-  nperseg=graphical_soundscape_parameters['nperseg']
-  noverlap=graphical_soundscape_parameters['noverlap']
-  db_range =graphical_soundscape_parameters['db_range']
-  min_distance=graphical_soundscape_parameters['min_distance']
-  n_jobs=graphical_soundscape_parameters['n_jobs']
+    threshold_abs = graphical_soundscape_parameters["threshold_abs"]
+    target_fs = graphical_soundscape_parameters["target_fs"]
+    nperseg = graphical_soundscape_parameters["nperseg"]
+    noverlap = graphical_soundscape_parameters["noverlap"]
+    db_range = graphical_soundscape_parameters["db_range"]
+    min_distance = graphical_soundscape_parameters["min_distance"]
+    n_jobs = graphical_soundscape_parameters["n_jobs"]
 
-  df_out = graphical_soundscape_maad(
-      media[media['fileLength']>0], #A Pandas DataFrame containing information about the audio files.
-      threshold_abs, 
-    'filePath', #Column name where the full path of audio is provided.
-      'time', #Column name where the time is provided as a string using the format ‘HHMMSS’.
-      target_fs, 
-      nperseg, 
-      noverlap, 
-      db_range, 
-      min_distance, 
-      n_jobs
-      )
-  return df_out 
-
+    df_out = graphical_soundscape_maad(
+        media[
+            media["fileLength"] > 0
+        ],  # A Pandas DataFrame containing information about the audio files.
+        threshold_abs,
+        "filePath",  # Column name where the full path of audio is provided.
+        "time",  # Column name where the time is provided as a string using the format ‘HHMMSS’.
+        target_fs,
+        nperseg,
+        noverlap,
+        db_range,
+        min_distance,
+        n_jobs,
+    )
+    return df_out

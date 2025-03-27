@@ -4,6 +4,7 @@
 Utilitary functions to manage, check and preprocess large sampling data assiciated with passive acoustic monitoring
 
 """
+
 import os
 import argparse
 import shutil
@@ -22,7 +23,5 @@ import seaborn as sns
 # ----------------------------------
 
 
-
 def util_function(flist, sample_len=1, verbose=False):
-    return 2+2
-
+    return 2 + 2

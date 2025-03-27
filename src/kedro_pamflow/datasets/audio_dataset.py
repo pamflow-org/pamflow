@@ -3,7 +3,8 @@ from typing import Any, Dict
 
 import fsspec
 import numpy as np
-#from PIL import Image
+
+# from PIL import Image
 from maad.sound import load, write
 
 from kedro.io import AbstractDataset
@@ -39,27 +40,21 @@ class SoundDataset(AbstractDataset[np.ndarray, np.ndarray]):
             sample rate
         """
         load_path = get_filepath_str(self._filepath, self._protocol)
-        
-        with self._fs.open(load_path, mode= 'rb') as f:
-            
+
+        with self._fs.open(load_path, mode="rb") as f:
             recording, sr = load(f)
             return recording, sr
 
     def _save(self, data: np.ndarray) -> None:
         """Saves audio data to the specified filepath."""
         save_path = get_filepath_str(self._filepath, self._protocol)
-        
+
         if not os.path.isdir(os.path.split(save_path)[0]):
             os.mkdir(os.path.split(save_path)[0])
-        
-            
-        audio,sr=data
+
+        audio, sr = data
         with self._fs.open(save_path, mode="wb") as f:
-            write(f, 
-                sr, 
-                audio, 
-                bit_depth=16
-                )
+            write(f, sr, audio, bit_depth=16)
 
     def _describe(self) -> Dict[str, Any]:
         """Returns a dict that describes the attributes of the dataset."""

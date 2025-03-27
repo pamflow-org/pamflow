@@ -1,6 +1,7 @@
 """Kedro PamFlow file for ensuring the package is executable
 as `kedro-pamflow` and `python -m kedro_pamflow`
 """
+
 import importlib
 from pathlib import Path
 
