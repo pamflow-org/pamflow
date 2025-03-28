@@ -5,7 +5,7 @@ This standard was adapted from [camtrapDP](https://camtrap-dp.tdwg.org/) (Bubnic
 The data is stored in 3 main csv tables:
 
 * **[deployments.csv](#deployments)**: Stores metadata about each deployment, including location, time frame, and recorder details.
-* **media.csv**: Contains information about recorded media files, such as file paths, timestamps, and technical metadata.
+* **[media.csv](#media)**: Contains information about recorded media files, such as file paths, timestamps, and technical metadata.
 * **observation.csv**: Records detected observations from media, including species identification, timestamps, and confidence scores.
 
 
@@ -37,6 +37,26 @@ The data is stored in 3 main csv tables:
 | **deploymentGroups**   | Groups associated with the deployment (e.g., spatial arrays, temporal sessions). Multiple values separated by \|, formatted as `key:value` pairs where applicable. |   |   | `string` | season:winter 2020 \| grid:A1 |
 | **deploymentTags**     | Tags associated with the deployment. Multiple values separated by \|, optionally formatted as `key:value` pairs. |   |   | `string` | land cover:forest \| bait:food |
 | **deploymentComments** | Additional comments or observations related to the deployment. |   |   | `string` | traffic noise during installation |
+
+# Media
+
+| Field Name       | Description  | Required | Unique | Type | Example |
+|------------------|-------------|----------|--------|------|---------|
+| **mediaID**      | Unique identifier for the media file. | ✅ | ✅ | `string` | MEDIA001 |
+| **deploymentID** | Identifier of the deployment associated with the media file (foreign key to `deployments.deploymentID`). |  | ✅ | `string` | DEP001 |
+| **captureMethod** | Method used to capture the media file. |  |  | `enum: activityDetection, timeLapse` | timeLapse |
+| **timestamp**    | Date and time when the media file was recorded, formatted as ISO 8601 with a timezone. | ✅ |  | `string` | 2020-03-24T11:21:46Z |
+| **filePath**     | URL or relative path to the media file (external hosting or local package). | ✅ |  | `string` | https://colecciones.humboldt.org.co/rec/sonidos/IAvH-CSA-20439/G001_20211110_060000.WAV |
+| **filePublic**   | ✅ if the media file is publicly accessible; leave blank if private (e.g., for privacy protection). | ✅ |  | `binary` | ✅ |
+| **fileName**     | Name of the media file. Useful for sorting files chronologically within a deployment (by `timestamp` first, then `fileName`). | ✅ |  | `string` | AUDIO_001.wav |
+| **fileMediatype** | Media type following the IANA format. | ✅ |  | `string` | audio/wav |
+| **sampleRate**   | Sampling rate of the audio file in Hertz. | ✅ |  | `float` | 44.050 |
+| **bitDepth**     | Bit depth (precision) of audio samples, in bits. | ✅ |  | `integer` | 16 |
+| **fileLength**   | Duration of the audio file in seconds. | ✅ |  | `float` | 60 |
+| **numChannels**  | Number of audio channels. | ✅ |  | `int` | 1 |
+| **favorite**     | ✅ if the media file is considered of interest (e.g., an exemplar sound). |  |  | `binary` | ✅ |
+| **mediaComments** | Notes or remarks about the media file (e.g., "corrupted file"). |  |  | `string` | corrupted file |
+
 
 # References
 * Bubnicki JW, Norton B, Baskauf SJ, Bruce T, Cagnacci F, Casaer J, Churski M, Cromsigt JPGM, Farra SD, Fiderer C, Forrester TD, Hendry H, Heurich M, Hofmeester TR, Jansen PA, Kays R, Kuijper DPJ, Liefting Y, Linnell JDC, Luskin MS, Mann C, Milotic T, Newman P, Niedballa J, Oldoni D, Ossi F, Robertson T, Rovero F, Rowcliffe M, Seidenari L, Stachowicz I, Stowell D, Tobler MW, Wieczorek J, Zimmermann F, Desmet P (2023). Camtrap DP: an open standard for the FAIR exchange and archiving of camera trap data. Remote Sensing in Ecology and Conservation. https://doi.org/10.1002/rse2.374
