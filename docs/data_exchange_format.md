@@ -10,6 +10,7 @@ The data is stored in 3 main tables in `csv` format:
 
 
 ## Deployments
+The `deployments.csv` table tracks information about sensor placements, such as location, duration, and recording settings.
 
 | Field Name              | Description | Required | Unique | Type | Example |
 |-------------------------|-------------|----------|--------|------|---------|
@@ -40,6 +41,7 @@ The data is stored in 3 main tables in `csv` format:
 | **deploymentComments** | Additional comments or observations related to the deployment. |   |   | `string` | traffic noise during installation |
 
 # Media
+The `media.csv` table contains references to audio or visual recordings used for classification.
 
 | Field Name       | Description  | Required | Unique | Type | Example |
 |------------------|-------------|----------|--------|------|---------|
@@ -59,6 +61,7 @@ The data is stored in 3 main tables in `csv` format:
 | **mediaComments** | Notes or remarks about the media file (e.g., "corrupted file"). |  |  | `string` | corrupted file |
 
 # Observations
+The `observations.csv` table stores classified occurrences of species or events, including metadata like behavior, vocalization details, and classification confidence. 
 
 | **Field Name** | **Description** | **Required** | **Unique** | **Type** | **Example** |
 |---|---|---|---|---|---|
