@@ -2,14 +2,15 @@
 
 To manage data collected during PAM analyses and facilitate exchange with biodiversity repositories, we implemented a standard called **pamDP**.
 This standard was adapted from [camtrapDP](https://camtrap-dp.tdwg.org/) (Bubnicki et al., 2023), preserving as much as possible while incorporating specific requirements for PAM.
-The data is stored in 3 main csv tables:
+The data is stored in 3 main tables in `csv` format:
 
 * **[deployments.csv](#deployments)**: Stores metadata about each deployment, including location, time frame, and recorder details.
 * **[media.csv](#media)**: Contains information about recorded media files, such as file paths, timestamps, and technical metadata.
-* **observation.csv**: Records detected observations from media, including species identification, timestamps, and confidence scores.
+* **[observations.csv](#observations)**: Records detected observations from media, including species identification, timestamps, and confidence scores.
 
 
 ## Deployments
+
 | Field Name              | Description | Required | Unique | Type | Example |
 |-------------------------|-------------|----------|--------|------|---------|
 | **deploymentID**        | Unique identifier for the deployment. Required for tracking and referencing specific deployments. | ✅ | ✅ | `string` | DEP001 |
@@ -47,16 +48,44 @@ The data is stored in 3 main csv tables:
 | **captureMethod** | Method used to capture the media file. |  |  | `enum: activityDetection, timeLapse` | timeLapse |
 | **timestamp**    | Date and time when the media file was recorded, formatted as ISO 8601 with a timezone. | ✅ |  | `string` | 2020-03-24T11:21:46Z |
 | **filePath**     | URL or relative path to the media file (external hosting or local package). | ✅ |  | `string` | https://colecciones.humboldt.org.co/rec/sonidos/IAvH-CSA-20439/G001_20211110_060000.WAV |
-| **filePublic**   | ✅ if the media file is publicly accessible; leave blank if private (e.g., for privacy protection). | ✅ |  | `binary` | ✅ |
+| **filePublic**   | TRUE if the media file is publicly accessible; leave blank if private (e.g., for privacy protection). | ✅ |  | `binary` | TRUE |
 | **fileName**     | Name of the media file. Useful for sorting files chronologically within a deployment (by `timestamp` first, then `fileName`). | ✅ |  | `string` | AUDIO_001.wav |
 | **fileMediatype** | Media type following the IANA format. | ✅ |  | `string` | audio/wav |
 | **sampleRate**   | Sampling rate of the audio file in Hertz. | ✅ |  | `float` | 44.050 |
 | **bitDepth**     | Bit depth (precision) of audio samples, in bits. | ✅ |  | `integer` | 16 |
 | **fileLength**   | Duration of the audio file in seconds. | ✅ |  | `float` | 60 |
 | **numChannels**  | Number of audio channels. | ✅ |  | `int` | 1 |
-| **favorite**     | ✅ if the media file is considered of interest (e.g., an exemplar sound). |  |  | `binary` | ✅ |
+| **favorite**     | TRUE if the media file is considered of interest (e.g., an exemplar sound). |  |  | `binary` | TRUE |
 | **mediaComments** | Notes or remarks about the media file (e.g., "corrupted file"). |  |  | `string` | corrupted file |
 
+# Observations
+
+| **Field Name** | **Description** | **Required** | **Unique** | **Type** | **Example** |
+|---|---|---|---|---|---|
+| **observationID** | Unique observation identifier. | ✅ | ✅ | `string` | obs1 |
+| **deploymentID** | Deployment identifier (foreign key). | ✅ | ✅ | `string` | dep1 |
+| **mediaID** | Media file identifier (foreign key, only for media-based). | | ✅ | `string` | media1 |
+| **eventID** | Event identifier linking observations. | | ✅ | `string` | sequence1 |
+| **observationLevel** | Classification level: `media` (file-based) or `event`. | ✅ | | `string` | media |
+| **observationType** | Observation category (enum: `animal`, `human voice`, `vehicle`, `silence`, `rain`, `wind`, `unknown`, `unclassified`). | ✅ | | `string` | animal |
+| **scientificName** | Scientific name of observed species. | | | `string` | *Ramphastos tucanus* |
+| **count** | Number of individuals (>1). | | | `int` | 5 |
+| **lifeStage** | Age class (enum: `adult`, `subadult`, `juvenile`). | | | `string` | juvenile |
+| **sex** | Sex (`female`, `male`). | | | `enum: female, male` | female |
+| **behavior** | Primary sound-related behavior. | | | `string` | duet |
+| **vocalActivity** | Vocalization intensity (1=Low, 2=Moderate, 3=High). | | | `int` | 1 |
+| **individualID** | Unique individual identifier. | | | `string` | RD123 |
+| **individualPositionRadius** | Distance from recorder (m, >0). | | | `float` | 6.81 |
+| **bboxTime** | Start time of vocalization in seconds. Range >0. | ✅ | | `float` | 3.5 |
+| **bboxFrequency** | Start frequency in Hertz. Range >0. | | | `float` | 1500 |
+| **bboxDuration** | Duration of vocalization in seconds. Range >0. | | | `float` | 10.4 |
+| **bboxBandwidth** | Vocalization bandwidth in Hertz. Range >0. | | | `float` | 5400 |
+| **classificationMethod** | Classification method (`human` or `machine`). | | | `string` | human |
+| **classifiedBy** | Name/ID of classifier (human or AI). | | | `string` | BirdNET v2.3 |
+| **classificationTimestamp** | Classification date/time (ISO 8601). | | | `datetime` | 2020-08-22T10:25:19Z |
+| **classificationProbability** | Confidence level. Range: 0-1. | | | `float` | 0.95 |
+| **observationTags** | Tags (e.g., `key:value` format). | | | `string` | signalToNoise:high |
+| **observationComments** | Additional notes. | | | `string` | Loud unknown bird vocalization |
 
 # References
 * Bubnicki JW, Norton B, Baskauf SJ, Bruce T, Cagnacci F, Casaer J, Churski M, Cromsigt JPGM, Farra SD, Fiderer C, Forrester TD, Hendry H, Heurich M, Hofmeester TR, Jansen PA, Kays R, Kuijper DPJ, Liefting Y, Linnell JDC, Luskin MS, Mann C, Milotic T, Newman P, Niedballa J, Oldoni D, Ossi F, Robertson T, Rovero F, Rowcliffe M, Seidenari L, Stachowicz I, Stowell D, Tobler MW, Wieczorek J, Zimmermann F, Desmet P (2023). Camtrap DP: an open standard for the FAIR exchange and archiving of camera trap data. Remote Sensing in Ecology and Conservation. https://doi.org/10.1002/rse2.374
