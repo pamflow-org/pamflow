@@ -6,9 +6,10 @@ Thank you for your interest in contributing to this project! We welcome all cont
 1. [Getting Started](#getting-started)
 2. [How to Contribute](#how-to-contribute)
 3. [Code Standards](#code-standards)
-4. [Testing](#testing)
-5. [Pull Request Process](#pull-request-process)
-6. [Reporting Issues](#reporting-issues)
+4. [Git Commit Names](#git-commit-names)
+5. [Testing](#testing)
+6. [Pull Request Process](#pull-request-process)
+7. [Reporting Issues](#reporting-issues)
 
 ## Getting Started
 1. Fork the repository and clone it locally:
@@ -45,6 +46,14 @@ Thank you for your interest in contributing to this project! We welcome all cont
   - Leverage `kedro catalog` for data management and reproducibility.
   - Ensure modular, reusable, and well-documented nodes within pipelines.
   - Write tests for `kedro` nodes and pipelines to validate data processing logic.
+
+## Git Commit Names
+Use the following commit message conventions:
+- **`build`**: Indicates a change to the build system or external dependencies.
+- **`docs`**: Indicates a change to documentation.
+- **`feat`**: Indicates a new feature being added to the code base.
+- **`fix`**: Indicates a bug fix.
+- **`test`**: Indicates changes to the testing framework.
 
 ## Testing
 - Ensure all changes include appropriate tests.
