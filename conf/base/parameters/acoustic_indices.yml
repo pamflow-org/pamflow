@@ -2,8 +2,41 @@
 #of the scikitmaad.sound function select_bandwith 
 #(see https://scikit-maad.github.io/generated/maad.sound.select_bandwidth.html)
 acoustic_indices:
-  target_fs: 48000  # sampling rate for analysis
-  filter_type: 'bandpass'
-  filter_cut: [300, 16000]
-  filter_order: 3
-  n_jobs: -1 #Number of cores used in parallelization: -1 forces to use all the cores available.
+  
+  preprocess:  # Preprocessing parameters
+    nperseg: 1024  # Length of each segment for FFT
+    noverlap: 0  # Number of points to overlap between segments
+    target_fs: 48000  # Sampling rate for analysis
+    filter_type: bandpass
+    filter_cut: [300, 16000]
+    filter_order: 3
+  
+  indices_settings: # List and paramters of acoustic indices
+    ACI: 
+    ADI:
+      fmin: 0
+      fmax: 24000
+      bin_step: 1000
+      index: shannon
+      dB_threshold: -40
+    BI:
+      flim: [2000, 11000]
+    Hf: 
+    Ht: 
+    H: 
+    NDSI:
+      flim_bioPh: [2000, 20000]
+      flim_antroPh: [0, 2000]
+    NP:
+      mode: linear
+      min_peak_val: 0
+      min_freq_dist: 100
+      slopes: null
+      prominence: 1e-6
+    RMS:
+    SC:
+      dB_threshold: -70
+      flim_LF: [1000, 20000]
+  
+  execution: # Number of cores used in parallelization 
+    n_jobs: -1 # (-1 for all cores)
