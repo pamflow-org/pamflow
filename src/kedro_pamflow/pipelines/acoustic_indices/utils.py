@@ -2,13 +2,134 @@
 
 import os
 import concurrent.futures
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
 from maad import sound, features, util
 
+#%%
+class AcousticIndices:
+    """
+    Class to compute acoustic indices from a spectrogram.
+    This class encapsulates the functionality to compute various acoustic indices
+    from a spectrogram. It takes the audio signal, spectrogram, time and frequency
+    vectors, and parameters as input. The indices can be computed using the
+    corresponding methods.
+    Attributes
+    ----------
+    s : 1d numpy array
+        Acoustic data (audio signal).
+    Sxx : 2d numpy array of floats
+        Amplitude spectrogram computed with maad.sound.spectrogram mode='amplitude'.
+    tn : 1d ndarray of floats
+        Time vector with temporal indices of spectrogram.
+    fn : 1d ndarray of floats
+        Frequency vector with temporal indices of spectrogram.
+    params : dict
+        Parameters for computing acoustic indices. The keys are the names of the
+        indices to be computed, and the values are the corresponding parameters.
+    Methods
+    -------
+    compute_ACI(params)
+        Compute Acoustic Complexity Index (ACI).
+    compute_ADI(params)
+        Compute Acoustic Diversity Index (ADI).
+    compute_BI(params)
+        Compute Bioacoustics Index (BI).
+    compute_Hf(params)
+        Compute Frequency Entropy (Hf).
+    compute_Ht(params)
+        Compute Temporal Entropy (Ht).
+    compute_H(params)
+        Compute Acoustic Entropy (H).
+    compute_NDSI(params)
+        Compute Normalized Difference Soundscape Index (NDSI).
+    compute_NP(params)
+        Compute Number of Peaks (NP).
+    compute_RMS(params)
+        Compute Root Mean Square (RMS).
+    compute_SC(params)
+        Compute Spectral Cover (SC).
+    compute_selected_indices()
+        Compute only selected indices based on parameters.
+    """
+    def __init__(self, s, Sxx, tn, fn, params):
+        self.s = s
+        self.Sxx = Sxx
+        self.tn = tn
+        self.fn = fn
+        self.params = self._convert_lists_to_tuples(params)
 
-def compute_acoustic_indices(s, Sxx, tn, fn):
+        # Convert spectrogram scales once to avoid redundancy
+        self.Sxx_power = Sxx**2
+        self.Sxx_dB = util.amplitude2dB(Sxx)
+
+    def compute_ACI(self, params):
+        """Compute Acoustic Complexity Index (ACI)."""
+        return features.acoustic_complexity_index(self.Sxx)[2]
+
+    def compute_ADI(self, params):
+        """Compute Acoustic Complexity Index (ACI)."""
+        return features.acoustic_diversity_index(self.Sxx, self.fn, **params)
+
+    def compute_BI(self, params):
+        """Compute Bioacoustics Index (BI)."""
+        return features.bioacoustics_index(self.Sxx, self.fn, **params)
+    
+    def compute_Hf(self, params):
+        """Compute Frequency Entropy (Hf)."""
+        return features.frequency_entropy(self.Sxx_power)[0]
+    
+    def compute_Ht(self, params):
+        """Compute Temporal Entropy (Ht)."""
+        return features.temporal_entropy(self.s)
+    
+    def compute_H(self, params):
+        """Compute Acoustic Entropy (H)."""
+        Hf = features.frequency_entropy(self.Sxx_power)[0]
+        Ht = features.temporal_entropy(self.s)
+        return Hf * Ht
+
+    def compute_NDSI(self, params):
+        """Compute Normalized Difference Soundscape Index (NDSI)."""
+        return features.soundscape_index(self.Sxx_power, self.fn, **params)[0]
+    
+    def compute_NP(self, params):
+        """Compute Number of Peaks (NP)."""
+        return features.number_of_peaks(self.Sxx_power, self.fn, **params)
+
+    def compute_RMS(self, params):
+        """Compute Root Mean Square (RMS)."""
+        return util.rms(self.s)
+    
+    def compute_SC(self, params):
+        """Compute Spectral Cover (SC)."""
+        return features.spectral_cover(self.Sxx_dB, self.fn, **params)[0]
+
+    def _convert_lists_to_tuples(self, data):
+        """Recursively convert all lists in a dictionary to tuples."""
+        if isinstance(data, dict):
+            return {key: self._convert_lists_to_tuples(value) for key, value in data.items()}
+        elif isinstance(data, list):
+            return tuple(self._convert_lists_to_tuples(item) for item in data)
+        else:
+            return data
+
+    def compute_selected_indices(self):
+        """Compute only selected indices based on parameters."""
+        if not isinstance(self.params, dict):
+            raise ValueError("Expected self.params to be a dictionary.")
+
+        results = {}
+        for index in self.params.keys():
+            method_name = f"compute_{index}"
+            if hasattr(self, method_name):
+                method = getattr(self, method_name)
+                results[index] = method(self.params[index])
+            else:
+                print(f"Warning: Method {method_name} not found in class.")
+
+        return pd.Series(results)
+#%%
+def compute_acoustic_indices(s, Sxx, tn, fn, params=None):
     """
     Main function that defines which and how indices will be computed.
 
@@ -28,65 +149,19 @@ def compute_acoustic_indices(s, Sxx, tn, fn):
     df_indices : pd.DataFrame
         Acoustic indices
     """
+    indices_computer = AcousticIndices(s, Sxx, tn, fn, params)
+    return indices_computer.compute_selected_indices()
 
-    # Set spectro as power (PSD) and dB scales.
-    Sxx_power = Sxx**2
-    Sxx_dB = util.amplitude2dB(Sxx)
-
-    # Compute acoustic indices
-    ADI = features.acoustic_diversity_index(
-        Sxx, fn, fmin=0, fmax=24000, bin_step=1000, index="shannon", dB_threshold=-40
-    )
-    _, _, ACI = features.acoustic_complexity_index(Sxx)
-    NDSI, xBA, xA, xB = features.soundscape_index(
-        Sxx_power, fn, flim_bioPh=(2000, 20000), flim_antroPh=(0, 2000)
-    )
-    Ht = features.temporal_entropy(s)
-    Hf, _ = features.frequency_entropy(Sxx_power)
-    H = Hf * Ht
-    BI = features.bioacoustics_index(Sxx, fn, flim=(2000, 11000))
-    NP = features.number_of_peaks(
-        Sxx_power,
-        fn,
-        mode="linear",
-        min_peak_val=0,
-        min_freq_dist=100,
-        slopes=None,
-        prominence=1e-6,
-    )
-    SC, _, _ = features.spectral_cover(
-        Sxx_dB, fn, dB_threshold=-70, flim_LF=(1000, 20000)
-    )
-
-    # Structure data into a pandas series
-    df_indices = pd.Series(
-        {
-            "ADI": ADI,
-            "ACI": ACI,
-            "NDSI": NDSI,
-            "BI": BI,
-            "Hf": Hf,
-            "Ht": Ht,
-            "H": H,
-            "SC": SC,
-            "NP": int(NP),
-        }
-    )
-
-    return df_indices
-
-
-# %%
-def compute_acoustic_indices_single_file(
-    path_audio,
-    target_fs=48000,
-    filter_type=None,
-    filter_cut=None,
-    filter_order=None,
-    verbose=True,
-):
-    if verbose:
-        print(f"Processing file {path_audio}", end="\r")
+#%% 
+def preprocess_audio_file(path_audio, params):
+    
+    # Load parameters
+    target_fs = params["target_fs"]
+    filter_type = params["filter_type"]
+    filter_cut = params["filter_cut"]
+    filter_order = params["filter_order"]
+    nperseg = params["nperseg"]
+    noverlap = params["noverlap"]
 
     # load audio
     s, fs = sound.load(path_audio)
@@ -98,42 +173,31 @@ def compute_acoustic_indices_single_file(
 
     # Compute the amplitude spectrogram and acoustic indices
     Sxx, tn, fn, _ = sound.spectrogram(
-        s, target_fs, nperseg=1024, noverlap=0, mode="amplitude"
-    )
-    df_indices_file = compute_acoustic_indices(s, Sxx, tn, fn)
+        s, target_fs, nperseg=nperseg, noverlap=noverlap, mode="amplitude")
+    
+    return s, Sxx, tn, fn
+    
+# %%
+def compute_acoustic_indices_single_file(
+    path_audio,
+    params_preprocess=None,
+    params_indices=None,
+    verbose=True,
+):
+    if verbose:
+        print(f"Processing file {path_audio}", end="\r")
+    
+    # Preprocess audio file
+    s, Sxx, tn, fn = preprocess_audio_file(path_audio, params_preprocess)
+    
+    # Compute acoustic indices
+    df_indices_file = compute_acoustic_indices(s, Sxx, tn, fn, params_indices)
 
     return df_indices_file
 
-
-# %%
-def batch_compute_acoustic_indices(data, path_save=None):
-    df = input_validation(data)
-    sensor_list = df.sensor_name.unique()
-
-    # Loop through sites
-    for sensor_name in sensor_list:
-        flist_sel = df.loc[df.sensor_name == sensor_name, :]
-
-        df_indices = pd.DataFrame()
-        for idx_row, row in flist_sel.iterrows():
-            print(f"{idx_row + 1} / {flist_sel.index[-1]}: {row.fname}", end="\r")
-            # Load and resample if needed
-            df_indices_file = compute_acoustic_indices_single_file(row.path_audio)
-
-            # add file information to dataframes
-            add_info = row[["fname", "sensor_name", "date"]]
-            df_indices_file = pd.concat([add_info, df_indices_file])
-
-            # append to dataframe
-            df_indices = pd.concat([df_indices, df_indices_file.to_frame().T])
-
-        # Save dataframes
-        df_indices.to_csv(path_save + sensor_name + "_indices.csv", index=False)
-
-
 # %% Parellel computing
 def compute_indices_parallel(
-    data, target_fs, filter_type, filter_cut, filter_order, n_jobs=4
+    data, params_preprocess, params_indices, n_jobs=-1
 ):
     if n_jobs == -1:
         n_jobs = os.cpu_count()
@@ -148,10 +212,9 @@ def compute_indices_parallel(
             executor.submit(
                 compute_acoustic_indices_single_file,
                 file,
-                target_fs,
-                filter_type,
-                filter_cut,
-                filter_order,
+                params_preprocess,
+                params_indices,
+                verbose=True,
             ): file
             for file in files
         }
@@ -171,25 +234,6 @@ def compute_indices_parallel(
                 print(f"Error processing {file_path}: {e}")
                 print("=" * 10)
                 print("=" * 10)
-
-    # Build dataframe with results
-    df_out = pd.DataFrame(results)
-    return df_out
-
-
-# %% Sequential computing
-def compute_indices_sequential(data, target_fs, filter_type, filter_cut, filter_order):
-    df = input_validation(data)
-    print(f"Computing acoustic indices for {df.shape[0]} files")
-
-    files = df.path_audio.to_list()
-    results = []
-    for i, file_path in enumerate(files, start=1):
-        result = compute_acoustic_indices_single_file(
-            file_path, target_fs, filter_type, filter_cut, filter_order
-        )
-        result["fname"] = os.path.basename(file_path)
-        results.append(result)
 
     # Build dataframe with results
     df_out = pd.DataFrame(results)

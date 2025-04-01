@@ -5,14 +5,8 @@ Utilitary functions to manage, check and preprocess large sampling data assiciat
 
 """
 
-import os
-import argparse
-import matplotlib.pyplot as plt
-from maad import sound, util
-import pandas as pd
-import seaborn as sns
+import time
 from kedro_pamflow.pipelines.acoustic_indices.utils import compute_indices_parallel
-
 
 def compute_indices(media, acoustic_indices_parameters):
     """Computes acoustic indices for media files.
@@ -39,14 +33,12 @@ def compute_indices(media, acoustic_indices_parameters):
         A DataFrame containing the computed acoustic indices. Stored in the catalog
         as `acoustic_indices@pandas`.
     """
-    target_fs = acoustic_indices_parameters["target_fs"]
-    filter_type = acoustic_indices_parameters["filter_type"]
-    filter_cut = acoustic_indices_parameters["filter_cut"]
-    filter_order = acoustic_indices_parameters["filter_order"]
-    n_jobs = acoustic_indices_parameters["n_jobs"]
+    params_preprocess = acoustic_indices_parameters["preprocess"]
+    params_indices = acoustic_indices_parameters["indices_settings"]
+    n_jobs = acoustic_indices_parameters["execution"]["n_jobs"]
 
     media = media[media["fileLength"] > 0]
     acoustic_indices = compute_indices_parallel(
-        media, target_fs, filter_type, filter_cut, filter_order, n_jobs
+        media, params_preprocess, params_indices, n_jobs
     )
     return acoustic_indices
