@@ -50,6 +50,8 @@ class AcousticIndices:
         Compute Spectral Cover (SC).
     compute_selected_indices()
         Compute only selected indices based on parameters.
+    _convert_lists_to_tuples(data)
+        Recursively convert all lists in a dictionary to tuples.
     """
     def __init__(self, s, Sxx, tn, fn, params):
         self.s = s
@@ -154,6 +156,26 @@ def compute_acoustic_indices(s, Sxx, tn, fn, params=None):
 
 #%% 
 def preprocess_audio_file(path_audio, params):
+    """
+    Preprocess audio file by resampling and filtering.
+    Parameters
+    ----------
+    path_audio : str
+        Path to the audio file.
+    params : dict
+        Parameters for preprocessing, including target sampling frequency,
+        filter type, filter cut-off frequency, filter order, and spectrogram parameters.
+    Returns
+    -------
+    s : 1d numpy array
+        Resampled audio signal.
+    Sxx : 2d numpy array
+        Amplitude spectrogram.
+    tn : 1d ndarray of floats
+        Time vector with temporal indices of spectrogram.
+    fn : 1d ndarray of floats
+        Frequency vector with temporal indices of spectrogram.
+    """
     
     # Load parameters
     target_fs = params["target_fs"]
@@ -184,6 +206,24 @@ def compute_acoustic_indices_single_file(
     params_indices=None,
     verbose=True,
 ):
+    """
+    Compute acoustic indices for a single audio file.
+    Parameters
+    ----------
+    path_audio : str
+        Path to the audio file.
+    params_preprocess : dict
+        Parameters for preprocessing, including target sampling frequency,
+        filter type, filter cut-off frequency, filter order, and spectrogram parameters.
+    params_indices : dict
+        Parameters for computing acoustic indices.
+    verbose : bool
+        If True, print progress messages.
+    Returns
+    -------
+    df_indices_file : pd.DataFrame
+        Acoustic indices for the audio file.
+    """
     if verbose:
         print(f"Processing file {path_audio}", end="\r")
     
@@ -199,8 +239,34 @@ def compute_acoustic_indices_single_file(
 def compute_indices_parallel(
     data, params_preprocess, params_indices, n_jobs=-1
 ):
-    if n_jobs == -1:
+    """
+    Compute acoustic indices in parallel for a list of audio files.
+    Parameters
+    ----------
+    data : pd.DataFrame
+        DataFrame containing metadata of media files, including file paths.
+    params_preprocess : dict
+        Parameters for preprocessing, including target sampling frequency,
+        filter type, filter cut-off frequency, filter order, and spectrogram parameters.
+    params_indices : dict
+        Parameters for computing acoustic indices.
+    n_jobs : int
+        Number of parallel jobs to run. If -1, use all available CPU cores.
+    Returns
+    -------
+    df_out : pd.DataFrame
+        DataFrame containing the computed acoustic indices for all audio files.
+    """
+    # Check if n_jobs is -1, set to number of CPU cores
+    if n_jobs is None:
+        n_jobs = 1
+    elif n_jobs == -1:
         n_jobs = os.cpu_count()
+    elif n_jobs < 0:
+        raise ValueError("n_jobs must be a positive integer or -1 for all cores.")
+    elif n_jobs == 0:
+        raise ValueError("n_jobs cannot be 0.")
+    
 
     print(f"Computing acoustic indices for {data.shape[0]} files with {n_jobs} threads")
 
@@ -235,6 +301,4 @@ def compute_indices_parallel(
                 print("=" * 10)
                 print("=" * 10)
 
-    # Build dataframe with results
-    df_out = pd.DataFrame(results)
-    return df_out
+    return pd.DataFrame(results)
