@@ -1,0 +1,15 @@
+birdnetlib==0.17.2
+contextily==1.6.2
+fsspec==2024.9.0
+geopandas==1.0.1
+kedro==0.19.8
+kedro_datasets==4.1.0
+kedro-viz==10.0.0
+librosa==0.10.2
+openpyxl==3.1.5
+pytest==8.3.3
+PyYAML==6.0.2
+scikit-maad==1.4.1
+statsmodels==0.14.4
+tensorflow==2.15.0
+tensorflow-metal
