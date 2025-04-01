@@ -16,7 +16,7 @@ def create_pipeline(**kwargs):
                 func=species_detection_parallel,
                 inputs=[
                     "media@pamDP",
-                    "deployment@pamDP",
+                    "deployments@pamDP",
                     "params:birdnet_parameters.n_jobs",
                 ],
                 outputs="unfiltered_observations@pamDP",

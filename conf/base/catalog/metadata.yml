@@ -11,7 +11,7 @@ sensor_deployment_data@pandas:
   type: pandas.CSVDataset
   filepath: data/output/metadata/sensor_deployment_data.csv
 
-plantilla_usuario_fdm@pandas:
+field_deployments_sheet@pandas:
   type: pandas.ExcelDataset
   filepath: data/input/plantilla_usuario_fdm/FDM2024.xlsx
   save_args:
@@ -21,6 +21,6 @@ plantilla_usuario_fdm@pandas:
     sheet_name: Plantilla Usuario
     header: 3
 
-deployment@pamDP:
+deployments@pamDP:
   type: kedro_pamflow.datasets.pamDP.deployments.Deployments
   filepath: data/output/metadata/deployment.csv

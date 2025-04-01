@@ -9,6 +9,39 @@ import random
 
 
 def find_thresholds(manual_annotations, correct, n_jobs, probability):
+    """Calculates probability thresholds for each species based on manual annotations.
+
+    This node processes manual annotations to calculate an optimal probability threshold 
+    for each species. The input corresponds to the catalog entry 
+    `manual_annotations@PartitionedDataset`. The output is stored in the catalog as 
+    `species_thresholds@pandas`.
+
+    Parameters
+    ----------
+    manual_annotations : dict
+        A dictionary where the keys are species names and the values are functions that 
+        return DataFrames with manual annotations for each species. Loaded from the catalog 
+        entry `manual_annotations@PartitionedDataset`.
+
+    correct : float
+        The minimum percentage of correct observations required to calculate the threshold.
+
+    n_jobs : int
+        The number of parallel jobs to use for processing. If set to -1, 80% of the available 
+        CPU cores will be used. Passed as `params:data_science_parameters.n_jobs`.
+
+    probability : float
+        The initial probability value used to calculate thresholds. Passed as 
+        `params:data_science_parameters.probability`.
+
+    Returns
+    -------
+    pandas.DataFrame
+        A DataFrame containing the calculated probability thresholds for each species. 
+        Stored in the catalog as `species_thresholds@pandas`. The DataFrame includes two 
+        columns: `species` (the species name) and `threshold` (the calculated probability 
+        threshold).
+    """
     data_list = [dataframe() for species, dataframe in manual_annotations.items()]
 
     if n_jobs == -1:

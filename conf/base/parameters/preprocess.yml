@@ -1,0 +1,17 @@
+#matplotlib key word arguments for consistent ploting
+#througout the project. 
+#It is used mainly for spectrograms
+# (See https://scikit-maad.github.io/generated/maad.sound.spectrogram.html)
+preprocess_plot:
+  nperseg: 1024
+  noverlap: 0
+  flims: [0, 24000]
+  fig_height: 4
+  fig_width: 15
+  db_range: 80
+  colormap: 'viridis'  # 'grey', 'viridis', 'plasma', 'inferno', 'cvidis'
+
+# Parameters for obtaining timelapses
+timelapse:
+  sample_length: 5  # length of sample to build timelapse
+  sample_period: '30min'  # period of sample to build timelapse

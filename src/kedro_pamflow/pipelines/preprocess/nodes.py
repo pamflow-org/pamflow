@@ -394,29 +394,29 @@ def get_timelapse(
         yield {file_name: (long_wav, fs)}, {file_name: fig}
 
 
-def plantilla_usuario_to_deployment(plantilla_usuario, media_summary):
-    """Converts user-provided deployment templates into a standardized deployment DataFrame.
+def field_deployments_sheet_to_deployments(plantilla_usuario, media_summary):
+    """Converts user-provided deployments templates into a standardized deployments DataFrame.
 
     This node processes a user-provided template and combines it with media summary data
-    to generate a deployment DataFrame following the pamDP.deployment format. The inputs
+    to generate a deployments DataFrame following the pamDP.deployment format. The inputs
     correspond to the catalog entries `plantilla_usuario@pandas` and `media_summary@pandas`.
-    The output is stored in the catalog as `deployment@pamDP`.
+    The output is stored in the catalog as `deployments@pamDP`.
 
     Parameters
     ----------
     plantilla_usuario : pandas.DataFrame
-        A DataFrame containing user-provided deployment information. Loaded from the catalog
+        A DataFrame containing user-provided deployments information. Loaded from the catalog
         entry `plantilla_usuario@pandas`.
 
     media_summary : pandas.DataFrame
-        A DataFrame summarizing metadata of acoustic sampling for each deployment. Loaded from
+        A DataFrame summarizing metadata of acoustic sampling for each deployments. Loaded from
         the catalog entry `media_summary@pandas`.
 
     Returns
     -------
     pandas.DataFrame
-        A standardized deployment DataFrame following the pamDP.deployment format. Stored in
-        the catalog as `deployment@pamDP`.
+        A standardized deployments DataFrame following the pamDP.deployments format. Stored in
+        the catalog as `deployments@pamDP`.
     """
     plantilla_usuario["Nombre del instalador+Apellido  del instalador"] = (
         plantilla_usuario["Nombre del instalador"]
@@ -425,8 +425,6 @@ def plantilla_usuario_to_deployment(plantilla_usuario, media_summary):
 
     columns_names_map = {
         "Indicador de evento": "deploymentID",
-        "Fecha inicial": "deploymentStart",
-        "Fecha final": "deploymentEnd",
         "Localidad": "locationName",
         "Latitud": "latitude",
         "Longitud": "longitude",
@@ -438,30 +436,40 @@ def plantilla_usuario_to_deployment(plantilla_usuario, media_summary):
         "Altura de la grabadora respecto al suelo": "recorderHeight",
     }
 
-    deployment = plantilla_usuario[columns_names_map.keys()].rename(
+    deployments = plantilla_usuario[list(columns_names_map.keys())
+                                   +["Fecha inicial","Fecha final", 'Hora inicial','Hora final'    ]
+    ].rename(
         columns=columns_names_map
     )
 
-    deployment["recorderID"] = None
-    deployment["locationID"] = deployment["locationName"]
-    deployment["coordinateUncertainty"] = None
-    deployment["deploymentGroups"] = None
+    deployments['deploymentStart']=deployments["Fecha inicial"].astype(str) + ' ' + deployments['Hora inicial'].astype(str)
+    deployments['deploymentEnd'  ]=deployments["Fecha final"  ].astype(str) + ' ' + deployments['Hora final'  ].astype(str)
+    deployments=deployments.astype({'deploymentStart':'datetime64[ns]',
+                    'deploymentEnd' :'datetime64[ns]'
+                })
+
+    deployments=deployments.drop(columns=['Fecha inicial','Fecha final', 'Hora inicial','Hora final'])
+
+    deployments["recorderID"] = None
+    deployments["locationID"] = deployments["locationName"]
+    deployments["coordinateUncertainty"] = None
+    deployments["deploymentGroups"] = None
 
     media_summary = media_summary[["deploymentID", "date_ini", "date_end"]]
 
-    deployment = deployment.merge(media_summary, on="deploymentID", how="left")
+    deployments = deployments.merge(media_summary, on="deploymentID", how="left")
 
-    deployment["deploymentStart"] = deployment["deploymentStart"].combine_first(
-        deployment["date_ini"]
+    deployments["deploymentStart"] = deployments["deploymentStart"].combine_first(
+        deployments["date_ini"]
     )
-    deployment["deploymentEnd"] = deployment["deploymentEnd"].combine_first(
-        deployment["date_end"]
+    deployments["deploymentEnd"] = deployments["deploymentEnd"].combine_first(
+        deployments["date_end"]
     )
 
-    deployment = deployment.dropna(
+    deployments = deployments.dropna(
         subset=["deploymentStart", "deploymentEnd", "deploymentID"]
     )
 
-    deployment = deployment.drop(columns=["date_ini", "date_end"])
+    deployments = deployments.drop(columns=["date_ini", "date_end"])
 
-    return deployment
+    return deployments

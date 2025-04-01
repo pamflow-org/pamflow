@@ -1,0 +1,19 @@
+#Parameters used in data_science pipeline
+data_science_parameters:
+  correct_column: positive  #Column name for labeling correctly identified species
+  n_jobs: -1 #Number of cores used in parallelization: -1 forces to use all the cores available.
+  probability: 0.95 #probability used the confidence model
+  train_size: 0.7 #Train test proportion
+
+#matplotlib key word arguments for consistent ploting
+#througout the project. 
+#It is used mainly for spectrograms
+# (See https://scikit-maad.github.io/generated/maad.sound.spectrogram.html)
+data_science_plot:
+  nperseg: 1024
+  noverlap: 0
+  flims: [0, 24000]
+  fig_height: 4
+  fig_width: 15
+  db_range: 80
+  colormap: 'viridis'  # 'grey', 'viridis', 'plasma', 'inferno', 'cvidis'

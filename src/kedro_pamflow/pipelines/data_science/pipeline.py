@@ -20,7 +20,7 @@ def create_pipeline(**kwargs):
                 func=build_train_test_dataset,
                 inputs=[
                     "manual_annotations@PartitionedDataset",
-                    "params:plot",
+                    "params:data_science_plot",
                     "params:data_science_parameters.train_size",
                 ],
                 outputs=[

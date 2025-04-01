@@ -1,0 +1,11 @@
+#The parameters in graphical_soundscape correspond to the arguments
+#of the scikitmaad.features function graphical_soundscape
+#(see https://scikit-maad.github.io/generated/maad.features.graphical_soundscape.html)
+graphical_soundscape_parameters:
+  target_fs: 48000  # target sampling frequency
+  nperseg: 256  # window size to compute the spectrogram
+  noverlap: 0  # overlap between windows to compute the spectrogram
+  db_range: 80  # dB range for the spectrogram
+  min_distance: 5  # minimum distance between peaks
+  threshold_abs: -55  # threshold for detecting peaks
+  n_jobs: -1 #Number of cores used in parallelization: -1 forces to use all the cores available.
