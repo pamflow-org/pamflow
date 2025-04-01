@@ -5,7 +5,7 @@ from .nodes import (
     plot_sensor_deployment,
     plot_sensor_location,
     get_timelapse,
-    plantilla_usuario_to_deployment,
+    field_deployments_sheet_to_deployments,
 )
 
 
@@ -34,14 +34,14 @@ def create_pipeline(**kwargs):
                 name="plot_sensor_deployment_node",
             ),
             node(  # Log
-                func=plantilla_usuario_to_deployment,
-                inputs=["plantilla_usuario_fdm@pandas", "media_summary@pandas"],
-                outputs="deployment@pamDP",
-                name="plantilla_usuario_to_deployment_node",
+                func=field_deployments_sheet_to_deployments,
+                inputs=["field_deployments_sheet@pandas", "media_summary@pandas"],
+                outputs="deployments@pamDP",
+                name="field_deployments_sheet_to_deployments_node",
             ),
             node(  # Log
                 func=plot_sensor_location,
-                inputs=["media_summary@pandas", "deployment@pamDP", "params:plot"],
+                inputs=["media_summary@pandas", "deployments@pamDP", "params:preprocess_plot"],
                 outputs="sensor_location@matplotlib",
                 name="plot_sensor_location_node",
             ),
@@ -50,9 +50,9 @@ def create_pipeline(**kwargs):
                 inputs=[
                     "sensor_deployment_data@pandas",
                     "media@pamDP",
-                    "params:preprocessing.sample_length",
-                    "params:preprocessing.sample_period",
-                    "params:plot",
+                    "params:timelapse.sample_length",
+                    "params:timelapse.sample_period",
+                    "params:preprocess_plot",
                 ],
                 outputs=[
                     "timelapse@PartitionedAudio",

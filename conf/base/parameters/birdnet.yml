@@ -1,0 +1,6 @@
+# Parameters used in birdnet pipeline
+birdnet_parameters:
+  n_jobs: -1 #Number of cores used in parallelization: -1 forces to use all the cores available.
+  minimum_observations: 20 #Minimum number of detections for a species to be considered  in the observations format
+  segment_size: 20 #Number of sample segments per species,
+  manual_annotations_file_name: 'species_manual_annotations' #prefix in file name for manual annotations:  {manual_annotations_file_name}_{species}
