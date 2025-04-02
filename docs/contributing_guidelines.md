@@ -49,11 +49,11 @@ Thank you for your interest in contributing to this project! We welcome all cont
 
 ## Git Commit Names
 Use the following commit message conventions:
-- **`build`**: Indicates a change to the build system or external dependencies.
-- **`docs`**: Indicates a change to documentation.
-- **`feat`**: Indicates a new feature being added to the code base.
-- **`fix`**: Indicates a bug fix.
-- **`test`**: Indicates changes to the testing framework.
+- **`BUILD`**: Indicates a change to the build system or external dependencies.
+- **`DOC`**: Indicates a change to documentation.
+- **`FEAT`**: Indicates a new feature being added to the code base.
+- **`FIX`**: Indicates a bug fix.
+- **`TEST`**: Indicates changes to the testing framework.
 
 ## Testing
 - Ensure all changes include appropriate tests.
