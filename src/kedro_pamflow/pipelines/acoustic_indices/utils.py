@@ -3,7 +3,10 @@
 import os
 import concurrent.futures
 import pandas as pd
+import logging
 from maad import sound, features, util
+
+logger = logging.getLogger(__name__)
 
 #%%
 class AcousticIndices:
@@ -127,7 +130,7 @@ class AcousticIndices:
                 method = getattr(self, method_name)
                 results[index] = method(self.params[index])
             else:
-                print(f"Warning: Method {method_name} not found in class.")
+                logger.info(f"Warning: Method {method_name} not found in class.")
 
         return pd.Series(results)
 #%%
@@ -268,7 +271,7 @@ def compute_indices_parallel(
         raise ValueError("n_jobs cannot be 0.")
     
 
-    print(f"Computing acoustic indices for {data.shape[0]} files with {n_jobs} threads")
+    logger.info(f"Computing acoustic indices for {data.shape[0]} files with {n_jobs} threads")
 
     # Use concurrent.futures for parelell execution
     files = data["filePath"].to_list()
@@ -295,10 +298,6 @@ def compute_indices_parallel(
                 results.append(result)
 
             except Exception as e:
-                print("=" * 10)
-                print("=" * 10)
-                print(f"Error processing {file_path}: {e}")
-                print("=" * 10)
-                print("=" * 10)
+                logger.error(f"Error processing {file_path}: {e}")
 
     return pd.DataFrame(results)

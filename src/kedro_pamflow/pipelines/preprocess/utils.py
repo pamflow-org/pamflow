@@ -6,27 +6,15 @@ Utilitary functions to manage, check and preprocess large sampling data assiciat
 """
 
 import os
-import argparse
-import shutil
-import pandas as pd
 import numpy as np
-import glob
-import yaml
-from pathlib import Path
-from os import listdir
-from maad import sound, util
-import matplotlib.pyplot as plt
+from maad import sound
 
 # ----------------------------------
 # Main Utilities For Nodes
 # ----------------------------------
 
-
-# --------------------
-# Time Lapse Functions
-# --------------------
 def concat_audio(flist, sample_len=1, verbose=False):
-    """Concatenates samples using a list of audio files
+    """Concatenates audio samples using a list of audio files for mixing timelapses
 
     Parameters
     ----------
@@ -45,7 +33,6 @@ def concat_audio(flist, sample_len=1, verbose=False):
        Sample frequency of long_wav
     """
 
-    # Compute long wav
     long_wav = list()
     for idx, fname in enumerate(flist, start=1):
         if verbose:
