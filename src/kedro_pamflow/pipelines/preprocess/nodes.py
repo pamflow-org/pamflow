@@ -6,7 +6,6 @@ Utilitary functions to manage, check and preprocess large sampling data assiciat
 """
 
 import os
-import argparse
 import matplotlib.pyplot as plt
 from maad import sound, util
 import pandas as pd
@@ -15,9 +14,11 @@ import geopandas as gpd
 import contextily as cx
 import matplotlib.dates as mdates
 import matplotlib as mpl
+import logging
 from kedro_pamflow.pipelines.preprocess.utils import concat_audio
 import datetime
 
+logger = logging.getLogger(__name__)
 
 def get_media_file(input_path):
     """Retrieves and processes metadata from media files in the given directory.
@@ -44,7 +45,6 @@ def get_media_file(input_path):
 
     metadata = util.get_metadata_dir(input_path, False)
     metadata.dropna(inplace=True)  # remove problematic files
-    print(metadata.columns)
     columns_names_dict = {
         "path_audio": "filePath",
         "fname": "mediaID",
@@ -355,24 +355,24 @@ def get_timelapse(
     df_timelapse = media[
         media["timestamp"].dt.date
         == datetime.datetime.strptime(selected_date, "%Y-%m-%d").date()
-    ]
+    ].copy()
 
-    df_timelapse["day"] = df_timelapse["timestamp"].dt.date
-
+    df_timelapse.loc[:, "day"] = df_timelapse["timestamp"].dt.date
     df_timelapse.set_index("timestamp", inplace=True)
 
+    # Get parameters for plotting
     ngroups = df_timelapse.groupby(["deploymentID", "day"]).ngroups
-
     nperseg = plot_params["nperseg"]
     noverlap = plot_params["noverlap"]
     db_range = plot_params["db_range"]
     width = plot_params["fig_width"]
     height = plot_params["fig_height"]
-    # create time lapse
-    print(f"Processing audio timelapse for {ngroups} devices:")
-    import sys
+    
+    # Mix timelapse
+    logger.info(f"Processing audio timelapse for {ngroups} devices:")
 
     for site, df_site in df_timelapse.groupby("deploymentID"):
+        logger.info(f"Processing deployment: {site}...")
         df_site.sort_values("timestamp", inplace=True)
         df_site = df_site.resample(sample_period).first()
 

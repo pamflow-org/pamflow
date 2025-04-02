@@ -38,7 +38,7 @@ handlers:
 
 loggers:
   kedro:
-    level: INFO
+    level: WARNING
 
   kedro_pamflow:
     level: INFO
