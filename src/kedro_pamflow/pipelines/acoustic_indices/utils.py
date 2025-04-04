@@ -1,4 +1,10 @@
-"""Utility functions to compute acoustic indices"""
+""" 
+Utilities for Acoustic Indices Computation
+
+This module provides functions and classes to compute various acoustic indices
+from audio signals. It includes preprocessing functions, a class for computing
+acoustic indices, and parallel processing capabilities.
+"""
 
 import os
 import concurrent.futures
@@ -6,6 +12,7 @@ import pandas as pd
 import logging
 from maad import sound, features, util
 
+# Set up logging
 logger = logging.getLogger(__name__)
 
 #%%
@@ -133,29 +140,6 @@ class AcousticIndices:
                 logger.info(f"Warning: Method {method_name} not found in class.")
 
         return pd.Series(results)
-#%%
-def compute_acoustic_indices(s, Sxx, tn, fn, params=None):
-    """
-    Main function that defines which and how indices will be computed.
-
-    Parameters
-    ----------
-    s : 1d numpy array
-        acoustic data
-    Sxx : 2d numpy array of floats
-        Amplitude spectrogram computed with maad.sound.spectrogram mode='amplitude'
-    tn : 1d ndarray of floats
-        time vector with temporal indices of spectrogram.
-    fn : 1d ndarray of floats
-        frequency vector with temporal indices of spectrogram..
-
-    Returns
-    -------
-    df_indices : pd.DataFrame
-        Acoustic indices
-    """
-    indices_computer = AcousticIndices(s, Sxx, tn, fn, params)
-    return indices_computer.compute_selected_indices()
 
 #%% 
 def preprocess_audio_file(path_audio, params):
@@ -234,9 +218,40 @@ def compute_acoustic_indices_single_file(
     s, Sxx, tn, fn = preprocess_audio_file(path_audio, params_preprocess)
     
     # Compute acoustic indices
-    df_indices_file = compute_acoustic_indices(s, Sxx, tn, fn, params_indices)
+    indices_computer = AcousticIndices(s, Sxx, tn, fn, params_indices)
+    df_indices_file = indices_computer.compute_selected_indices()
 
     return df_indices_file
+
+#%%
+def validate_n_jobs(n_jobs):
+    """
+    Validate and normalize the n_jobs parameter.
+    
+    Parameters
+    ----------
+    n_jobs : int or None
+        Number of jobs to run in parallel. -1 means using all available CPU cores.
+    
+    Returns
+    -------
+    int
+        Validated number of jobs.
+    
+    Raises
+    ------
+    ValueError
+        If n_jobs is invalid (e.g., 0 or negative other than -1).
+    """
+    if n_jobs is None:
+        return 1
+    if n_jobs == -1:
+        return os.cpu_count()
+    if n_jobs <= 0:
+        raise ValueError("n_jobs must be a positive integer or -1 for all cores.")
+    return n_jobs
+
+# %%
 
 # %% Parellel computing
 def compute_indices_parallel(
@@ -260,44 +275,33 @@ def compute_indices_parallel(
     df_out : pd.DataFrame
         DataFrame containing the computed acoustic indices for all audio files.
     """
-    # Check if n_jobs is -1, set to number of CPU cores
-    if n_jobs is None:
-        n_jobs = 1
-    elif n_jobs == -1:
-        n_jobs = os.cpu_count()
-    elif n_jobs < 0:
-        raise ValueError("n_jobs must be a positive integer or -1 for all cores.")
-    elif n_jobs == 0:
-        raise ValueError("n_jobs cannot be 0.")
-    
+    n_jobs = validate_n_jobs(n_jobs)
 
-    logger.info(f"Computing acoustic indices for {data.shape[0]} files with {n_jobs} threads")
-
-    # Use concurrent.futures for parelell execution
-    files = data["filePath"].to_list()
+    # Use concurrent.futures for parallel execution
+    files = data[["filePath", "mediaID"]].to_dict(orient="records")
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
         # Use submit for each task
         futures = {
             executor.submit(
                 compute_acoustic_indices_single_file,
-                file,
+                file["filePath"],
                 params_preprocess,
                 params_indices,
                 verbose=True,
-            ): file
+            ): file["mediaID"]
             for file in files
         }
 
         # Get results when tasks are completed
         results = []
         for future in concurrent.futures.as_completed(futures):
-            file_path = futures[future]
+            media_id = futures[future]
             try:
                 result = future.result()
-                result["filePath"] = os.path.basename(file_path)
+                result["mediaID"] = media_id
                 results.append(result)
 
             except Exception as e:
-                logger.error(f"Error processing {file_path}: {e}")
+                logger.error(f"Error processing file {media_id}: {e}")
 
     return pd.DataFrame(results)

@@ -6,7 +6,9 @@ Utilitary functions to manage, check and preprocess large sampling data assiciat
 """
 
 import time
+import logging
 from kedro_pamflow.pipelines.acoustic_indices.utils import compute_indices_parallel
+logger = logging.getLogger(__name__)
 
 def compute_indices(media, acoustic_indices_parameters):
     """Computes acoustic indices for media files.
@@ -36,9 +38,14 @@ def compute_indices(media, acoustic_indices_parameters):
     params_preprocess = acoustic_indices_parameters["preprocess"]
     params_indices = acoustic_indices_parameters["indices_settings"]
     n_jobs = acoustic_indices_parameters["execution"]["n_jobs"]
-
     media = media[media["fileLength"] > 0]
-    acoustic_indices = compute_indices_parallel(
-        media, params_preprocess, params_indices, n_jobs
-    )
-    return acoustic_indices
+    
+    groups = media["deploymentID"].nunique()
+    logger.info(f"Computing acoustic indices on {groups} for {media.shape[0]} files")
+
+    for deployment, media_gp in media.groupby('deploymentID'):
+        logger.info(f"Computing acoustic indices on {deployment} for {media_gp.shape[0]} files")
+        acoustic_indices = compute_indices_parallel(
+            media_gp, params_preprocess, params_indices, n_jobs)
+    
+        yield {f'indices_{deployment}': acoustic_indices}
