@@ -41,10 +41,10 @@ def compute_indices(media, acoustic_indices_parameters):
     media = media[media["fileLength"] > 0]
     
     groups = media["deploymentID"].nunique()
-    logger.info(f"Computing acoustic indices on {groups} for {media.shape[0]} files")
+    logger.info(f"Computing acoustic indices for {groups} ({media.shape[0]} files)")
 
     for deployment, media_gp in media.groupby('deploymentID'):
-        logger.info(f"Computing acoustic indices on {deployment} for {media_gp.shape[0]} files")
+        logger.info(f"Computing acoustic indices for {deployment} ({media_gp.shape[0]} files)")
         acoustic_indices = compute_indices_parallel(
             media_gp, params_preprocess, params_indices, n_jobs)
     
