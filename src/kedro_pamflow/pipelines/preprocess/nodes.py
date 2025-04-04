@@ -373,14 +373,18 @@ def get_timelapse(
 
     for site, df_site in df_timelapse.groupby("deploymentID"):
         logger.info(f"Processing deployment: {site}...")
+
+        # Adjust samples for timelapse
         df_site.sort_values("timestamp", inplace=True)
         df_site = df_site.resample(sample_period).first()
 
+        # Compute timelapse
         long_wav, fs = concat_audio(
             df_site["filePath"],
             sample_len=sample_len,
         )
-        plt.close()
+
+        # Plot spectrogram
         fig, ax = plt.subplots(figsize=(width, height))
         Sxx, tn, fn, ext = sound.spectrogram(
             long_wav,
@@ -390,8 +394,12 @@ def get_timelapse(
         )
         util.plot_spectrogram(Sxx, ext, db_range, ax=ax, colorbar=False)
 
+        # Return audio and figure
         file_name = f"{site}_timelapse_{selected_date}"
         yield {file_name: (long_wav, fs)}, {file_name: fig}
+        
+        # Close the plot to free up memory
+        plt.close(fig)
 
 
 def field_deployments_sheet_to_deployments(plantilla_usuario, media_summary):
