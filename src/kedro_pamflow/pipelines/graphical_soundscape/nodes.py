@@ -8,15 +8,14 @@ References:
   - Campos-Cerqueira, M., Aide, T.M., 2017. Changes in the acoustic structure and composition along a tropical elevational gradient. JEA 1, 1–1. https://doi.org/10.22261/JEA.PNCO7I
 """
 
-import os
-import argparse
 import pandas as pd
-import glob
-import matplotlib.pyplot as plt
-from maad import sound, util
-from maad.rois import spectrogram_local_max
 from maad.features import graphical_soundscape as graphical_soundscape_maad
+from maad.features import plot_graph
+import matplotlib.pyplot as plt
+import logging
 
+# Set up logging
+logger = logging.getLogger(__name__)
 
 def graphical_soundscape_pamflow(media, graphical_soundscape_parameters):
     """Generates graphical soundscapes based on spectrogram peaks for acoustic analysis.
@@ -43,9 +42,7 @@ def graphical_soundscape_pamflow(media, graphical_soundscape_parameters):
         A DataFrame containing the computed graphical soundscape data. Stored in the catalog
         as `graphical_soundscape@pandas`.
     """
-    media["date"] = pd.to_datetime(media.timestamp)
-    media["time"] = media.date.dt.hour
-
+    # Extract parameters from the input dictionary
     threshold_abs = graphical_soundscape_parameters["threshold_abs"]
     target_fs = graphical_soundscape_parameters["target_fs"]
     nperseg = graphical_soundscape_parameters["nperseg"]
@@ -53,19 +50,31 @@ def graphical_soundscape_pamflow(media, graphical_soundscape_parameters):
     db_range = graphical_soundscape_parameters["db_range"]
     min_distance = graphical_soundscape_parameters["min_distance"]
     n_jobs = graphical_soundscape_parameters["n_jobs"]
+    media["date"] = pd.to_datetime(media.timestamp)
+    media["time"] = media.date.dt.hour
+    media = media[media["fileLength"] > 0]
 
-    df_out = graphical_soundscape_maad(
-        media[
-            media["fileLength"] > 0
-        ],  # A Pandas DataFrame containing information about the audio files.
-        threshold_abs,
-        "filePath",  # Column name where the full path of audio is provided.
-        "time",  # Column name where the time is provided as a string using the format ‘HHMMSS’.
-        target_fs,
-        nperseg,
-        noverlap,
-        db_range,
-        min_distance,
-        n_jobs,
-    )
-    return df_out
+    # Compute graphical soundscapes by deploymentID
+    for deployment, media_gp in media.groupby('deploymentID'):
+        logger.info(f"Computing graphical soundscapes for {deployment} ({media_gp.shape[0]} files)")
+        
+        # Compute graphical soundscape
+        df_out = graphical_soundscape_maad(
+            media_gp,  # A Pandas DataFrame containing information about the audio files.
+            threshold_abs,
+            "filePath",  # Column name where the full path of audio is provided.
+            "time",  # Column name where the time is provided as a string using the format ‘HHMMSS’.
+            target_fs,
+            nperseg,
+            noverlap,
+            db_range,
+            min_distance,
+            n_jobs,
+        )
+        
+        # Plot graphical soundscape
+        fig, ax = plt.subplots()
+        plot_graph(df_out, savefig=False, ax=ax)
+
+        # Save graph and figure as Partitioned Dataset
+        yield {f'graph_{deployment}': df_out},  {f'graph_{deployment}': fig}
