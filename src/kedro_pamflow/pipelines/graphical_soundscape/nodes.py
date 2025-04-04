@@ -78,3 +78,6 @@ def graphical_soundscape_pamflow(media, graphical_soundscape_parameters):
 
         # Save graph and figure as Partitioned Dataset
         yield {f'graph_{deployment}': df_out},  {f'graph_{deployment}': fig}
+
+        # Close the plot to free up memory
+        plt.close(fig)
