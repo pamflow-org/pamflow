@@ -17,3 +17,10 @@ timelapse_spectrograms@PartitionedImage:
     type: matplotlib.MatplotlibWriter
   filename_suffix: ".png"
 
+graph_plot@PartitionedImage:
+  type: partitions.PartitionedDataset
+  path: data/output/graphical_soundscape/
+  dataset:
+    type: matplotlib.MatplotlibWriter
+  filename_suffix: ".png"
+

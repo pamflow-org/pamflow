@@ -1,3 +1,5 @@
-graphical_soundscape@pandas:
-  type: pandas.CSVDataset
-  filepath: data/output/graphical_soundscape/graphical_soundscape.csv
+graphical_soundscape@PartitionedDataset:
+  type: partitions.PartitionedDataset
+  path: data/output/graphical_soundscape/
+  filename_suffix: ".csv"
+  dataset: pandas.CSVDataset
