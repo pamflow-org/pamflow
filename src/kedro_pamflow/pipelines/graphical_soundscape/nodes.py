@@ -70,6 +70,7 @@ def graphical_soundscape_pamflow(media, graphical_soundscape_parameters):
             db_range,
             min_distance,
             n_jobs,
+            verbose=False,
         )
         
         # Plot graphical soundscape
