@@ -2,6 +2,7 @@ import os
 from maad import sound
 from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
+from contextlib import redirect_stdout
 import concurrent.futures
 
 
@@ -38,15 +39,18 @@ def species_detection_single_file(wav_file_path, lat, lon, mediaID, deploymentID
         observation. Each observation includes details such as scientific name,
         start time, end time, confidence score, and other relevant metadata.
     """
-    # Load and initialize the BirdNET-Analyzer models.
-    analyzer = Analyzer()
-    recording = Recording(
-        analyzer,
-        wav_file_path,
-        lat=lat,
-        lon=lon,
-    )
-    recording.analyze()
+    with open('/dev/null', 'w') as fnull, redirect_stdout(fnull):  # Suppress print messages
+        # Load and initialize the BirdNET-Analyzer models.
+        analyzer = Analyzer()
+        recording = Recording(
+            analyzer,
+            wav_file_path,
+            lat=lat,
+            lon=lon,
+        )
+    
+        recording.analyze()
+    
     # species_detections is a list of dictionaries.
     # One  dictionary for each detection having the following keys:
     # dict_keys(['common_name', 'scientific_name', 'start_time', 'end_time', 'confidence', 'label'])
