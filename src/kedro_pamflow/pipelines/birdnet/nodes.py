@@ -304,7 +304,7 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
             "bboxDuration",
             "scientificName",
         ]
-    ]
+    ].copy()
 
     excel_generic_format["positive"] = ""
 
