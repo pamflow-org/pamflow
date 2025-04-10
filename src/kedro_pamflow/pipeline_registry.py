@@ -6,6 +6,7 @@ from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
 
 from kedro_pamflow.pipelines.data_preparation import pipeline as data_preparation
+from kedro_pamflow.pipelines.quality_control import pipeline as quality_control
 from kedro_pamflow.pipelines.graphical_soundscape import (
     pipeline as graphical_soundscape,
 )
@@ -22,6 +23,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         A mapping from pipeline names to ``Pipeline`` objects.
     """
     data_preparation_pipeline = data_preparation.create_pipeline()
+    quality_control_pipeline = quality_control.create_pipeline()
     graphical_soundscape_pipeline = graphical_soundscape.create_pipeline()
     acoustic_indices_pipeline = acoustic_indices.create_pipeline()
     species_detection_pipeline = species_detection.create_pipeline()
@@ -40,6 +42,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "pamflow": pamflow_pipeline
         + data_science_pipeline,  # +species_detection_pipeline_pipeline+acousti...,
         "data_preparation": data_preparation_pipeline,
+        "quality_control":quality_control_pipeline,
         "graphical_soundscape": graphical_soundscape_pipeline,
         "acoustic_indices": acoustic_indices_pipeline,
         "species_detection": species_detection_pipeline,

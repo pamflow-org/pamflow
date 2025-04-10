@@ -7,9 +7,6 @@ media_summary@pandas:
   type: pandas.CSVDataset
   filepath: data/output/data_preparation/audio_media_summary.csv
 
-sensor_deployment_data@pandas:
-  type: pandas.CSVDataset
-  filepath: data/output/data_preparation/sensor_deployment_data.csv
 
 field_deployments_sheet@pandas:
   type: pandas.ExcelDataset

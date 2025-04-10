@@ -1,6 +1,6 @@
-sensor_deployment_figure@matplotlib:
+sensor_performance_figure@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/figures/sensor_deployment.png
+  filepath: data/output/figures/sensor_performance.png
   save_args:
     format: png
 
