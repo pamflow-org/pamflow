@@ -167,3 +167,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Kedro Viz
+.viz/stats.json
