@@ -34,7 +34,7 @@ def get_media_file(input_path):
     # add_file_prefix(folder_name=input_path,
     #                recursive=True
     #                )
-    logger.info(f"Reading metadata from {input_path}...")
+    logger.info(f"Preparing data from {input_path}...")
     metadata = util.get_metadata_dir(input_path, False)
     metadata.dropna(inplace=True)  # remove problematic files
     columns_names_dict = {
@@ -158,6 +158,7 @@ def field_deployments_sheet_to_deployments(plantilla_usuario, media_summary):
     deployments["coordinateUncertainty"] = None
     deployments["deploymentGroups"] = None
 
+    n_recordings = media_summary["n_recordings"].sum()
     media_summary = media_summary[["deploymentID", "date_ini", "date_end"]]
 
     deployments = deployments.merge(media_summary, on="deploymentID", how="left")
@@ -174,5 +175,7 @@ def field_deployments_sheet_to_deployments(plantilla_usuario, media_summary):
     )
 
     deployments = deployments.drop(columns=["date_ini", "date_end"])
+    
+    logger.info(f"Done! {len(deployments)} deployments with {n_recordings} recordings saved to pamDP format.")
 
     return deployments
