@@ -13,7 +13,7 @@ sensor_deployment_data@pandas:
 
 field_deployments_sheet@pandas:
   type: pandas.ExcelDataset
-  filepath: data/input/plantilla_usuario_fdm/FDM2024.xlsx
+  filepath: data/input/field_deployments/field_deployments_sheet.xlsx
   save_args:
     sheet_name: Plantilla Usuario
     header: 3
