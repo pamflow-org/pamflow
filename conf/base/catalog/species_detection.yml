@@ -1,19 +1,19 @@
 unfiltered_observations@pamDP:
   type: kedro_pamflow.datasets.pamDP.observations.Observations
-  filepath: data/output/birdnet/unfiltered_observations.csv
+  filepath: data/output/species_detection/unfiltered_observations.csv
 target_species@pandas:
   type: pandas.CSVDataset
   filepath: data/input/target_species/target_species.csv
 observations@pamDP:
   type: kedro_pamflow.datasets.pamDP.observations.Observations
-  filepath: data/output/birdnet/observations.csv
+  filepath: data/output/species_detection/observations.csv
 segments@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/birdnet/segments.csv
+  filepath: data/output/species_detection/segments.csv
 
 segments_audio_folder@AudioFolderDataset:
   type: partitions.PartitionedDataset
-  path: data/output/birdnet/segments
+  path: data/output/species_detection/segments
   dataset:
     type: kedro_pamflow.datasets.audio_dataset.SoundDataset
   filename_suffix: ".WAV"
