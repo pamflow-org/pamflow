@@ -5,7 +5,7 @@ from typing import Dict
 from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
 
-from kedro_pamflow.pipelines.preprocess import pipeline as preprocess
+from kedro_pamflow.pipelines.data_preparation import pipeline as data_preparation
 from kedro_pamflow.pipelines.graphical_soundscape import (
     pipeline as graphical_soundscape,
 )
@@ -21,7 +21,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     Returns:
         A mapping from pipeline names to ``Pipeline`` objects.
     """
-    preprocess_pipeline = preprocess.create_pipeline()
+    data_preparation_pipeline = data_preparation.create_pipeline()
     graphical_soundscape_pipeline = graphical_soundscape.create_pipeline()
     acoustic_indices_pipeline = acoustic_indices.create_pipeline()
     birdnet_pipeline = birdnet.create_pipeline()
@@ -29,7 +29,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     export_pipeline = export.create_pipeline()
 
     pamflow_pipeline = (
-        preprocess_pipeline
+        data_preparation_pipeline
         + graphical_soundscape_pipeline
         + acoustic_indices_pipeline
         + birdnet_pipeline
@@ -39,7 +39,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "__default__": pamflow_pipeline,
         "pamflow": pamflow_pipeline
         + data_science_pipeline,  # +birdnet_pipeline+acousti...,
-        "preprocess": preprocess_pipeline,
+        "data_preparation": data_preparation_pipeline,
         "graphical_soundscape": graphical_soundscape_pipeline,
         "acoustic_indices": acoustic_indices_pipeline,
         "birdnet": birdnet_pipeline,
