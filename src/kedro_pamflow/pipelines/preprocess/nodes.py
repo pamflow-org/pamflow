@@ -14,6 +14,7 @@ import geopandas as gpd
 import contextily as cx
 import matplotlib.dates as mdates
 import matplotlib as mpl
+from matplotlib.colors import Normalize
 import logging
 from kedro_pamflow.pipelines.preprocess.utils import concat_audio
 import datetime
@@ -42,7 +43,7 @@ def get_media_file(input_path):
     # add_file_prefix(folder_name=input_path,
     #                recursive=True
     #                )
-
+    logger.info(f"Reading metadata from {input_path}...")
     metadata = util.get_metadata_dir(input_path, False)
     metadata.dropna(inplace=True)  # remove problematic files
     columns_names_dict = {
@@ -104,7 +105,6 @@ def get_media_summary(media):
     media_summary["duration"] = media_summary["date_end"] - media_summary["date_ini"]
     return media_summary
 
-
 def plot_sensor_deployment(media):
     """Plots sensor deployment to provide an overview of the sampling effort.
 
@@ -163,15 +163,30 @@ def plot_sensor_deployment(media):
     # Order dataframe to get ordered vertical axis
     media_out = media_out.sort_values(by=y, ascending=False)
 
+    # Create a Normalize object for the count range
+    count_min = media_out["count"].min()
+    count_max = media_out["count"].max()
+
+    # Handle the edge case where all values are equal
+    if count_max == count_min:
+        sizes = np.full(len(media_out), 50)
+        colors = np.full(len(media_out), 1) 
+        norm = None  # not needed in this case
+    else:
+        sizes = (media_out["count"] - count_min + 1) * 3
+        norm = Normalize(vmin=count_min, vmax=count_max)
+        colors = norm(media_out["count"])
+    
     # Draw scatterplot
     fig, ax = plt.subplots(figsize=[width, height])
     scatter = ax.scatter(
         media_out[x],
         media_out[y],
         s=sizes,
-        c=media_out["count"],
+        c=colors,
         cmap=Blues_mod,
-        alpha=0.9,
+        norm=norm if norm else None,
+        alpha=1,
     )
 
     # Format date
@@ -183,24 +198,37 @@ def plot_sensor_deployment(media):
     ax.set_title(
         f"Sensor Deployment: {media.deploymentID.nunique()} sites | {media.shape[0]} files"
     )
-
+    
     # Create legend handles
     legend_values = np.linspace(
         media_out["count"].min(), media_out["count"].max(), num=4
     ).astype(int)
-    legend_handles = [
-        plt.scatter(
-            [],
-            [],
-            s=(val - media_out["count"].min() + 1) * 3,
-            color=Blues_mod(
-                (val - media_out["count"].min())
-                / (media_out["count"].max() - media_out["count"].min())
-            ),
-            label=f"{int(val)}",
-        )
-        for val in legend_values
-    ]
+    if count_max == count_min:
+        # All counts are equal — one legend handle with fixed size and color
+        legend_handles = [
+            plt.scatter(
+                [],
+                [],
+                s=50,  # same as scatter plot
+                color=Blues_mod(1),  # same as scatter plot
+                label=f"{count_min}",
+                alpha=1,
+            )
+        ]
+    else:
+        # Multiple values — create gradient-based legend handles
+        legend_values = np.linspace(count_min, count_max, num=4).astype(int)
+        legend_handles = [
+            plt.scatter(
+                [],
+                [],
+                s=(val - count_min + 1) * 3,
+                color=Blues_mod(norm(val)),
+                label=f"{int(val)}",
+            )
+            for val in legend_values
+        ]
+    
     # Adjust spines
     for spine in ax.spines.values():
         spine.set_linewidth(0.5)  # Adjust the thickness
