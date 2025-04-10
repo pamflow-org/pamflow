@@ -1,15 +1,15 @@
 media@pamDP:
   type:  kedro_pamflow.datasets.pamDP.media.Media
-  filepath: data/output/metadata/media.csv
+  filepath: data/output/data_preparation/media.csv
 
 
 media_summary@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/metadata/audio_metadata_summary.csv
+  filepath: data/output/data_preparation/audio_media_summary.csv
 
 sensor_deployment_data@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/metadata/sensor_deployment_data.csv
+  filepath: data/output/data_preparation/sensor_deployment_data.csv
 
 field_deployments_sheet@pandas:
   type: pandas.ExcelDataset
@@ -23,4 +23,4 @@ field_deployments_sheet@pandas:
 
 deployments@pamDP:
   type: kedro_pamflow.datasets.pamDP.deployments.Deployments
-  filepath: data/output/metadata/deployment.csv
+  filepath: data/output/data_preparation/deployment.csv

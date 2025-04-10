@@ -14,7 +14,7 @@ def create_pipeline(**kwargs):
         [
             node(  # Log
                 func=get_media_file,
-                inputs=["params:DEVICES_ROOT_DIRECTORY"],
+                inputs=["params:audio_root_directory"],
                 outputs="media@pamDP",
                 name="get_media_file_node",
             ),
