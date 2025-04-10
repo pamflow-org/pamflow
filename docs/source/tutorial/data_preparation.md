@@ -52,5 +52,50 @@ audio_root_directory: "/media/pamResearcher/guaviare_project_external_disk/pam_d
 
 ```
 
-Now, for providing pamflow with your custom `field_deployments_sheet` and `target_species`
+Now, for providing pamflow with your custom `field_deployments_sheet` and `target_species` go to the `data/` folder which should look like this
+
+```plaintext
+data/
+├── input/                       # Folder containing all the input data
+│   ├── field_deployments/       # Folder containing field_deployments_sheet 
+│   └── target_species/          # Folder containing target_species
+└── output/                      # Folder containing all outputs
+```
+
+Intuitively enough, copy `field_deployments_sheet` to the path `data\input\field_deployments_sheet\field_deployments_sheet.xlsx` and `target_species` to the path `data\input\target_species\target_species.csv`.
+
+> **⚠️ Warning:** Ensure the `field_deployments_sheet` and `target_species` files are in the correct format.
+> This means to check the files are named properly: `field_deployments_sheet.xlsx` and `target_species.csv`.
+> Also make sure that the columns are properly named.
+
+Now that your data is properly stored, you can use **pamflow** to complete your [asigned tasks](./tutorial.md)
 ## Extract metadata from each audio file
+
+You already got familiar with the provided data and handed it over to *pamflow*. Now you are ready to complete your second task: Extract metadata from each audio file and each passive acoustic sensor.
+
+Now that **pamflow** have access to your `audio_root_directory` we can ask it to read the  content of the folder and produce the `media@pamDP` table. The content of  `media@pamDP` is explained [here](../data_exchange_format.md#getting-started). The way to ask **pamflow** to produce it is by typing
+
+```bash
+kedro run --nodes get_media_file_node
+```
+
+The message
+
+```plaintext
+INFO     Pipeline execution completed successfully.  
+```
+
+will tell you the process is over and that now you are able to access `media@pamDP`. It will be stored in 
+
+```plaintext
+data/
+├── input/                        # Folder containing all the input data
+└── output/                       # Folder containing all outputs
+    └── data_preparation/         # Folder containing outputs of the pipeline data_preparation
+        └── media.csv             # `media@pamDP` file
+```
+ As soon as you open it you will find the following information regarding your audio files
+
+ ![](../../meta/images/media_visualization.png)
+
+ You can check details on the definition of each field [here](../data_exchange_format.md#getting-started).
