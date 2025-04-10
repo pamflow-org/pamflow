@@ -4,7 +4,7 @@ import pandas as pd
 import itertools as it
 import numpy as np
 import logging
-from kedro_pamflow.pipelines.birdnet.utils import (
+from kedro_pamflow.pipelines.species_detection.utils import (
     species_detection_single_file,
     trim_audio,
 )
@@ -32,7 +32,7 @@ def species_detection_parallel(media, deployments, n_jobs):
 
     n_jobs : int
         The number of parallel jobs to use for species detection. Passed as
-        `params:birdnet_parameters.n_jobs`. If set to -1, the number of jobs will
+        `params:species_detection_parameters.n_jobs`. If set to -1, the number of jobs will
         be equal to the number of CPU cores.
 
     Returns
@@ -132,10 +132,10 @@ def filter_observations(
 
     minimum_observations : int
         The minimum number of observations required for each species. Passed as
-        `params:birdnet_parameters.minimum_observations`.
+        `params:species_detection_parameters.minimum_observations`.
 
     segment_size : int
-        The number of segments per species. Passed as `params:birdnet_parameters.segment_size`.
+        The number of segments per species. Passed as `params:species_detection_parameters.segment_size`.
 
     Returns
     -------
@@ -154,7 +154,7 @@ def filter_observations(
     ]
     if observations.shape[0] == 0:
         raise ValueError(f"""None of the {target_species.shape[0]} species in data/input/target_species/target_species.csv are among the detected species in 
-                            data/output/birdnet/unfiltered_observations.csv. \n
+                            data/output/species_detection/unfiltered_observations.csv. \n
                             This caused the observations file to be empty which is incompatible with the rest of the pipeline \n 
                             Include more or different species in data/input/target_species/target_species.csv to fix this issue.
          """)
@@ -163,9 +163,9 @@ def filter_observations(
         observations.groupby("scientificName").transform("size") >= minimum_observations
     ]
     if observations.shape[0] == 0:
-        raise ValueError(f"""None of the {target_species.shape[0]} species in data/input/target_species/target_species.csv have as many observations as requested  in params:birdnet_parameters.minimum_observations ({minimum_observations}). \n 
+        raise ValueError(f"""None of the {target_species.shape[0]} species in data/input/target_species/target_species.csv have as many observations as requested  in params:species_detection_parameters.minimum_observations ({minimum_observations}). \n 
                             This caused the observations file to be empty which is incompatible with the rest of the pipeline \n 
-                            Include more or different species in data/input/target_species/target_species.csv or decrease  params:birdnet_parameters.minimum_observations to fix this issue.
+                            Include more or different species in data/input/target_species/target_species.csv or decrease  params:species_detection_parameters.minimum_observations to fix this issue.
          """)
     return observations
 
@@ -191,7 +191,7 @@ def create_segments(observations, media, segment_size):
 
     segment_size : int
         The number of segments to sample per species. Passed as
-        `params:birdnet_parameters.segment_size`.
+        `params:species_detection_parameters.segment_size`.
 
     Returns
     -------
@@ -240,11 +240,11 @@ def create_segments_folder(segments, n_jobs, segment_size):
 
     n_jobs : int
         The number of parallel jobs to use for creating audio segment files. Passed as
-        `params:birdnet_parameters.n_jobs`.
+        `params:species_detection_parameters.n_jobs`.
 
     segment_size : int
         The number of segments to sample per species. Passed as
-        `params:birdnet_parameters.segment_size`.
+        `params:species_detection_parameters.segment_size`.
 
     Yields
     ------
@@ -280,7 +280,7 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
 
     manual_annotations_file_name : str
         A generic file name template for the manual annotation files. Passed as
-        `params:birdnet_parameters.manual_annotations_file_name`. The file name
+        `params:species_detection_parameters.manual_annotations_file_name`. The file name
         will be customized for each species.
 
     Returns

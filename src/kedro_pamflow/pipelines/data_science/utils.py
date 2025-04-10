@@ -35,7 +35,7 @@ def find_threshold_single_species(params_tuple):
 
 
 def single_spectrogram(species, segments_file_name, plot_params):
-    segments_path = "/home/s0nabio/kedroPamflow/data/output/birdnet/segments"
+    segments_path = "/home/s0nabio/kedroPamflow/data/output/species_detection/segments"
     segments_file_name = os.path.join(
         segments_path, "_".join(species.split()), segments_file_name
     )
