@@ -3,11 +3,14 @@ import concurrent.futures
 import pandas as pd
 import itertools as it
 import numpy as np
+import logging
 from kedro_pamflow.pipelines.birdnet.utils import (
     species_detection_single_file,
     trim_audio,
 )
 
+# Set up logging
+logger = logging.getLogger(__name__)
 
 def species_detection_parallel(media, deployments, n_jobs):
     """Detects species in media files using parallel processing.
@@ -47,8 +50,8 @@ def species_detection_parallel(media, deployments, n_jobs):
     if n_jobs == -1:
         n_jobs = os.cpu_count()
 
-    print(
-        f"Automatic detection of species for {df.shape[0]} files with {n_jobs} threads"
+    logger.info(
+        f"Computing species detection for {df.shape[0]} files using {n_jobs} threads"
     )
     # Use concurrent.futures for parelell execution
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
@@ -250,6 +253,7 @@ def create_segments_folder(segments, n_jobs, segment_size):
         (organized by species) and the values are the corresponding audio data. Stored in
         the catalog as `segments_audio_folder@AudioFolderDataset`.
     """
+    logger.info(f'Writing {segments.shape[0]} audio segments to disk...')
     for index, row in segments.iterrows():
         result = trim_audio(
             row["bboxTime"],
