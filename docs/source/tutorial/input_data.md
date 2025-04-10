@@ -14,7 +14,7 @@ During the collaboration between Humboldt Institute and local communities at Gua
 
 The resulting audio files are stored in a  external disk that's been delivered to you by  field researchers. The audios are organized as shown bellow
 
-![](../../meta/images/devices_root_directory.png)
+![](../../meta/images/audio_root_directory.png)
 
 
 Each of the {{number_of_sensors}} subfolders corresponds to one of the installed sensors and stores the 48 one-minute audio files collected by the sensor. These are the audio files from which **pamflow** will help you extract metadata, detected species and audio segments later on the tutorial. This folder containing all the audio files per sensor is called `audio_root_directory`. 
