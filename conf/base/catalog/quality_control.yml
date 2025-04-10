@@ -1,0 +1,3 @@
+sensor_performance_data@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/quality_control/sensor_performance_data.csv
