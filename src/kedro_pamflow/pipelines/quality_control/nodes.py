@@ -312,6 +312,7 @@ def get_timelapse(
     db_range = plot_params["db_range"]
     width = plot_params["fig_width"]
     height = plot_params["fig_height"]
+    colormap = plot_params["colormap"]
     
     # Mix timelapse
     logger.info(f"Processing audio timelapse for {ngroups} devices:")
@@ -337,7 +338,7 @@ def get_timelapse(
             nperseg=nperseg,
             noverlap=noverlap,  # nperseg*noverlap
         )
-        util.plot_spectrogram(Sxx, ext, db_range, ax=ax, colorbar=False)
+        util.plot_spectrogram(Sxx, ext, db_range, ax=ax, colorbar=False, cmap=colormap)
 
         # Return audio and figure
         file_name = f"{site}_timelapse_{selected_date}"
