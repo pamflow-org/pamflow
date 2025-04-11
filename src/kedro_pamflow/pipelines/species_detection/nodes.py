@@ -106,6 +106,9 @@ def species_detection_parallel(media, deployments, n_jobs):
 
     # observations['mediaID']=observations['filePath'].str.split(os.sep).str[-1]
     observations = observations.drop(columns=["common_name", "label"])
+    logger.info(
+        f"Species detection completed! Detevted {observations.shape[0]} observations."
+    )
     return observations
 
 
