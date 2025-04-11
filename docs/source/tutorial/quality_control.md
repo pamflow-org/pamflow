@@ -43,27 +43,20 @@ Both the resulting audio and spectrograms can be found  in `data\output\quality_
 ```plaintext
 data/
 ├── input/                        
-└── output/                       
-    ├── acoustic_indices/         
-    ├── data_preparation/         
-    ├── figures/                  
-    ├── graphical_soundscape/     
+└── output/                          
     ├── quality_control/          
-    │   ├── sensor_location.png   
-    │   ├── sensor_performance.png # Plot showing sensor performance
-    │   ├── sensor_performance_data.csv # Data file for sensor performance
-    │   └── timelapse/            # Timelapse outputs for quality control
+    │   ├── timelapse/            # Timelapse outputs for quality control
     │       ├── MC-002_timelapse_2024-03-02.png  # Spectrogram for sensor MC-002
     │       ├── MC-002_timelapse_2024-03-02.WAV  # Timelapse audio for sensor MC-002
     │       ├── MC-009_timelapse_2024-03-02.png  # Spectrogram for sensor MC-009
     │       ├── MC-009_timelapse_2024-03-02.WAV  # Timelapse audio for sensor MC-009
     │       ├── MC-013_timelapse_2024-03-02.png  # Spectrogram for sensor MC-013
     │       └── MC-013_timelapse_2024-03-02.WAV  # Timelapse audio for sensor MC-013
-    └── species_detection/               
+    └──               
 ```
 
 And the resulting spectrograms should look like this
- ![](../../meta/images/MC-002_timelapse_2024-03-02.png)
+ ![](../../meta/images/MC-009_timelapse_2024-03-02.png)
 
 
 In the [next](./species_detection.md) section you will learn how to use **pamflow** for detecting target species in your audios.
