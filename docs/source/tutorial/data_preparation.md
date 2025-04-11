@@ -35,16 +35,10 @@ To hand your input files over  to **pamflow** you will only need two out of thes
 
 ```plaintext
 conf/
-├── base/                # Base configuration files
-│   ├── catalog/         # Data catalog configuration
-│   ├── parameters/      # Pipeline parameters
-│   ├── logging.yml      # Logging configuration
-│   ├── credentials.yml  # Credentials for external services
-│   └── parameters.yml   # File to inform pamflow where audio_root_directory is located
-├── local/               # Local environment-specific configuration (ignored by Git)
-├── catalog/             # Additional catalog configurations
-├── parameters/          # Additional parameter configurations
-└── credentials/         # Secure credentials (ignored by Git)
+├── base/               
+│   ├── parameters.yml
+│   └──   
+└── 
 ```
 Now open the file `conf/base/parameters.yml` and write the path to the `audio_root_directory`. The external disk provided to you is called `guaviare_project_external_disk` and inside it there is the folder we get familiar with in [previous section](./input_data.md)  called `pam_data_guaviare`. Thus, the `conf/base/parameters.yml` file should look like this now you have changed it.
 
@@ -95,9 +89,15 @@ data/
     └── data_preparation/         # Folder containing outputs of the pipeline data_preparation
         └── media.csv             # `media@pamDP` file
 ```
- As soon as you open it you will find the following information regarding your audio files
+ As soon as you open it you will find the following information regarding your audio files (along with other columns)
 
- ![](../../meta/images/media_visualization.png)
+| mediaID                     | deploymentID | bboxTime | bboxDuration | Scientific Name         | classificationProbability |
+|-----------------------------|--------------|----------|--------------|-------------------------|---------------------------|
+| MC-013_20240302_063000.WAV  | MC-013       | 15.0     | 18.0         | Cyanocorax violaceus    | 0.192                     |
+| MC-013_20240302_083000.WAV  | MC-013       | 0.0      | 3.0          | Ramphastos tucanus      | 0.666                     |
+| MC-013_20240302_083000.WAV  | MC-013       | 3.0      | 6.0          | Ramphastos tucanus      | 0.615                     |
+| MC-013_20240302_083000.WAV  | MC-013       | 6.0      | 9.0          | Ramphastos tucanus      | 0.871                     |
+| ...                         | ...          | ...      | ...          | ...                     | ...                       |
 
  You can check details on the definition of each field [here](../data_exchange_format.md#getting-started).
 

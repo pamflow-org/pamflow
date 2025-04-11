@@ -26,7 +26,7 @@ On each of the followig sections you will find relevant information on how to us
 
 
 
-![](../../meta/images/soundscape.png)
+![](../../meta/images/pamflow_intro.jpg)
 
 
 
