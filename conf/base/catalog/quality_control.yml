@@ -1,3 +1,28 @@
 sensor_performance_data@pandas:
   type: pandas.CSVDataset
   filepath: data/output/quality_control/sensor_performance_data.csv
+sensor_performance_figure@matplotlib:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/output/quality_control/sensor_performance.png
+  save_args:
+    format: png
+
+sensor_location@matplotlib:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/output/quality_control/sensor_location.png
+  save_args:
+    format: png
+
+timelapse_spectrograms@PartitionedImage:
+  type: partitions.PartitionedDataset
+  path: data/output/quality_control/timelapse/
+  dataset:
+    type: matplotlib.MatplotlibWriter
+  filename_suffix: ".png"
+
+timelapse@PartitionedAudio:
+  type: partitions.PartitionedDataset
+  path: data/output/quality_control/timelapse/
+  dataset:
+    type: kedro_pamflow.datasets.audio_dataset.SoundDataset
+  filename_suffix: ".WAV"
