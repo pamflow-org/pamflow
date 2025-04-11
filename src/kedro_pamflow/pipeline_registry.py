@@ -35,6 +35,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         + graphical_soundscape_pipeline
         + acoustic_indices_pipeline
         + species_detection_pipeline
+        +quality_control_pipeline
     )  # no incluir data_science
 
     return {
