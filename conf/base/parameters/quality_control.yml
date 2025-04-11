@@ -4,11 +4,11 @@
 # (See https://scikit-maad.github.io/generated/maad.sound.spectrogram.html)
 quality_control_plot:
   nperseg: 1024
-  noverlap: 0
+  noverlap: 512
   flims: [0, 24000]
   fig_height: 4
   fig_width: 15
-  db_range: 80
+  db_range: 90
   colormap: 'viridis'  # 'grey', 'viridis', 'plasma', 'inferno', 'cvidis'
 
 # Parameters for obtaining timelapses
