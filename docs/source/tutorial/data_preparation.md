@@ -6,6 +6,7 @@ In this section you will learn how to use pamflow for data preparation and siste
 ## Table of Contents
 1. [Get **pamflow** to read input data](#get-pamflow-to-read-input-data)
 2. [Extract metadata from each audio file](#extract-metadata-from-each-audio-file)
+3. [Extract metadata from each sensor](#extract-metadata-from-each-sensor)
 
 
 ## Get **pamflow** to read input data
@@ -99,3 +100,5 @@ data/
  ![](../../meta/images/media_visualization.png)
 
  You can check details on the definition of each field [here](../data_exchange_format.md#getting-started).
+
+ In the [next](./quality_control.md) section  you will learn how to check for sensor behavior and performance.
