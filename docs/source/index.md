@@ -4,6 +4,6 @@
 :maxdepth: 2
 :caption: Contents:
 
-tutorial/tutorial.md
+tutorial/index.md
 contributing_guidelines.md
 data_exchange_format.md
