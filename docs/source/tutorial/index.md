@@ -17,16 +17,19 @@ First let's  give some context to the data we will be working with and what kind
 
 On each of the followig sections you will find relevant information on how to use **pamflow** to complete all of your tasks. We are assuming you already installed and set up **pamflow** in your computer as explained  [here](../contributing_guidelines.md#getting-started).
 
-## Table of Contents
-1. [Input data](./input_data.md)
-2. [Data Preparation](./data_preparation.md)
-3. [Quality control](./quality_control.md)
-4. [Species Detection, Segments and Data Annotation](./species_detection.md)
-
-
-
-
 ![](../../meta/images/pamflow_intro.jpg)
+
+
+
+```{toctree}
+:maxdepth: 1
+:caption: Tutorial
+input_data.md
+data_preparation.md
+quality_control.md
+species_detection.md
+
+
 
 
 

@@ -1,15 +1,14 @@
-# Data Preparation
+## Data Preparation
 
 In this section you will learn how to use pamflow for data preparation and sistematization. **pamflow** uses the input data described in   [previous section](./input_data.md)  to extract the necessary metadata common to most PAM projects. 
 
-
-## Table of Contents
+***Table of Contents***: 
 1. [Get **pamflow** to read input data](#get-pamflow-to-read-input-data)
 2. [Extract metadata from each audio file](#extract-metadata-from-each-audio-file)
 3. [Extract metadata from each sensor](#extract-metadata-from-each-sensor)
 
 
-## Get **pamflow** to read input data
+### Get **pamflow** to read input data
 
 The first step towards using **pamflow** is to inform where the `audio_root_directory` is located. When you installed the project as explained in the [Getting started page](../contributing_guidelines.md#getting-started),  you ended up with this folder structure
 
@@ -64,7 +63,7 @@ Intuitively enough, copy `field_deployments_sheet` to the path `data\input\field
 > Also make sure that the columns are properly named.
 
 Now that your data is properly stored, you can use **pamflow** to complete your [asigned tasks](./tutorial.md)
-## Extract metadata from each audio file
+### Extract metadata from each audio file
 
 You already got familiar with the provided data and handed it over to *pamflow*. Now you are ready to complete your second task: Extract metadata from each audio file and each passive acoustic sensor.
 
