@@ -13,7 +13,7 @@ In this section you will learn how to use pamflow for data preparation and siste
 The first step towards using **pamflow** is to inform where the `audio_root_directory` is located. When you installed the project as explained in the [Getting started page](../contributing_guidelines.md#getting-started),  you ended up with this folder structure
 
 
-```plaintext
+``` 
 kedroPamflow/
 ├── conf/                # Configuration files (catalog, parameters, etc.)
 ├── data/                # Data directory (raw, intermediate, processed, etc.)
@@ -32,14 +32,14 @@ kedroPamflow/
 
 To hand your input files over  to **pamflow** you will only need two out of these folders, namely, `data/` and `conf/`. Let's focus on `conf/` first for informing **pamflow** specifically about your `audio_root_directory` . Inside `conf/` you will find this folder structure:
 
-```plaintext
+``` 
 conf/
-├── base/               
+├── local/               
 │   ├── parameters.yml
 │   └──   
 └── 
 ```
-Now open the file `conf/base/parameters.yml` and write the path to the `audio_root_directory`. The external disk provided to you is called `guaviare_project_external_disk` and inside it there is the folder we get familiar with in [previous section](./input_data.md)  called `pam_data_guaviare`. Thus, the `conf/base/parameters.yml` file should look like this now you have changed it.
+Now open the file `conf/local/parameters.yml` and write the path to the `audio_root_directory`. The external disk provided to you is called `guaviare_project_external_disk` and inside it there is the folder we get familiar with in [previous section](./input_data.md)  called `pam_data_guaviare`. Thus, the `conf/base/parameters.yml` file should look like this now you have changed it.
 
 ```yaml
 audio_root_directory: "/media/pamResearcher/guaviare_project_external_disk/pam_data_guaviare"
@@ -48,7 +48,7 @@ audio_root_directory: "/media/pamResearcher/guaviare_project_external_disk/pam_d
 
 Now, for providing pamflow with your custom `field_deployments_sheet` and `target_species` go to the `data/` folder which should look like this
 
-```plaintext
+``` 
 data/
 ├── input/                       # Folder containing all the input data
 │   ├── field_deployments/       # Folder containing field_deployments_sheet 
@@ -67,7 +67,7 @@ Now that your data is properly stored, you can use **pamflow** to complete your 
 
 You already got familiar with the provided data and handed it over to *pamflow*. Now you are ready to complete your second task: Extract metadata from each audio file and each passive acoustic sensor.
 
-Now that **pamflow** have access to your `audio_root_directory` we can ask it to read the  content of the folder and produce the `media@pamDP` table. The content of  `media@pamDP` is explained [here](../data_exchange_format.md#getting-started). The way to ask **pamflow** to produce it is by typing
+Now that **pamflow** has access to your `audio_root_directory` we can ask it to read the  content of the folder and produce the `media@pamDP` table. The content of  `media@pamDP` is explained [here](../data_exchange_format.md#getting-started). The way to ask **pamflow** to produce it is by typing
 
 ```bash
 kedro run --nodes get_media_file_node
@@ -75,13 +75,13 @@ kedro run --nodes get_media_file_node
 
 The message
 
-```plaintext
+``` 
 INFO     Pipeline execution completed successfully.  
 ```
 
 will tell you the process is over and that now you are able to access `media@pamDP`. It will be stored in 
 
-```plaintext
+``` 
 data/
 ├── input/                        # Folder containing all the input data
 └── output/                       # Folder containing all outputs

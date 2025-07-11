@@ -10,18 +10,19 @@ In this section you will get familiar with the data collected during the project
 
 ### Audio Root Directory
 
-During the collaboration between Humboldt Institute and local communities at Guaviare, Colombia, {{number_of_sensors}} passive acoustic sensors where installed for {{number_of_days}} days. The sensors where programmed for recording one minute each 30 minutes so for each day and each installed microphone 48 files were collected for a total number of {{ number_of_wav_files}} one minute recordings. 
+During the collaboration between Humboldt Institute and local communities at Guaviare, Colombia, {{number_of_sensors}} passive acoustic sensors where installed for {{number_of_days}} days. The sensors where programmed for recording one minute each 30 minutes so, if everything went well, for each day and each installed microphone 48 files were collected for a total number of {{ number_of_wav_files}} one minute recordings. 
 
 The resulting audio files are stored in a  external disk that's been delivered to you by  field researchers. The audios are organized as shown bellow
 
 ```
 /guaviare_project_external_disk/pam_data_guaviare/
-├── MC-002/    # Folder containing audio files from sensor MC-002
-├── MC-009/    # Folder containing audio files from sensor MC-009
-└── MC-013/    # Folder containing audio files from sensor MC-013
+├── MC-002/
+├── MC-003/  
+├── MC-009/  
+└── MC-013/  
 ```
 
-Each of the {{number_of_sensors}} subfolders corresponds to one of the installed sensors and stores the 48 one-minute audio files collected by the sensor. These are the audio files from which **pamflow** will help you extract metadata, detected species and audio segments later on the tutorial. This folder containing all the audio files per sensor is called `audio_root_directory`. 
+Each of the {{number_of_sensors}} subfolders corresponds to one of the installed sensors and stores the 48 one-minute audio files collected by the sensor. These are the audio files from which **pamflow** will help you extract metadata, detected species and extract audio segments later on the tutorial. This folder containing all the audio files per sensor is called `audio_root_directory`. 
 
 
 ### Field deployment
@@ -42,4 +43,4 @@ Even though there are many bird species at the monitoring site, the community is
 | Ramphastos tucanus       |
 
 
-These are the three only inputs required to run **pamflow**. Now that you understand what they are and their structure let's move on with [next section](./data_preparation.md) to learn how to input them into **pamflow**. 
+These are the three only inputs required to run **pamflow**. Now that you understand what they are and their structure let's move on with [next section](./data_preparation.md) to learn how to get **pamflow** to read them. 
