@@ -1,6 +1,6 @@
 ## Species detection
 
-Here you will learn how use pamflow for automatic species detection and identification in the collected audios, filter for the custom list of target species and store segmetns of the audios having relavant animal vocalizations. 
+Here you will learn how to use pamflow for automatic species detection and identification in the collected audios, filter for the custom list of target species and store segments of the audios having relavant animal vocalizations. 
 
 
 ***Table of Contents***:  
@@ -15,7 +15,7 @@ Passive acoustic monitoring is a useful tool for assessing species presence. Usi
 kedro run --nodes "species_detection_node, filter_observations_node"
 ```
 
-this will output two files: `unfiltered_observations@pamDP` and `observations@pamDP` which follow the [observation data format](../data_exchange_format.md#getting-started) and will be stored in `data/output/species_detection/unfiltered_observations.csv` and `data/output/species_detection/observations.csv respectively`. As suggested by their names, `unfiltered_observations@pamDP` stores every detection regardless of the animal detected whereas `observations@pamDP` acconts for detections exclusively for those species in `target_species`. Each detection in both files indicates in which file is the vocalization and in what time of the audio as well as the scientific name of the animal detected and the confidence of the detection. 
+this will output two files: `unfiltered_observations@pamDP` and `observations@pamDP` which follow the [observation data format](../data_exchange_format.md#getting-started) and will be stored in `data/output/species_detection/unfiltered_observations.csv` and `data/output/species_detection/observations.csv respectively`. As suggested by their names, `unfiltered_observations@pamDP` stores every detection regardless of the animal detected whereas `observations@pamDP` acconts for detections exclusively for those species in `target_species`. Each detection in both files indicates in which file is the vocalization and in what time of the audio as well as the scientific name of the animal detected and the confidence of the detection. You can learn more about this format [here](../data_exchange_format.md#Observations).
 
 | File Name                     | Start Time | End Time | Scientific Name         | ... | Confidence |
 |-------------------------------|------------|----------|-------------------------|-----|------------|
@@ -27,7 +27,7 @@ this will output two files: `unfiltered_observations@pamDP` and `observations@pa
 
 ### Segments
 
-Now that the species of interest to the project have been spotted in the audios, the bird experts need to listen to some of these detections to confirm the detection. Instead of having the experts reading the `observations@pamDP` file to select some of the detections, looking for the original audiofiles and going to the exact second where the detection started, you can use **pamflow** to select and store the segment of each audio where there is a relevant detection. By running
+Now that the species of interest to the project have been spotted in the audios, the bird experts need to listen to some of these detections to confirm them. Instead of having the experts reading the `observations@pamDP` file to select some of the detections, looking for the original audiofiles and going to the exact second where the detection started, you can use **pamflow** to select and store the segment of each audio where there is a relevant detection. By running
 
 ```bash
 kedro run --nodes "create_segments_node, create_segments_folder_node"
@@ -35,17 +35,17 @@ kedro run --nodes "create_segments_node, create_segments_folder_node"
 
 **pamflow** will randomly select a custom number of segments for each species out of the detections in `observations@pamDP`. The info of the selected segments will be stored in `segments@pandas` and the actual segments are now stored in `data/output/species_detection/segments`. Inside this path, one folder for each species in `target_species` will contain the corresponding audios for the segments.
 
-```plaintext
+``` 
 data/
 ├── input/                        
 └── output/                       
     ├──  species_detection/                    
         └── segments/                    
             ├── Amazona_farinosa/        
-            │   ├── 0.142_MC-009_20240302_073000_57.0_60.0.WAV
+            │   ├── 0.142_MC-002_20240302_073000_57.0_60.0.WAV
             │   ├── 0.168_MC-009_20240302_073000_36.0_39.0.WAV
             │   │            ...
-            │   └── 0.762_MC-009_20240302_073000_42.0_45.0.WAV      
+            │   └── 0.762_MC-013_20240302_073000_42.0_45.0.WAV      
             ├── Cyanocorax_violaceus/    
             ├── Pitangus_sulphuratus/    
             └── Ramphastos_tucanus/              
@@ -63,7 +63,7 @@ kedro run --nodes "create_manual_annotation_formats_node"
 This will create one excel file per species in the folder `data/input/manual_annotations`:
 
 
-```plaintext
+``` 
 data/
 ├── input/                        
 │   └── manual_annotations/       # Folder containing manual annotation files for each species
