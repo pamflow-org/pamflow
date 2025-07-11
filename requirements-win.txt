@@ -10,6 +10,6 @@ numpy== 1.24.0
 openpyxl==3.1.5
 pytest==8.3.3
 PyYAML==6.0.2
-scikit-maad==1.4.1
+scikit-maad==1.5.1
 statsmodels==0.14.4
 tensorflow==2.14.0 
