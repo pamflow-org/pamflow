@@ -1,12 +1,14 @@
 unfiltered_observations@pamDP:
   type: kedro_pamflow.datasets.pamDP.observations.Observations
   filepath: data/output/species_detection/unfiltered_observations.csv
+  timezone: Etc/GMT+5
 target_species@pandas:
   type: pandas.CSVDataset
   filepath: data/input/target_species/target_species.csv
 observations@pamDP:
   type: kedro_pamflow.datasets.pamDP.observations.Observations
   filepath: data/output/species_detection/observations.csv
+  timezone: Etc/GMT+5
 segments@pandas:
   type: pandas.CSVDataset
   filepath: data/output/species_detection/segments.csv

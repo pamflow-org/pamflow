@@ -23,10 +23,8 @@ observations_pamdp_columns = [
     "eventID",
     "observationType",
     "scientificName",
-    "bboxTime",
-    "bboxFrequency",
-    "bboxDuration",
-    "bboxBandwidth",
+    "eventStart",
+    "eventEnd",
     "classificationMethod",
     "classifiedBy",
     "classificationTimestamp",
@@ -41,10 +39,8 @@ observations_required_dictionary = {
     "eventID": False,
     "observationType": True,
     "scientificName": False,
-    "bboxTime": True,
-    "bboxFrequency": False,
-    "bboxDuration": False,
-    "bboxBandwidth": False,
+    "eventStart":True,
+    "eventEnd":True,
     "classificationMethod": False,
     "classifiedBy": False,
     "classificationTimestamp": False,
@@ -59,13 +55,11 @@ observations_schema_dictionary = {
     "eventID": str,
     "observationType": str,  # enum: animal, human voice, vehicle, silence, rain, wind, unknown, unclassified
     "scientificName": str,
-    "bboxTime": "float64",
-    "bboxFrequency": "float64",
-    "bboxDuration": "float64",
-    "bboxBandwidth": "float64",
+    "eventStart": "float64",
+    "eventEnd": "float64",
     "classificationMethod": str,  # enum: human, machine
     "classifiedBy": str,
-    "classificationTimestamp": "datetime64[ns]",
+    "classificationTimestamp": str,  # ISO8601 format
     "classificationProbability": "float64",
     "observationComments": str,
 }
@@ -77,10 +71,8 @@ observations_unique_dictionary = {
     "eventID": False,
     "observationType": False,
     "scientificName": False,
-    "bboxTime": False,
-    "bboxFrequency": False,
-    "bboxDuration": False,
-    "bboxBandwidth": False,
+    "eventStart": False,
+    "eventEnd": False,
     "classificationMethod": False,
     "classifiedBy": False,
     "classificationTimestamp": False,
@@ -102,11 +94,14 @@ observations_enum_dictionary = {
     "classificationMethod": ["human", "machine"],
 }
 
-
+observations_date_columns = [
+    "classificationTimestamp",
+]
 class Observations(CSVPamDP):
     def __init__(
         self,
         filepath: str,
+        timezone,
         load_args: Dict[str, Any] | None = None,
         save_args: Dict[str, Any] | None = None,
         version: Version | None = None,
@@ -121,6 +116,8 @@ class Observations(CSVPamDP):
             unique_dictionary=observations_unique_dictionary,
             enum_dictionary=observations_enum_dictionary,
             filepath=filepath,
+            timezone=timezone,
+            date_columns=observations_date_columns,
             load_args=load_args,
             save_args=save_args,
             version=version,

@@ -1,5 +1,5 @@
 from pathlib import PurePosixPath
-from typing import Any, Dict
+from typing import Any, Dict, List
 import fsspec
 from kedro.io.core import get_filepath_str, get_protocol_and_path
 import os
@@ -12,6 +12,7 @@ from kedro.io.core import (
     get_filepath_str,
     get_protocol_and_path,
 )
+import pandas as pd
 
 
 class CSVPamDP(CSVDataset):
@@ -22,6 +23,8 @@ class CSVPamDP(CSVDataset):
         schema_dictionary,
         unique_dictionary,
         filepath: str,
+        timezone: str = "UTC",
+        date_columns: List[str] | None = None,
         enum_dictionary: Dict[str, Any] | None = None,
         load_args: Dict[str, Any] | None = None,
         save_args: Dict[str, Any] | None = None,
@@ -45,6 +48,8 @@ class CSVPamDP(CSVDataset):
         self.schema_dictionary = schema_dictionary
         self.unique_dictionary = unique_dictionary
         self.enum_dictionary = enum_dictionary
+        self.date_columns = date_columns
+        self.timezone = timezone
 
     def _load(self):
         df = super()._load()
@@ -90,6 +95,10 @@ class CSVPamDP(CSVDataset):
                                             The values {set(df[df[col].notna()][col].unique()) - set(enum_values)}
                                             are not allowed for this field. 
                         """)
+        #6. ISO 8601 date format 
+        if self.date_columns is not None:
+            for col in self.date_columns:
+                df[col]=pd.to_datetime(df[col]).apply(lambda x: x.isoformat())
 
         return df[self.pamdp_columns]
 
@@ -126,5 +135,9 @@ class CSVPamDP(CSVDataset):
                 raise ValueError(
                     f"Column {col} has duplicate values but should be unique."
                 )
-        # return df[self.pamdp_columns]
+        # 5. ISO 8601 date format 
+        if self.date_columns is not None:
+            for col in self.date_columns:
+                df[col]=pd.to_datetime(df[col]).apply(lambda x: x.isoformat())
+        
         super()._save(df[self.pamdp_columns])

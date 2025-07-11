@@ -87,8 +87,8 @@ def species_detection_parallel(media, deployments, n_jobs):
     df_out = pd.DataFrame(resultados_por_carpeta_unchained)
     column_names_dict = {
         "scientific_name": "scientificName",
-        "start_time": "bboxTime",
-        "end_time": "bboxDuration",
+        "start_time": "eventStart",
+        "end_time": "eventEnd",
         "confidence": "classificationProbability",
     }
     #'common_name', 'scientific_name', 'start_time', 'end_time', 'confidence', 'label'
@@ -101,13 +101,13 @@ def species_detection_parallel(media, deployments, n_jobs):
 
     observations["eventID"] = None
     observations["observationComments"] = None
-    observations["bboxFrequency"] = None
-    observations["bboxBandwidth"] = None
+    observations["classificationProbability"] = observations["classificationProbability"].astype(float).round(3)
+    
 
     # observations['mediaID']=observations['filePath'].str.split(os.sep).str[-1]
     observations = observations.drop(columns=["common_name", "label"])
     logger.info(
-        f"Species detection completed! Detevted {observations.shape[0]} observations."
+        f"Species detection completed! Detected {observations.shape[0]} observations."
     )
     return observations
 
@@ -219,7 +219,7 @@ def create_segments(observations, media, segment_size):
     )
 
     segments["segmentsFilePath"] = segments.apply(
-        lambda x: f"{x['classificationProbabilityRounded']}_{x['mediaID'].replace('.WAV', '')}_{x['bboxTime']}_{x['bboxDuration']}.WAV",
+        lambda x: f"{x['classificationProbabilityRounded']}_{x['mediaID'].replace('.WAV', '')}_{x['eventStart']}_{x['eventEnd']}.WAV",
         axis=1,
     )
 
@@ -233,7 +233,7 @@ def create_segments_folder(segments, n_jobs, segment_size):
     for each segment. The input corresponds to the catalog entry `segments@pandas`.
     The output is stored in the catalog as `segments_audio_folder@AudioFolderDataset`
     in separated folder for each species. The file naming format is the following:
-    "classificationProbability_mediaID_bboxTime_bboxDuration.WAV"
+    "classificationProbability_mediaID_eventStart_eventEnd.WAV"
 
     Parameters
     ----------
@@ -259,8 +259,8 @@ def create_segments_folder(segments, n_jobs, segment_size):
     logger.info(f'Writing {segments.shape[0]} audio segments to disk...')
     for index, row in segments.iterrows():
         result = trim_audio(
-            row["bboxTime"],
-            row["bboxDuration"],
+            row["eventStart"],
+            row["eventEnd"],
             row["filePath"],
             row["segmentsFilePath"],
         )
@@ -307,8 +307,8 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
             "segmentsFilePath",
             "filePath",
             "classificationProbability",
-            "bboxTime",
-            "bboxDuration",
+            "eventStart",
+            "eventEnd",
             "scientificName",
         ]
     ].copy()
