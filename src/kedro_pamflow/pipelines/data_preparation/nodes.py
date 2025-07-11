@@ -49,10 +49,12 @@ def get_media_file(input_path):
     }
     media = metadata.rename(columns=columns_names_dict)
     media["fileName"] = media["filePath"].str.split(os.sep).str[-1]
-    media["fileMediatype"] = "WAV"
+    media["fileMediatype"] = "audio/WAV"
     media["mediaComments"] = None
     media["favorite"] = None
+    media["filePublic"] = False  
     media["captureMethod"] = "activityDetection"
+    media["fileLength"] = media["fileLength"].astype(float).round(3)
 
     return media.drop(columns=["time", "fsize", "samples"])
 
@@ -78,7 +80,7 @@ def get_media_summary(media):
         statistics. This is stored in the catalog as `media_summary@pandas`.
     """
 
-    media["timestamp"] = pd.to_datetime(media.timestamp, format="%Y-%m-%d %H:%M:%S")
+    media["timestamp"] = pd.to_datetime(media.timestamp)
 
     media["diff"] = media["timestamp"].sort_values().diff()
     media_summary = (

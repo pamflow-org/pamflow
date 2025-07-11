@@ -22,7 +22,7 @@ media_pamdp_columns = [
     "captureMethod",
     "timestamp",
     "filePath",
-    #'filePublic' ,
+    'filePublic' ,
     "fileName",
     "fileMediatype",
     "sampleRate",
@@ -39,7 +39,7 @@ media_required_dictionary = {
     "captureMethod": False,
     "timestamp": True,
     "filePath": True,
-    #'filePublic' :True,
+    'filePublic' :True,
     "fileName": True,
     "fileMediatype": True,
     "sampleRate": True,
@@ -53,17 +53,17 @@ media_required_dictionary = {
 media_schema_dictionary = {
     "mediaID": str,
     "deploymentID": str,
-    "captureMethod": str,  # toca hacer prueba a parte para que verifique que solo están los valores activityDetection, timeLapse
-    "timestamp": "datetime64[ns]",  # toca hacer prueba a parte para que verifique ISO8601
+    "captureMethod": str,  
+    "timestamp": str,  # ISO8601 format
     "filePath": str,
-    #'filePublic' :'bool', #hacer prueba previa de que tenga solo dos valores únicos
+    'filePublic' :'bool', #hacer prueba previa de que tenga solo dos valores únicos
     "fileName": str,
     "fileMediatype": str,
     "sampleRate": "float64",
     "bitDepth": "int64",
     "fileLength": "float64",
     "numChannels": "int64",
-    "favorite": "bool",  # hacer prueba previa de que tenga solo dos valores únicos
+    "favorite": "bool", 
     "mediaComments": "str",
 }
 
@@ -73,7 +73,7 @@ media_unique_dictionary = {
     "captureMethod": False,
     "timestamp": False,
     "filePath": False,
-    #'filePublic' :False,
+    'filePublic' :False,
     "fileName": False,
     "fileMediatype": False,
     "sampleRate": False,
@@ -87,13 +87,18 @@ media_unique_dictionary = {
 media_enum_dictionary = {
     "captureMethod": ["activityDetection", "timeLapse"],
     "favorite": [True, False],
+    'filePublic': [True, False],
 }
+
+media_date_columns= [
+    "timestamp"]
 
 
 class Media(CSVPamDP):
     def __init__(
         self,
         filepath: str,
+        timezone,
         load_args: Dict[str, Any] | None = None,
         save_args: Dict[str, Any] | None = None,
         version: Version | None = None,
@@ -108,6 +113,8 @@ class Media(CSVPamDP):
             unique_dictionary=media_unique_dictionary,
             enum_dictionary=media_enum_dictionary,
             filepath=filepath,
+            timezone=timezone,
+            date_columns=media_date_columns,
             load_args=load_args,
             save_args=save_args,
             version=version,

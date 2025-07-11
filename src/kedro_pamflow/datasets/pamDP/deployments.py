@@ -61,8 +61,8 @@ deployments_schema_dictionary = {
     "latitude": "float64",
     "longitude": "float64",
     "coordinateUncertainty": "float64",
-    "deploymentStart": "datetime64[ns]",
-    "deploymentEnd": "datetime64[ns]",
+    "deploymentStart": str,  # ISO8601 format
+    "deploymentEnd": str,  # ISO8601 format
     "setupBy": str,
     "recorderID": str,
     "recorderModel": str,
@@ -92,11 +92,16 @@ deployments_unique_dictionary = {
     "deploymentComments": False,
 }
 
+deployments_date_columns = [
+    "deploymentStart",
+    "deploymentEnd",
+]
 
 class Deployments(CSVPamDP):
     def __init__(
         self,
         filepath: str,
+        timezone,
         load_args: Dict[str, Any] | None = None,
         save_args: Dict[str, Any] | None = None,
         version: Version | None = None,
@@ -110,6 +115,8 @@ class Deployments(CSVPamDP):
             schema_dictionary=deployments_schema_dictionary,
             unique_dictionary=deployments_unique_dictionary,
             filepath=filepath,
+            timezone=timezone,
+            date_columns=deployments_date_columns,
             load_args=load_args,
             save_args=save_args,
             version=version,
