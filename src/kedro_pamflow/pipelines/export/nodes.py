@@ -17,11 +17,32 @@ import matplotlib.dates as mdates
 import matplotlib as mpl
 from kedro_pamflow.pipelines.export.utils import util_function
 import datetime
+import json
 
 
-def from_deployments_to_DwC(deployments):
-    dwc_eventos = deployments
-    return dwc_eventos
+def from_media_to_media_gbif(media):
+    columns_to_drop=['sampleRate' , 'bitDepth' , 'fileLength' , 'numChannels']
+    media['mediaComments']= json.loads(media[columns_to_drop].T.to_json()).values()
+    media_gbif = media.drop(columns=columns_to_drop)
+    return media_gbif
+    
+def from_deployments_to_deployments_gbif(deployments):
+    deployments_gbif = deployments.rename(
+        columns={
+            "recorderID": "cameraID",
+            "recorderModel": "cameraModel",
+            "recorderHeight": "cameraHeight",
+        }
+        )
+    deployments_gbif['deploymentComments']=deployments_gbif['recorderConfiguration'].apply(
+        lambda row: {'recorderConfiguration':row}
+    )
+    deployments_gbif = deployments_gbif.drop(columns=['recorderConfiguration'])
+    return deployments_gbif
+
+def from_observations_to_observations_gbif(observations):
+    dwc_observations = observations.assign(observationLevel='event')
+    return dwc_observations
 
 
 def from_deployments_to_CSA_eventos(deployments, media, fdm):

@@ -4,3 +4,13 @@ DwC_eventos@pandas:
 CSA_eventos@pandas:
   type: pandas.CSVDataset
   filepath: data/output/export/CSA_eventos.csv
+
+media_gbif@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/export/media_gbif.csv
+observations_gbif@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/export/observations_gbif.csv
+deployments_gbif@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/export/deployments_gbif.csv
