@@ -6,16 +6,7 @@ Utilitary functions to manage, check and preprocess large sampling data assiciat
 """
 
 import os
-import argparse
-import matplotlib.pyplot as plt
-from maad import sound, util
 import pandas as pd
-import numpy as np
-import geopandas as gpd
-import contextily as cx
-import matplotlib.dates as mdates
-import matplotlib as mpl
-from kedro_pamflow.pipelines.export.utils import util_function
 import datetime
 import json
 
@@ -58,15 +49,12 @@ def from_deployments_to_CSA_eventos(deployments, media, fdm):
         "RecordingEquipment",
         "SamplingRate",
         "Resolution",
-        "QualityOfRecording",
         "TypeOfRecording",
         "MicrophoneTrademark",
-        "QualityOfRecording",
         "IsCurrent1",
         "Country",
         "State",
         "County",
-        "LocalityDescription",
         "Habitat",
         "HabitatCharacteristics",
         "MinimumEleveation",
@@ -75,7 +63,6 @@ def from_deployments_to_CSA_eventos(deployments, media, fdm):
         "GeodeticDatum",
         "geolocationDevice",
         "StartDate",
-        "RecordNumber",
         "CollectorFirstName1",
         "CollectorLastName1",
         "PreparedFirstName1",
@@ -97,11 +84,11 @@ def from_deployments_to_CSA_eventos(deployments, media, fdm):
         "NationalParkName",
         "EndDate",
         "EventTime",
-        "Statum",
+        "recorderHeight",
         "CollectingMethod",
         "eventRemarks",
         "PrepType1",
-        "CountAmt1",
+        "numberOfFiles",
         "Description1",
         "OtherCatalogNumber1",
     ]
@@ -123,31 +110,29 @@ def from_deployments_to_CSA_eventos(deployments, media, fdm):
     media_rename_dictionary = {"sampleRate": "SamplingRate", "bitDepth": "Resolution"}
 
     fdm_rename_dictionary = {
-        "Ubicación en el medio de almacenamiento": "FolderLocation",
-        "Indicador de evento": "FieldNumber",
-        "Nombre de la carpeta proyecto (NOMBRE_NÚMEROIAVH)": "projectName",
-        "Equipo de grabación": "RecordingEquipment",
-        "Calidad de grabación": "QualityOfRecording",
-        "Medio de almacenamiento temporal": "MediaType",
-        "Comentario de sonido": "CommentsOfTheRecording",
-        "País": "Country",
-        "Departamento": "State",
-        "Municipio": "County",
-        "Localidad": "VerbatimLocality",
-        "Área Natural Protegida": "NationalParkName",
-        "Características del hábitat": "LocalityDescription",
-        "Hábitat": "Habitat",
-        "Características del hábitat": "HabitatCharacteristics",
-        "Elevación": "MinimumEleveation",
-        "Instrumento de geolocalización": "geolocationDevice",
-        "Fecha inicial": "StartDate",
-        "Fecha final": "EndDate",
-        "Altura de la grabadora respecto al suelo": "Statum",
-        "Configuración de muestreo": "CollectingMethod",
-        "Nombre del instalador": "CollectorFirstName1",
-        "Apellido  del instalador": "CollectorLastName1",
-        "Numero de archivos": "CountAmt1",
-    }
+            "Ubicación en el medio de almacenamiento": "FolderLocation",
+            "Indicador de evento": "FieldNumber",
+            "Nombre de la carpeta proyecto (NOMBRE_NÚMEROIAVH)": "projectName",
+            "Equipo de grabación": "RecordingEquipment",
+            "Medio de almacenamiento temporal": "MediaType",
+            "Comentario de sonido": "CommentsOfTheRecording",
+            "País": "Country",
+            "Departamento": "State",
+            "Municipio": "County",
+            "Localidad": "VerbatimLocality",
+            "Área Natural Protegida": "NationalParkName",
+            "Hábitat": "Habitat",
+            "Características del hábitat": "HabitatCharacteristics",
+            "Elevación": "MinimumEleveation",
+            "Instrumento de geolocalización": "geolocationDevice",
+            "Fecha inicial": "StartDate",
+            "Fecha final": "EndDate",
+            "Altura de la grabadora respecto al suelo": "recorderHeight",
+            "Configuración de muestreo": "CollectingMethod",
+            "Nombre del instalador": "CollectorFirstName1",
+            "Apellido  del instalador": "CollectorLastName1",
+            "Numero de archivos": "numberOfFiles",
+        }
 
     fdm = fdm[
         list(fdm_rename_dictionary.keys()) + ["Hora inicial", "Hora final"]
@@ -163,23 +148,28 @@ def from_deployments_to_CSA_eventos(deployments, media, fdm):
     deployments = deployments[
         list(deployments_rename_dictionary.keys()) + ["deploymentID"]
     ].rename(columns=deployments_rename_dictionary)
-
+    media=media.groupby("deploymentID").agg(SamplingRate=('SamplingRate','first'),
+                                    Resolution=('Resolution','first'),
+                                    fileLength=('fileLength','sum')
+                                    ).reset_index()
+    media['fileLength']=media['fileLength'].astype('int64').apply(lambda x: f"""{x//(60*60):02d}:{(x%(60*60))//60:02d}:{(x%(60*60))%60:02d}""")
+    media=media.rename(columns={'fileLength':"Duration(HH:MM:SS)"  })
     # -------------------
     # -------------------
     # --Join DataFrames--
     # -------------------
     # -------------------
 
-    media["Duration(HH:MM:SS)"] = media.groupby("deploymentID")["fileLength"].transform(
-        "sum"
-    )
+
     deployments = deployments.merge(
-        media.drop(columns=["fileLength"]), on="deploymentID", how="left"
+        media, on="deploymentID", how="left"
     )
     deployments = deployments.rename(columns={"deploymentID": "FieldNumber"})
 
     CSA_eventos = deployments.merge(fdm, on="FieldNumber", how="left")
-
+    CSA_eventos['FolderLocation']=CSA_eventos[['FolderLocation','FieldNumber']].apply(lambda x: os.path.join(x['FolderLocation'],x['FieldNumber']),
+                                                        axis=1
+                                                    )
     columnas_fdm = [
         "Nombre de la carpeta proyecto (NOMBRE_AÑO)",
         "Indicador de evento",
@@ -209,7 +199,6 @@ def from_deployments_to_CSA_eventos(deployments, media, fdm):
         "Publicado",
         "Estrato de Vegetación",
     ]
-
     # Broadcasted columns
     CSA_eventos["exist"] = "Yes"
     CSA_eventos["TypeOfRecording"] = "Monitoreo Acústico Pasivo"
@@ -218,8 +207,7 @@ def from_deployments_to_CSA_eventos(deployments, media, fdm):
     CSA_eventos["Kingdom"] = "Animalia"
     CSA_eventos["PrepType1"] = "Bloque de audios"
     CSA_eventos["IsCurrent1"] = "Yes"
-    CSA_eventos["RecordNumber"] = CSA_eventos["FieldNumber"]
-    CSA_eventos["LocalityDescription"] = CSA_eventos["HabitatCharacteristics"]
+
     # Manually set by curator
     CSA_eventos["CatalogNumber"] = None
     CSA_eventos["OtherCatalogNumber1"] = None
