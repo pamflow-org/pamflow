@@ -4,7 +4,11 @@ DwC_eventos@pandas:
 CSA_eventos@pandas:
   type: pandas.CSVDataset
   filepath: data/output/export/CSA_eventos.csv
-
+  load_args:
+    encoding: utf-8
+  save_args:
+    encoding: utf-8
+    index: False
 media_gbif@pandas:
   type: pandas.CSVDataset
   filepath: data/output/export/media_gbif.csv

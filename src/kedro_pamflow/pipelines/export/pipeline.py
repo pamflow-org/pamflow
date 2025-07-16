@@ -27,15 +27,15 @@ def create_pipeline(**kwargs):
                 outputs="observations_gbif@pandas",
                 name="from_observations_to_observations_gbif_node",
             ),
-            #node(  
-            #    func=from_deployments_to_CSA_eventos,
-            #    inputs=[
-            #        "deployments@pamDP",
-            #        "media@pamDP",
-            #        "field_deployments_sheet@pandas",
-            #    ],
-            #    outputs="CSA_eventos@pandas",
-            #    name="from_deployments_to_CSA_eventos_node",
-            #),
+            node(  
+                func=from_deployments_to_CSA_eventos,
+                inputs=[
+                    "deployments@pamDP",
+                    "media@pamDP",
+                    "field_deployments_sheet@pandas",
+                ],
+                outputs="CSA_eventos@pandas",
+                name="from_deployments_to_CSA_eventos_node",
+            ),
         ]
     )
