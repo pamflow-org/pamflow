@@ -4,7 +4,7 @@ import pandas as pd
 import itertools as it
 import numpy as np
 import logging
-from kedro_pamflow.pipelines.species_detection.utils import (
+from pamflow.pipelines.species_detection.utils import (
     species_detection_single_file,
     trim_audio,
 )

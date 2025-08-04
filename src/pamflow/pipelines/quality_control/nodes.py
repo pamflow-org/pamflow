@@ -16,7 +16,7 @@ import matplotlib.dates as mdates
 import matplotlib as mpl
 from matplotlib.colors import Normalize
 import logging
-from kedro_pamflow.pipelines.quality_control.utils import concat_audio
+from pamflow.pipelines.quality_control.utils import concat_audio
 import datetime
 
 logger = logging.getLogger(__name__)

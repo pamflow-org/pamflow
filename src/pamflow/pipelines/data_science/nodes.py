@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import concurrent.futures
-from kedro_pamflow.pipelines.data_science.utils import (
+from pamflow.pipelines.data_science.utils import (
     find_threshold_single_species,
     spectrograms_single_species,
 )

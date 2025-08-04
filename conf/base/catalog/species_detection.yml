@@ -1,12 +1,12 @@
 unfiltered_observations@pamDP:
-  type: kedro_pamflow.datasets.pamDP.observations.Observations
+  type: pamflow.datasets.pamDP.observations.Observations
   filepath: data/output/species_detection/unfiltered_observations.csv
   timezone: Etc/GMT+5
 target_species@pandas:
   type: pandas.CSVDataset
   filepath: data/input/target_species/target_species.csv
 observations@pamDP:
-  type: kedro_pamflow.datasets.pamDP.observations.Observations
+  type: pamflow.datasets.pamDP.observations.Observations
   filepath: data/output/species_detection/observations.csv
   timezone: Etc/GMT+5
 segments@pandas:
@@ -17,7 +17,7 @@ segments_audio_folder@AudioFolderDataset:
   type: partitions.PartitionedDataset
   path: data/output/species_detection/segments
   dataset:
-    type: kedro_pamflow.datasets.audio_dataset.SoundDataset
+    type: pamflow.datasets.audio_dataset.SoundDataset
   filename_suffix: ".WAV"
 
 manual_annotations@PartitionedDataset:

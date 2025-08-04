@@ -1,5 +1,5 @@
 media@pamDP:
-  type:  kedro_pamflow.datasets.pamDP.media.Media
+  type:  pamflow.datasets.pamDP.media.Media
   filepath: data/output/data_preparation/media.csv
   timezone: Etc/GMT+5
 
@@ -20,6 +20,6 @@ field_deployments_sheet@pandas:
     header: 3
 
 deployments@pamDP:
-  type: kedro_pamflow.datasets.pamDP.deployments.Deployments
+  type: pamflow.datasets.pamDP.deployments.Deployments
   filepath: data/output/data_preparation/deployment.csv
   timezone: Etc/GMT+5

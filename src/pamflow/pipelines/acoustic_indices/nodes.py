@@ -7,7 +7,7 @@ Utilitary functions to manage, check and preprocess large sampling data assiciat
 
 import time
 import logging
-from kedro_pamflow.pipelines.acoustic_indices.utils import compute_indices_parallel
+from pamflow.pipelines.acoustic_indices.utils import compute_indices_parallel
 logger = logging.getLogger(__name__)
 
 def compute_indices(media, acoustic_indices_parameters):

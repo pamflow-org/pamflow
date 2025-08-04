@@ -1,5 +1,5 @@
-"""Kedro PamFlow file for ensuring the package is executable
-as `kedro-pamflow` and `python -m kedro_pamflow`
+"""PamFlow file for ensuring the package is executable
+as `pamflow` and `python -m pamflow`
 """
 
 import importlib
