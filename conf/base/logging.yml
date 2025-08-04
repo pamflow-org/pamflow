@@ -40,7 +40,7 @@ loggers:
   kedro:
     level: INFO
 
-  kedro_pamflow:
+  pamflow:
     level: INFO
 
 root:

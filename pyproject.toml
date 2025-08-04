@@ -1,6 +1,6 @@
 [tool.kedro]
-package_name = "kedro_pamflow"
-project_name = "Kedro PamFlow"
+package_name = "pamflow"
+project_name = "pamFlow"
 kedro_init_version = "0.19.5"
 
 [tool.isort]
@@ -9,7 +9,7 @@ profile = "black"
 [tool.pytest.ini_options]
 addopts = """
 --cov-report term-missing \
---cov src/kedro_pamflow -ra"""
+--cov src/pamflow -ra"""
 
 [tool.coverage.report]
 fail_under = 0
@@ -33,7 +33,7 @@ select = [
 ]
 
 [project]
-name = "kedro_pamflow"
+name = "pamflow"
 version = "0.1.0"  # Add the version here
 description = "Simplified analysis for passive acoustic monitoring"
 authors = [{name = "Juan Sebastian Ulloa", email = "julloa@humboldt.org.co"}, {name = "Nicolas Betancourt", email = "nbetancourtc@humboldt.org.co"}]

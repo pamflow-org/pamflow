@@ -5,15 +5,15 @@ from typing import Dict
 from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
 
-from kedro_pamflow.pipelines.data_preparation import pipeline as data_preparation
-from kedro_pamflow.pipelines.quality_control import pipeline as quality_control
-from kedro_pamflow.pipelines.graphical_soundscape import (
+from pamflow.pipelines.data_preparation import pipeline as data_preparation
+from pamflow.pipelines.quality_control import pipeline as quality_control
+from pamflow.pipelines.graphical_soundscape import (
     pipeline as graphical_soundscape,
 )
-from kedro_pamflow.pipelines.acoustic_indices import pipeline as acoustic_indices
-from kedro_pamflow.pipelines.species_detection import pipeline as species_detection
-from kedro_pamflow.pipelines.data_science import pipeline as data_science
-from kedro_pamflow.pipelines.export import pipeline as export
+from pamflow.pipelines.acoustic_indices import pipeline as acoustic_indices
+from pamflow.pipelines.species_detection import pipeline as species_detection
+from pamflow.pipelines.data_science import pipeline as data_science
+from pamflow.pipelines.export import pipeline as export
 
 
 def register_pipelines() -> Dict[str, Pipeline]:
