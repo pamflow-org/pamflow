@@ -8,7 +8,7 @@ import os
 from kedro.io import AbstractDataset
 from kedro_datasets.partitions import PartitionedDataset
 from kedro.io.core import get_filepath_str, get_protocol_and_path
-from kedro_pamflow.datasets.audio_dataset import SoundDataset
+from pamflow.datasets.audio_dataset import SoundDataset
 
 
 class AudioFolderDataset(AbstractDataset[Dict[str, Any], Dict[str, Any]]):
