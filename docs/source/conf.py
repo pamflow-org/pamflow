@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-# kedro_pamflow documentation build
+# pamflow documentation build
 # configuration file, created by sphinx-quickstart.
 #
 # This file is execfile()d with the current directory set to its
@@ -23,7 +23,7 @@ import sys
 
 from kedro.framework.cli.utils import find_stylesheets
 sys.path.insert(0, os.path.abspath("../src"))
-from kedro_pamflow import __version__ as release
+from pamflow import __version__ as release
 
 # -- Project information -----------------------------------------------------
 
@@ -135,7 +135,7 @@ html_show_sourcelink = False
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "kedro_pamflowdoc"
+htmlhelp_basename = "pamflowdoc"
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -163,8 +163,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "kedro_pamflow.tex",
-        "kedro_pamflow Documentation",
+        "pamflow.tex",
+        "pamflow Documentation",
         "Kedro",
         "manual",
     )
@@ -177,8 +177,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "kedro_pamflow",
-        "kedro_pamflow Documentation",
+        "pamflow",
+        "pamflow Documentation",
         [author],
         1,
     )
@@ -192,11 +192,11 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "kedro_pamflow",
-        "kedro_pamflow Documentation",
+        "pamflow",
+        "pamflow Documentation",
         author,
-        "kedro_pamflow",
-        "Project kedro_pamflow codebase.",
+        "pamflow",
+        "Project pamflow codebase.",
         "Data-Science",
     )
 ]
