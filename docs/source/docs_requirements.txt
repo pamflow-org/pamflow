@@ -3,3 +3,4 @@ sphinx-autodoc-typehints
 nbsphinx
 myst-parser
 sphinx-copybutton
+kedro==0.19.8
