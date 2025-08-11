@@ -4,3 +4,4 @@ nbsphinx
 myst-parser
 sphinx-copybutton
 kedro==0.19.8
+sphinx_rtd_theme
