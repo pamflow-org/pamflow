@@ -1,13 +1,13 @@
 # **pamflow** Tutorial
 
-Welcome to the **pamflow**'s tutorial! This guide will walk you through the steps to set up, run, and understand the outputs of this tool.
+Welcome to the **pamflow**'s tutorial! This guide will walk you through the steps to step for  running **pamflow** and understanding its outputs.
 
-First let's  give some context to the data we will be working with and what kind of tasks are required uisng this data.
+For this, we will use an immersive example with real acoustic data.
 
 ***Context***: 
 *The National biodiversity institute in Colombia, the Humboldt Institute, collaborated with communities at Guaviare, Colombia to perform a communitary project on the local bird fauna. You are part of the project and your task is to process the passively collected acoustic data, extract insights and produce relevant metrics and graphics for a report on the project. You will use **pamflow** to help you.*
 
-***Yor tasks***: 
+***Your tasks***: 
 1. Get familiar with the collected data.
 2. Extract metadata from each audio file and each passive acoustic sensor.
 3. Check that all sensors behaved as expected.
@@ -25,6 +25,7 @@ On each of the followig sections you will find relevant information on how to us
 :maxdepth: 1
 :caption: Tutorial
 input_data.md
+setup.md
 data_preparation.md
 quality_control.md
 species_detection.md
