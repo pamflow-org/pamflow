@@ -1,33 +1,39 @@
 ## Input data: minimum required information for **pamflow**
 
-In this section you will get familiar with the data collected during the project. In general, these are the input files that **pamflow** requires to work and are common among many PAM projects.
+Now that your computer has the required programms for running **pamflow** you can focus on The Guaviare Project. In this section you will get familiar with the data collected during the project. These input files are not only part of The Guaviare Project but are also the data that **pamflow** requires in any other passive acoustic monitoring project.
+
 
 ***Table of Contents***: 
-1. [Audio Root Directory](#devices-root-directory)
+1. [Audio Root Directory](#audio-root-directory)
 2. [Field deployment](#field-deployment)
 3. [Target species](#target-species)
 
 
 ### Audio Root Directory
 
-During the collaboration between Humboldt Institute and local communities at Guaviare, Colombia, {{number_of_sensors}} passive acoustic sensors where installed for {{number_of_days}} days. The sensors where programmed for recording one minute each 30 minutes so, if everything went well, for each day and each installed microphone 48 files were collected for a total number of {{ number_of_wav_files}} one minute recordings. 
+During The Guaviare Project {{number_of_sensors}} passive acoustic sensors where installed for {{number_of_days}} days. The sensors where programmed for recording one minute every 30 minutes so, if everything went well, for each day and each installed sensor 48 files were collected for a total number of {{ number_of_wav_files}} one-minute recordings. 
 
-The resulting audio files are stored in a  external disk that's been delivered to you by  field researchers. The audios are organized as shown bellow
+The resulting audio files are stored in an  external disk that's been delivered to you by  field researchers. The audios are organized as shown bellow
 
-```
 /guaviare_project_external_disk/pam_data_guaviare/
 ├── MC-002/
-├── MC-003/  
+│   ├── MC-002_20240229_000000.WAV
+│   ├── MC-002_20240229_003000.WAV
+│   ├── MC-002_20240229_010000.WAV
+│   ├── MC-002_20240229_013000.WAV
+│   └── MC-002_20240229_020000.WAV
 ├── MC-009/  
 └── MC-013/  
-```
 
-Each of the {{number_of_sensors}} subfolders corresponds to one of the installed sensors and stores the 48 one-minute audio files collected by the sensor. These are the audio files from which **pamflow** will help you extract metadata, detected species and extract audio segments later on the tutorial. This folder containing all the audio files per sensor is called `audio_root_directory`. 
+Each of the {{number_of_sensors}} subfolders corresponds to one of the installed sensors and stores the {{ number_of_wav_files_per_sensor}} one-minute audio files collected by the sensor. These are the audio files from which **pamflow** will help you extract metadata, detected species and extract audio segments later on the tutorial. This folder containing all the audio files per sensor is called `audio_root_directory`. 
 
-
+> **⚠️ Warning:** Ensure the file names of the audio files meets the format above.  When working with your
+> own audio data, the audio files need to be named following the nomenclature: 
+> {Sensor name}_{date}_{time}.WAV
+> **pamflow** will ignore files named after a different structure.
 ### Field deployment
 
-Field researchers installed the acoustic sensors and took notes on everything important regarding the installation: coordinates, dates, time, sensor characteristics and  ecological traits of the deployment site. 
+Field researchers installed the acoustic sensors and took notes on everything important regarding the installation: coordinates of the site, date and time of installation,  sensor characteristics and  ecological traits of the deployment site. 
 
 These notes were handed out to you along with the recordings in a format  called `field_deployments_sheet`. This is a `.xlsx` file with one row per installed sensor having all the previously mentioned data regarding the installation of the sensor. 
 

@@ -1,6 +1,6 @@
 ## Species detection
 
-Here you will learn how to use pamflow for automatic species detection and identification in the collected audios, filter for the custom list of target species and store segments of the audios having relavant animal vocalizations. 
+You are almost completing your assigned tasks for The Guaviare Project. In ths new section you will learn how **pamflow** can be a great help for the remaining duites. Specifically, you will learn how to use **pamflow** for automatic species detection and identification in the collected audios, filter for the custom list of target species and store segments of the audios having relavant animal vocalizations. 
 
 
 ***Table of Contents***:  
@@ -9,21 +9,21 @@ Here you will learn how to use pamflow for automatic species detection and ident
 3. [Data annotation](#data-annotation)
 
 ### Species detection
-Passive acoustic monitoring is a useful tool for assessing species presence. Using **pamflow** you can automatically process all your audiofiles in `audio_root_directory` looking for animal vocalizations. Additionally, **pamflow** will filter for the animals specified in `target_species`.  To get **pamflow** to analyze the audios in search for animal vocalizations run 
+Passive acoustic monitoring is a useful tool for assessing species presence. Using **pamflow** you can automatically process all your audiofiles in `audio_root_directory` looking for bird vocalizations. Additionally, **pamflow** will filter for the animals specified in `target_species`.  To get **pamflow** to analyze the audios in search for animal vocalizations run 
 
 ```bash
 kedro run --nodes "species_detection_node, filter_observations_node"
 ```
 
-this will output two files: `unfiltered_observations@pamDP` and `observations@pamDP` which follow the [observation data format](../data_exchange_format.md#getting-started) and will be stored in `data/output/species_detection/unfiltered_observations.csv` and `data/output/species_detection/observations.csv respectively`. As suggested by their names, `unfiltered_observations@pamDP` stores every detection regardless of the animal detected whereas `observations@pamDP` acconts for detections exclusively for those species in `target_species`. Each detection in both files indicates in which file is the vocalization and in what time of the audio as well as the scientific name of the animal detected and the confidence of the detection. You can learn more about this format [here](../data_exchange_format.md#Observations).
+this will output two files: `unfiltered_observations@pamDP` and `observations@pamDP` which follow the [observation data format](../data_exchange_format.md#getting-started) and will be stored in `data/output/species_detection/unfiltered_observations.csv` and `data/output/species_detection/observations.csv respectively`. As suggested by their names, `unfiltered_observations@pamDP` stores every detection regardless of the animal detected whereas `observations@pamDP` acconts for detections exclusively for those species in `target_species`. Each detection specifies the file and timestamp of the vocalization, along with the detected animal’s scientific name and the confidence level of the identification (classification probability). You can learn the specifics  of the `observations@pamDP` format bellow (column content, data constraints, schema...) on the [Data Exchange Formats ](../data_exchange_format.md#Observations)  section.
 
-| File Name                     | Start Time | End Time | Scientific Name         | ... | Confidence |
-|-------------------------------|------------|----------|-------------------------|-----|------------|
-| MC-002_20240302_073000.wav    | 00:36.0    | 00:39.0  | Amazona farinosa        | ... | 0.168      |
-| MC-002_20240302_073000.wav    | 00:42.0    | 00:45.0  | Cyanocorax violaceus    | ... | 0.285      |
-| MC-009_20240302_073000.wav    | 00:57.0    | 01:00.0  | Pitangus sulphuratus    | ... | 0.142      |
-| MC-013_20240302_073000.wav    | 00:36.0    | 00:39.0  | Ramphastos tucanus      | ... | 0.762      |
-| ...                           | ...        | ...      | ...                     | ... | ...        |
+| File Name                     | Start Time | End Time | Scientific Name         | ... | classificationProbability |
+|-------------------------------|------------|----------|-------------------------|-----|---------------------------|
+| MC-002_20240302_073000.wav    | 00:36.0    | 00:39.0  | Amazona farinosa        | ... | 0.168                     |
+| MC-002_20240302_073000.wav    | 00:42.0    | 00:45.0  | Cyanocorax violaceus    | ... | 0.285                     |
+| MC-009_20240302_073000.wav    | 00:57.0    | 01:00.0  | Pitangus sulphuratus    | ... | 0.142                     |
+| MC-013_20240302_073000.wav    | 00:36.0    | 00:39.0  | Ramphastos tucanus      | ... | 0.762                     |
+| ...                           | ...        | ...      | ...                     | ... | ...                       |
 
 ### Segments
 
@@ -50,11 +50,11 @@ data/
             ├── Pitangus_sulphuratus/    
             └── Ramphastos_tucanus/              
 ```
-Each file name follows the structure `<confidence>_<original file name>_<start time>_<end time>.WAV`. 
+Each file name follows the structure `<classification probability>_<original file name>_<start time>_<end time>.WAV`. 
 
 ### Data annotation 
 
-Now the segments are ready for the experts to listen and you want to make them the task of annotation easier for them. Using **panflow** you can automatically generate excel files referencing each of the segments. As soon as an expert determines if a particular detection is accurate or not, she only needs to type true or false on the format. For generating these formats run 
+The segments are now ready for the experts to listen and confirm the detections. In order to make verification easier for them, **pamflow** can generate excel files referencing each of the segments. As soon as an expert determines if a particular detection is accurate or not, she only needs to type true or false on the format.  Additionally, if an observation is not accurate, experts can type the actual species in the segment (if known) on the column `detectedSpecies`. For generating these formats run 
 
 ```bash
 kedro run --nodes "create_manual_annotation_formats_node"
@@ -73,3 +73,10 @@ data/
 │       └── Ramphastos_tucanus_manual_annotations.xlsx
 └── output/             
 ```
+
+| segmentsFilePath                                      | filePath                                    | classificationProbability | eventStart | eventEnd | scientificName     | positive | detectedSpecies |
+|-------------------------------------------------------|---------------------------------------------|---------------------------|------------|----------|-------------------|----------|----------------|
+| 0.841_MC-009_20240301_073000_36.0_39.0.WAV            | .../MC-009/MC-009_20240301_073000.WAV       | 0.841                     | 36         | 39       | Amazona farinosa  |          |                |
+| 0.684_MC-009_20240301_073000_0.0_3.0.WAV              | .../MC-009/MC-009_20240301_073000.WAV       | 0.684                     | 0          | 3        | Amazona farinosa  |          |                |
+| 0.659_MC-009_20240301_073000_33.0_36.0.WAV            | .../MC-009/MC-009_20240301_073000.WAV       | 0.659                     | 33         | 36       | Amazona farinosa  |          |                |
+| 0.653_MC-009_20240301_073000_30.0_33.0.WAV            | .../MC-009/MC-009_20240301_073000.WAV       | 0.653                     | 30         | 33       | Amazona farinosa  |          |                |
