@@ -1,12 +1,11 @@
 ## Data Preparation
-Sofar, out of your assigend tasks for The Guaviare Project, you have only got familiar with the data collected by your fellow researchers. 
-In this section you will learn how to get pamflow to read this data in order to standardize them and extract mor information.
+So far, out of your assigend tasks for The Guaviare Project, you have only got familiar with the data collected by your fellow researchers. 
+In this section you will learn how to get pamflow to read this data in order to standardize them and extract more information.
 
 
 ***Table of Contents***: 
 1. [Get **pamflow** to read input data](#get-pamflow-to-read-input-data)
-2. [Extract metadata from each audio file](#extract-metadata-from-each-audio-file)
-3. [Extract metadata from each sensor](#extract-metadata-from-each-sensor)
+2. [Standardized metadata from each audio and each sensor](#standardized-metadata-from-each-audio-and-each-sensor)
 
 
 ### Get **pamflow** to read input data
@@ -61,17 +60,23 @@ Intuitively enough, copy `field_deployments_sheet` to the path `data\input\field
 
 > **⚠️ Warning:** Ensure the `field_deployments_sheet` and `target_species` files are in the correct format.
 > This means to check the files are named properly: `field_deployments_sheet.xlsx` and `target_species.csv`.
-> Also make sure that the columns are properly named.
+> Also make sure that the columns are properly named and the info in  `field_deployments_sheet.xlsx` is stored in a sheed called `Plantilla Usuario`.
 
 Now that your data is properly stored, you can use **pamflow** to complete your [asigned tasks](./tutorial.md)
-### Extract metadata from each audio file
 
-You already got familiar with the provided data and handed it over to *pamflow*. Now you are ready to complete your second task: Extract metadata from each audio file and each passive acoustic sensor.
 
-Now that **pamflow** has access to your `audio_root_directory` we can ask it to read the  content of the folder and produce the `media@pamDP` table. The content of  `media@pamDP` is explained [here](../data_exchange_format.md#getting-started). The way to ask **pamflow** to produce it is by typing
+### Standardized metadata from each audio and each sensor
+
+You already got familiar with the provided data and handed it over to **pamflow**. Now you are ready to complete your second task: Extract metadata from each audio file and each passive acoustic sensor.
+
+Now that **pamflow** has access to the `audio_root_directory` and `field_deployments_sheet` we can ask it to generate the `media@pamDP` and `deployments@pamDP` formats. The former is a `.csv` containing one row per each  `.WAV` file in the `audio_root_directory` and displaying important information related to each audio. The latter, contains information about each deployed sensor. The content, schema and structure of these datasets is further explained in the [Data Exchange Formats ](../data_exchange_format.md#Observations)  section. These formats are the baseline for the rest of the processess carried out through **pamflow**.
+
+
+
+ For generating them,  run 
 
 ```bash
-kedro run --nodes get_media_file_node
+kedro run --pipeline data_preparation
 ```
 
 The message
@@ -80,7 +85,7 @@ The message
 INFO     Pipeline execution completed successfully.  
 ```
 
-will tell you the process is over and that now you are able to access `media@pamDP`. It will be stored in 
+will tell you the process is over and that now you are able to access `media@pamDP` and `deployments@pamDP`. It will be stored in 
 
 ``` 
 data/
@@ -88,17 +93,23 @@ data/
 └── output/                       # Folder containing all outputs
     └── data_preparation/         # Folder containing outputs of the pipeline data_preparation
         └── media.csv             # `media@pamDP` file
+        └── deployments.csv       # `deployments@pamDP` file
 ```
- As soon as you open it you will find the following information regarding your audio files (along with other columns)
+ As soon as you open `media@pamDP` you will find the following information regarding your audio files (along with other columns)
 
-| mediaID                     | deploymentID | bboxTime | bboxDuration | Scientific Name         | classificationProbability |
-|-----------------------------|--------------|----------|--------------|-------------------------|---------------------------|
-| MC-013_20240302_063000.WAV  | MC-013       | 15.0     | 18.0         | Cyanocorax violaceus    | 0.192                     |
-| MC-013_20240302_083000.WAV  | MC-013       | 0.0      | 3.0          | Ramphastos tucanus      | 0.666                     |
-| MC-013_20240302_083000.WAV  | MC-013       | 3.0      | 6.0          | Ramphastos tucanus      | 0.615                     |
-| MC-013_20240302_083000.WAV  | MC-013       | 6.0      | 9.0          | Ramphastos tucanus      | 0.871                     |
-| ...                         | ...          | ...      | ...          | ...                     | ...                       |
+| mediaID                     | deploymentID | timestamp           | filePath                                | sampleRate | ... | bitDepth | fileLength |
+|-----------------------------|--------------|---------------------|-----------------------------------------|------------|-----|----------|------------|
+| MC-013_20240302_070000.WAV  | MC-013       | 2024-03-02T07:00:00 | .../MC-013/MC-013_20240302_070000.WAV   | 48000      | ... | 16       | 60.0       |
+| MC-013_20240229_063000.WAV  | MC-013       | 2024-02-29T06:30:00 | .../MC-013/MC-013_20240229_063000.WAV   | 48000      | ... | 16       | 60.0       |
+| MC-013_20240304_053000.WAV  | MC-013       | 2024-03-04T05:30:00 | .../MC-013/MC-013_20240304_053000.WAV   | 48000      | ... | 16       | 60.0       |
 
- You can check details on the definition of each field [here](../data_exchange_format.md#getting-started).
+As for `deployments@pamDP` you'll find a file that looks like this 
+
+| deploymentID | locationID   | latitude  | longitude   | deploymentStart      | deploymentEnd        | ... | recorderModel       | habitat       |
+|--------------|--------------|-----------|-------------|----------------------|----------------------|-----|---------------------|---------------|
+| MC-002       | EL REBALSE   | 2.117463  | -72.779575  | 2024-02-15T15:04:45  | 2024-03-06T15:04:45  | ... | AudioMoth v 1.2.0   | Pastos limpios|
+| MC-009       | SAN MIGUEL   | 2.059644  | -72.920236  | 2024-02-15T15:32:00  | 2024-03-06T15:32:00  | ... | AudioMoth v 1.2.0   | Pastos limpios|
+| MC-013       | LA TORTUGA   | 2.183335  | -72.987016  | 2024-02-16T20:48:06  | 2024-03-07T20:48:06  | ... | AudioMoth v 1.2.0   | Pastos limpios|
+
 
  In the [next](./quality_control.md) section  you will learn how to check for sensor behavior and performance.
