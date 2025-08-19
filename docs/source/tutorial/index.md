@@ -4,8 +4,8 @@ Welcome to the **pamflow**'s tutorial! This guide will walk you through the step
 
 For this, we will use an immersive example with real acoustic data.
 
-***Context***: 
-*The National biodiversity institute in Colombia, the Humboldt Institute, collaborated with communities at Guaviare, Colombia to perform a communitary project on the local bird fauna. You are part of the project and your task is to process the passively collected acoustic data, extract insights and produce relevant metrics and graphics for a report on the project. You will use **pamflow** to help you.*
+***Context: The Guaviare Project***: 
+*The National biodiversity institute in Colombia, the Humboldt Institute, collaborated with communities at Guaviare, Colombia to perform a communitary project on the local bird fauna. You are part of the project (The Guaviare Project) and your task is to process the passively collected acoustic data, extract insights and produce relevant metrics and graphics for a report on the project. You will use **pamflow** to help you.*
 
 ***Your tasks***: 
 1. Get familiar with the collected data.

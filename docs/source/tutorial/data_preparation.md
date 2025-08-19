@@ -1,6 +1,7 @@
 ## Data Preparation
+Sofar, out of your assigend tasks for The Guaviare Project, you have only got familiar with the data collected by your fellow researchers. 
+In this section you will learn how to get pamflow to read this data in order to standardize them and extract mor information.
 
-In this section you will learn how to use pamflow for data preparation and sistematization. **pamflow** uses the input data described in   [previous section](./input_data.md)  to extract the necessary metadata common to most PAM projects. 
 
 ***Table of Contents***: 
 1. [Get **pamflow** to read input data](#get-pamflow-to-read-input-data)
