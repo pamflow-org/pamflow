@@ -59,24 +59,29 @@ kedro run
 ```
 However, for the first execution, it is recommended to run one pipeline at a time for better control.
 
-#### 2.1. Preprocessing
+#### 2.1. Prepare data
 ```bash
-kedro run --pipeline=preprocessing
+kedro run --pipeline=prepare_data
 ```
 
-#### 2.2. Compute Acoustic Indices
+#### 2.2. Revise quality of deployments and recordings
+```bash
+kedro run --pipeline=quality_control
+```
+
+#### 2.3. Detect species with AI
+```bash
+kedro run --pipeline=species_detection
+```
+
+#### 2.4. Compute Acoustic Indices
 ```bash
 kedro run --pipeline=acoustic_indices
 ```
 
-#### 2.3. Generate Graphical Soundscapes
+#### 2.5. Generate Graphical Soundscapes
 ```bash
 kedro run --pipeline=graphical_soundscape
-```
-
-#### 2.4. Perform BirdNet Detections
-```bash
-kedro run --pipeline=birdnet
 ```
 
 ## License
