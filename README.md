@@ -7,7 +7,7 @@ This repository provides a workflow for analyzing passive acoustic monitoring (P
 ### 1. Download or Clone This Repository
 
 ```bash
-git clone https://github.com/pamflow/pamflow
+git clone https://github.com/pamflow/pamflow.git
 cd pamflow
 ```
 
