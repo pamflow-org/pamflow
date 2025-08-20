@@ -1,4 +1,4 @@
-# kedro-pamflow
+# pamflow: simplified analisys for passive acoustic monitoring
 
 This repository provides a workflow for analyzing passive acoustic monitoring (PAM) data using Python. It is designed to offer an easy-to-use and reproducible framework for researchers, conservation biologists, citizen scientists, and anyone interested in ecoacoustics and soundscape ecology.
 
@@ -7,8 +7,8 @@ This repository provides a workflow for analyzing passive acoustic monitoring (P
 ### 1. Download or Clone This Repository
 
 ```bash
-git clone https://github.com/nicolasbetancourtc/kedroPamflow
-cd kedroPamflow
+git clone https://github.com/pamflow/pamflow
+cd pamflow
 ```
 
 ### 2. Set Up a Working Environment
