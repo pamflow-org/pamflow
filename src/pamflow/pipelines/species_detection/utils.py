@@ -39,7 +39,7 @@ def species_detection_single_file(wav_file_path, lat, lon, mediaID, deploymentID
         observation. Each observation includes details such as scientific name,
         start time, end time, confidence score, and other relevant metadata.
     """
-    with open('/dev/null', 'w') as fnull, redirect_stdout(fnull):  # Suppress print messages
+    with open(os.devnull, 'w') as fnull, redirect_stdout(fnull):  # Suppress print messages
         # Load and initialize the BirdNET-Analyzer models.
         analyzer = Analyzer()
         recording = Recording(
