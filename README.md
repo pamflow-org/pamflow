@@ -1,4 +1,4 @@
-# kedro-pamflow
+# pamflow: simplified analysis for passive acoustic monitoring
 
 This repository provides a workflow for analyzing passive acoustic monitoring (PAM) data using Python. It is designed to offer an easy-to-use and reproducible framework for researchers, conservation biologists, citizen scientists, and anyone interested in ecoacoustics and soundscape ecology.
 
@@ -7,8 +7,8 @@ This repository provides a workflow for analyzing passive acoustic monitoring (P
 ### 1. Download or Clone This Repository
 
 ```bash
-git clone https://github.com/nicolasbetancourtc/kedroPamflow
-cd kedroPamflow
+git clone https://github.com/pamflow/pamflow.git
+cd pamflow
 ```
 
 ### 2. Set Up a Working Environment
@@ -59,24 +59,29 @@ kedro run
 ```
 However, for the first execution, it is recommended to run one pipeline at a time for better control.
 
-#### 2.1. Preprocessing
+#### 2.1. Prepare data
 ```bash
-kedro run --pipeline=preprocessing
+kedro run --pipeline=prepare_data
 ```
 
-#### 2.2. Compute Acoustic Indices
+#### 2.2. Revise quality of deployments and recordings
+```bash
+kedro run --pipeline=quality_control
+```
+
+#### 2.3. Detect species with AI
+```bash
+kedro run --pipeline=species_detection
+```
+
+#### 2.4. Compute Acoustic Indices
 ```bash
 kedro run --pipeline=acoustic_indices
 ```
 
-#### 2.3. Generate Graphical Soundscapes
+#### 2.5. Generate Graphical Soundscapes
 ```bash
 kedro run --pipeline=graphical_soundscape
-```
-
-#### 2.4. Perform BirdNet Detections
-```bash
-kedro run --pipeline=birdnet
 ```
 
 ## License
