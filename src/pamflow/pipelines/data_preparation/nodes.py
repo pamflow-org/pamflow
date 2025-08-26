@@ -12,7 +12,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def get_media_file(input_path):
+def get_media_file(input_pat, field_deployments_sheet):
     """Retrieves and processes metadata from media files in the given directory.
 
     Parameters
@@ -21,6 +21,9 @@ def get_media_file(input_path):
         Path to the directory containing a folder for each sensor
         and the corresponding wav files. Specified in parameters.yml
         as DEVICES_ROOT_DIRECTORY.
+    field_deployments_sheet : pandas.DataFrame
+        A DataFrame containing user-provided deployments information. Loaded from the catalog
+        entry `field_deployments_sheet@pandas`.
 
 
     Returns
@@ -35,6 +38,24 @@ def get_media_file(input_path):
     #                recursive=True
     #                )
     logger.info(f"Preparing data from {input_path}...")
+    # checking consistency between sensors found on audio root directory and field deployments sheet
+    sensors_in_audio_root_directory=os.listdir(input_path)
+    sensors_in_field_deployments=field_deployments_sheet['Indicador de evento'].unique().tolist()
+    if set(sensors_in_audio_root_directory)!=set(sensors_in_field_deployments):
+    missing_in_field_deployments = set(sensors_in_audio_root_directory) - set(sensors_in_field_deployments)
+    if missing_in_field_deployments:
+        logger.warning(
+            f"Deployments {', '.join(missing_in_field_deployments)}, "
+            "found on Audio Root Directory, won't be fully processed as they are not listed on Field Deployments Sheet."
+        )
+
+    missing_in_audio = set(sensors_in_field_deployments) - set(sensors_in_audio_root_directory)
+    if missing_in_audio:
+        logger.warning(
+            f"Deployments {', '.join(missing_in_audio)}, "
+            "found on Field Deployments Sheet, won't be fully processed because they have no corresponding folder "
+            "on Audio Root Directory."
+        )
     metadata = util.get_metadata_dir(input_path, False)
     metadata.dropna(inplace=True)  # remove problematic files
     columns_names_dict = {
@@ -55,7 +76,14 @@ def get_media_file(input_path):
     media["filePublic"] = False  
     media["captureMethod"] = "activityDetection"
     media["fileLength"] = media["fileLength"].astype(float).round(3)
-
+    # checking consistency between sensors found on audio root directory and media
+    sensors_in_media=media['deploymentID'].unique().tolist()
+    missing_in_media=set(sensors_in_audio_root_directory)-set(sensors_in_media)
+    if missing_in_media:
+        logger.warning(
+                f"Deployments {', '.join(missing_in_media)} "
+                " won't be processed as the corresponding folders on Audio Root Directory were empty or none of the WAV files within met the file name format."
+            )
     return media.drop(columns=["time", "fsize", "samples"])
 
 
@@ -111,7 +139,7 @@ def field_deployments_sheet_to_deployments(plantilla_usuario, media_summary):
     ----------
     plantilla_usuario : pandas.DataFrame
         A DataFrame containing user-provided deployments information. Loaded from the catalog
-        entry `plantilla_usuario@pandas`.
+        entry `field_deployments_sheet@pandas`.
 
     media_summary : pandas.DataFrame
         A DataFrame summarizing metadata of acoustic sampling for each deployments. Loaded from
