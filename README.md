@@ -1,9 +1,7 @@
 <div align="center">
   <img src="">
-  <img src="docs/meta/images/pamflow_logo.png" alt="pamflow logo"/>
+  <img src="https://github.com/pamflow/pamflow/blob/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo"/>
 </div>
-
-[![Python version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%20-blue.svg)]
 
 
 # What is pamflow?
