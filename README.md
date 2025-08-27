@@ -1,10 +1,8 @@
 <div align="center">
-  <img src="">
-  <img src="https://github.com/pamflow/pamflow/blob/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo"/>
+  <img src="https://github.com/pamflow/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="400"/>
 </div>
 
-
-# What is pamflow?
+![Python version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue.svg)
 
 **pamflow** is a workflow for analyzing passive acoustic monitoring data using Python. It is designed to offer an easy-to-use and reproducible framework for researchers, conservation biologists, citizen scientists, and anyone interested in ecoacoustics and soundscape ecology.
 
