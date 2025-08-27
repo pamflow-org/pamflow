@@ -1,6 +1,14 @@
-# pamflow: simplified analysis for passive acoustic monitoring
+<div align="center">
+  <img src="">
+  <img src="docs/meta/images/pamflow_logo.png" alt="pamflow logo"/>
+</div>
 
-This repository provides a workflow for analyzing passive acoustic monitoring (PAM) data using Python. It is designed to offer an easy-to-use and reproducible framework for researchers, conservation biologists, citizen scientists, and anyone interested in ecoacoustics and soundscape ecology.
+[![Python version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%20-blue.svg)]
+
+
+# What is pamflow?
+
+**pamflow** is a workflow for analyzing passive acoustic monitoring data using Python. It is designed to offer an easy-to-use and reproducible framework for researchers, conservation biologists, citizen scientists, and anyone interested in ecoacoustics and soundscape ecology.
 
 ## Before You Begin
 
