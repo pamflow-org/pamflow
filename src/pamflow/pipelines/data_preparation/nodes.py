@@ -12,7 +12,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def get_media_file(input_pat, field_deployments_sheet):
+def get_media_file(input_path, field_deployments_sheet):
     """Retrieves and processes metadata from media files in the given directory.
 
     Parameters
@@ -42,20 +42,20 @@ def get_media_file(input_pat, field_deployments_sheet):
     sensors_in_audio_root_directory=os.listdir(input_path)
     sensors_in_field_deployments=field_deployments_sheet['Indicador de evento'].unique().tolist()
     if set(sensors_in_audio_root_directory)!=set(sensors_in_field_deployments):
-    missing_in_field_deployments = set(sensors_in_audio_root_directory) - set(sensors_in_field_deployments)
-    if missing_in_field_deployments:
-        logger.warning(
-            f"Deployments {', '.join(missing_in_field_deployments)}, "
-            "found on Audio Root Directory, won't be fully processed as they are not listed on Field Deployments Sheet."
-        )
+        missing_in_field_deployments = set(sensors_in_audio_root_directory) - set(sensors_in_field_deployments)
+        if missing_in_field_deployments:
+            logger.warning(
+                f"Deployments {', '.join(missing_in_field_deployments)}, "
+                "found on Audio Root Directory, won't be fully processed as they are not listed on Field Deployments Sheet."
+            )
 
-    missing_in_audio = set(sensors_in_field_deployments) - set(sensors_in_audio_root_directory)
-    if missing_in_audio:
-        logger.warning(
-            f"Deployments {', '.join(missing_in_audio)}, "
-            "found on Field Deployments Sheet, won't be fully processed because they have no corresponding folder "
-            "on Audio Root Directory."
-        )
+        missing_in_audio = set(sensors_in_field_deployments) - set(sensors_in_audio_root_directory)
+        if missing_in_audio:
+            logger.warning(
+                f"Deployments {', '.join(missing_in_audio)}, "
+                "found on Field Deployments Sheet, won't be fully processed because they have no corresponding folder "
+                "on Audio Root Directory."
+            )
     metadata = util.get_metadata_dir(input_path, False)
     metadata.dropna(inplace=True)  # remove problematic files
     columns_names_dict = {
