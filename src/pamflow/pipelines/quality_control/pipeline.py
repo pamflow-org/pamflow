@@ -21,7 +21,7 @@ def create_pipeline(**kwargs):
             ),
             node(  # Log
                 func=plot_sensor_location,
-                inputs=["media_summary@pandas","deployments@pamDP","params:quality_control_plot"],
+                inputs=["media_summary@pandas","deployments@pamDP","params:sensor_location_plot"],
                 outputs="sensor_location@matplotlib",
                 name="plot_sensor_location_node",
             ),
@@ -33,7 +33,7 @@ def create_pipeline(**kwargs):
                     "media@pamDP",
                     "params:timelapse.sample_length",
                     "params:timelapse.sample_period",
-                    "params:quality_control_plot",
+                    "params:timelapse_plot",
                 ],
                 outputs=[
                     "timelapse@PartitionedAudio",

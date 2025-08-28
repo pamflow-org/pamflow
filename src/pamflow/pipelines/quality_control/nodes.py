@@ -92,7 +92,7 @@ def plot_sensor_performance(media):
     else:
         sizes = (media_out["count"] - count_min + 1) * 3
         norm = Normalize(vmin=count_min, vmax=count_max)
-        colors = norm(media_out["count"])
+        colors = media_out["count"]
     
     # Draw scatterplot
     fig, ax = plt.subplots(figsize=[width, height])
@@ -113,7 +113,8 @@ def plot_sensor_performance(media):
     # Add title and set grid
     ax.grid(alpha=0.2)
     ax.set_title(
-        f"Sensor Deployment: {media.deploymentID.nunique()} sites | {media.shape[0]} files"
+        f"Deployment timeline: {media.deploymentID.nunique()} recorders | {media.shape[0]} files",
+        pad=10,
     )
     
     # Create legend handles
@@ -189,8 +190,16 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
         A figure showing the geographic distribution of sensors and their recording activity.
         Stored in the catalog as `sensor_location_plot@matplotlib`.
     """
-    # Prepare data
-    geo_info_microfonos = gpd.GeoDataFrame(
+    # --- Adjustable parameters from plot_parameters ---
+    marker_color   = plot_parameters.get("marker_color", "#1f77b4")  # default blue
+    marker_size  = plot_parameters.get("marker_size", 200)    # base size for points
+    fig_height  = plot_parameters.get("fig_height", 10)        # default height 8
+    fig_width   = plot_parameters.get("fig_width", 10)         # default width 8
+    text_size   = plot_parameters.get("text_size", 10)        # default annotation size
+    alpha   = plot_parameters.get("alpha", 0.7)        # default annotation size
+
+    # --- Prepare data ---
+    geoinfo_mics = gpd.GeoDataFrame(
         deployments[["deploymentID", "latitude", "longitude"]],
         geometry=gpd.points_from_xy(
             deployments["longitude"],
@@ -199,95 +208,79 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
         crs="EPSG:4326",
     )
 
-    geo_info_microfonos = geo_info_microfonos.merge(
-        media_summary, on="deploymentID", how="left"
-    )
+    geoinfo_mics = geoinfo_mics.merge(media_summary, on="deploymentID", how="left")
+    geoinfo_mics = geoinfo_mics.astype({"n_recordings": "int"})
 
-    geo_info_microfonos = geo_info_microfonos.astype({"n_recordings": "int"})
+    # --- Figure ---
+    fig, ax = plt.subplots(figsize=[fig_width, fig_height])
 
-    ## Plot data
-    fig, ax = plt.subplots(figsize=(10, 10))
+    # --- Scale point sizes based on number of recordings ---
+    n = geoinfo_mics["n_recordings"]
 
-    # Get figure area
-    fig_width, fig_height = fig.get_size_inches()
-    dpi = fig.dpi
-    fig_area = fig_width * fig_height * dpi * dpi  # total pixel area
-
-    # Normalize n_recordings to [0, 1]
-    n = geo_info_microfonos["n_recordings"]
-    sizes = ((n - n.min()) / (n.max() - n.min() + 1e-6)) * 0.5 * fig_area + 50  # 0.05 is a scaling factor
-
-    # Plot points with ax.scatter instead of geo_info_microfonos.plot
+    # --- Plot points ---
     ax.scatter(
-        geo_info_microfonos.geometry.x,
-        geo_info_microfonos.geometry.y,
-        s=sizes,
-        color=plot_parameters.get("dot_color", "#1f77b4"),
-        alpha=0.7,
-        edgecolor=plot_parameters.get("dot_color", "#1f77b4"),
+        geoinfo_mics.geometry.x,
+        geoinfo_mics.geometry.y,
+        s=marker_size,
+        color=marker_color,
+        alpha=alpha,
+        edgecolor=marker_color,
     )
 
-    # Add Map
-    cx.add_basemap(ax, crs=geo_info_microfonos.crs.to_string())
+    # Add basemap
+    cx.add_basemap(ax, crs=geoinfo_mics.crs.to_string())
 
-    # Add deploymentID information to each point
-    
+    # --- Text annotations ---
     for x, y, label in zip(
-        geo_info_microfonos.geometry.x,
-        geo_info_microfonos.geometry.y,
-        geo_info_microfonos.deploymentID,
+        geoinfo_mics.geometry.x,
+        geoinfo_mics.geometry.y,
+        geoinfo_mics.deploymentID,
     ):
         ax.annotate(
             label,
             xy=(x, y),
             xytext=(3, 3),
             textcoords="offset points",
-            fontsize=plt.rcParams['font.size'],
+            fontsize=text_size,
         )
 
-    
-    # Legend for dot sizes (number of recordings)
-    unique_n = np.unique(n)
-    if len(unique_n) == 1:
-        legend_values = unique_n
-    else:
-        legend_values = np.linspace(n.min(), n.max(), num=3, dtype=int)
-    legend_sizes = ((legend_values - n.min()) / (n.max() - n.min() + 1e-6)) * 0.5 * fig_area + 50
+    # # --- Legend (dot size scale) ---
+    # unique_n = np.unique(n)
+    # if len(unique_n) == 1:
+    #     legend_values = unique_n
+    # else:
+    #     legend_values = np.linspace(n.min(), n.max(), num=3, dtype=int)
+    # legend_sizes = ((legend_values - n.min()) / (n.max() - n.min() + 1e-6)) * marker_size + 50
 
-    handles = [
-        plt.scatter([], [], s=size, color=plot_parameters.get("dot_color", "#1f77b4"), alpha=0.7, label=f"{val}")
-        for size, val in zip(legend_sizes, legend_values)
-    ]
-    ax.legend(
-        handles=handles,
-        title="Number of recordings",
-        scatterpoints=1,
-        loc="lower right",  # use the legend’s lower-right corner as the reference
-        bbox_to_anchor=(1, -0.2), # place outside the map
-        frameon=True,
-    )
+    # handles = [
+    #     plt.scatter([], [], s=size, color=marker_color, alpha=0.7, label=f"{val}")
+    #     for size, val in zip(legend_sizes, legend_values)
+    # ]
+    # ax.legend(
+    #     handles=handles,
+    #     title="Number of recordings",
+    #     scatterpoints=1,
+    #     loc="lower right",
+    #     bbox_to_anchor=(1, -0.2),
+    #     frameon=True,
+    # )
 
-    # Set title
-    ax.set_title("Location of sensor deployments")
-    
-    # Set margins (e.g., 10% of the data range) to avoid having dots near the border
-    margin_x = 0.10 * (geo_info_microfonos.geometry.x.max() - geo_info_microfonos.geometry.x.min())
-    margin_y = 0.10 * (geo_info_microfonos.geometry.y.max() - geo_info_microfonos.geometry.y.min())
-    
-    ax.set_xlim(
-        geo_info_microfonos.geometry.x.min() - margin_x,
-        geo_info_microfonos.geometry.x.max() + margin_x,
-    )
-    ax.set_ylim(
-        geo_info_microfonos.geometry.y.min() - margin_y,
-        geo_info_microfonos.geometry.y.max() + margin_y,
-    )
-    
-    # Ensure aspect ratio after plotting and setting limits
+    # Title
+    ax.set_title(f"Deployment locations: {len(geoinfo_mics)} recorders", pad=10)
+
+    # Margins
+    margin_x = 0.10 * (geoinfo_mics.geometry.x.max() - geoinfo_mics.geometry.x.min())
+    margin_y = 0.10 * (geoinfo_mics.geometry.y.max() - geoinfo_mics.geometry.y.min())
+    ax.set_xlim(geoinfo_mics.geometry.x.min() - margin_x,
+                geoinfo_mics.geometry.x.max() + margin_x)
+    ax.set_ylim(geoinfo_mics.geometry.y.min() - margin_y,
+                geoinfo_mics.geometry.y.max() + margin_y)
+
+    # Equal aspect ratio
     ax.set_aspect('equal')
-    
-    return fig
+    plt.tight_layout()
 
+    return fig
 
 def get_timelapse(
     sensor_deployment_data, media, sample_len, sample_period, plot_params
