@@ -189,6 +189,7 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
         A figure showing the geographic distribution of sensors and their recording activity.
         Stored in the catalog as `sensor_location_plot@matplotlib`.
     """
+    # Prepare data
     geo_info_microfonos = gpd.GeoDataFrame(
         deployments[["deploymentID", "latitude", "longitude"]],
         geometry=gpd.points_from_xy(
@@ -202,27 +203,35 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
         media_summary, on="deploymentID", how="left"
     )
 
-    geo_info_microfonos = geo_info_microfonos.astype({"n_recordings": "float64"})
+    geo_info_microfonos = geo_info_microfonos.astype({"n_recordings": "int"})
 
+    ## Plot data
     fig, ax = plt.subplots(figsize=(10, 10))
-    geo_info_microfonos.plot(
-        ax=ax,
-        # c=geo_info_microfonos['n_recordings'],
-        column="n_recordings",
-        cmap=plot_parameters["colormap"],
-        legend=True,
+
+    # Get figure area
+    fig_width, fig_height = fig.get_size_inches()
+    dpi = fig.dpi
+    fig_area = fig_width * fig_height * dpi * dpi  # total pixel area
+
+    # Normalize n_recordings to [0, 1]
+    n = geo_info_microfonos["n_recordings"]
+    sizes = ((n - n.min()) / (n.max() - n.min() + 1e-6)) * 0.5 * fig_area + 50  # 0.05 is a scaling factor
+
+    # Plot points with ax.scatter instead of geo_info_microfonos.plot
+    ax.scatter(
+        geo_info_microfonos.geometry.x,
+        geo_info_microfonos.geometry.y,
+        s=sizes,
+        color=plot_parameters.get("dot_color", "#1f77b4"),
+        alpha=0.7,
+        edgecolor=plot_parameters.get("dot_color", "#1f77b4"),
     )
 
-    # ax.legend(metadata_summary['n_recordings'])
+    # Add Map
+    cx.add_basemap(ax, crs=geo_info_microfonos.crs.to_string())
 
-    ax.set_title("Number of recordings per sensor")
-
-    cx.add_basemap(
-        ax,
-        # source=xyz.OpenStreetMap.Mapnik,
-        crs=geo_info_microfonos.crs.to_string(),
-    )
-
+    # Add deploymentID information to each point
+    
     for x, y, label in zip(
         geo_info_microfonos.geometry.x,
         geo_info_microfonos.geometry.y,
@@ -233,9 +242,50 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
             xy=(x, y),
             xytext=(3, 3),
             textcoords="offset points",
-            fontsize=0.15 * geo_info_microfonos["deploymentID"].nunique(),
-            # rotation=np.random.choice([0,45,-45],p=[0.8,0.1,0.1])
+            fontsize=plt.rcParams['font.size'],
         )
+
+    
+    # Legend for dot sizes (number of recordings)
+    unique_n = np.unique(n)
+    if len(unique_n) == 1:
+        legend_values = unique_n
+    else:
+        legend_values = np.linspace(n.min(), n.max(), num=3, dtype=int)
+    legend_sizes = ((legend_values - n.min()) / (n.max() - n.min() + 1e-6)) * 0.5 * fig_area + 50
+
+    handles = [
+        plt.scatter([], [], s=size, color=plot_parameters.get("dot_color", "#1f77b4"), alpha=0.7, label=f"{val}")
+        for size, val in zip(legend_sizes, legend_values)
+    ]
+    ax.legend(
+        handles=handles,
+        title="Number of recordings",
+        scatterpoints=1,
+        loc="upper left",  # places legend outside the map
+        bbox_to_anchor=(1, 1),
+        frameon=True
+    )
+
+    # Set title
+    ax.set_title("Location of sensor deployments")
+    
+    # Set margins (e.g., 10% of the data range) to avoid having dots near the border
+    margin_x = 0.10 * (geo_info_microfonos.geometry.x.max() - geo_info_microfonos.geometry.x.min())
+    margin_y = 0.10 * (geo_info_microfonos.geometry.y.max() - geo_info_microfonos.geometry.y.min())
+    
+    ax.set_xlim(
+        geo_info_microfonos.geometry.x.min() - margin_x,
+        geo_info_microfonos.geometry.x.max() + margin_x,
+    )
+    ax.set_ylim(
+        geo_info_microfonos.geometry.y.min() - margin_y,
+        geo_info_microfonos.geometry.y.max() + margin_y,
+    )
+    
+    # Ensure aspect ratio after plotting and setting limits
+    ax.set_aspect('equal')
+    
     return fig
 
 
