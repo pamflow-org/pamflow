@@ -1,13 +1,21 @@
 # Matplotlib keyword arguments for consistent plotting
-# throughout the project. These settings are primarily
-# used for spectrograms.
+# throughout the project. 
 # Reference: https://scikit-maad.github.io/generated/maad.sound.spectrogram.html
-quality_control_plot:
+sensor_location_plot:
+  fig_height: 8           # Figure height (in inches)
+  fig_width: 8           # Figure width (in inches)
+  marker_size: 40         # Size of the location markers
+  marker_color: "#1f77b4" # Size of the location markers
+  text_size: 10           # Size of the text annotations
+  alpha: 0.7              # Transparency level of the markers
+
+# Parameters for generating timelapse spectrograms
+timelapse_plot:
+  fig_height: 4          # Figure height (in inches)
+  fig_width: 15          # Figure width (in inches)
   nperseg: 1024          # Number of data points per segment
   noverlap: 512          # Number of overlapping points
   flims: [0, 24000]      # Frequency limits (Hz)
-  fig_height: 4          # Figure height (in inches)
-  fig_width: 15          # Figure width (in inches)
   db_range: 90           # Dynamic range in decibels
   colormap: 'grey'       # Colormap options: 'grey', 'viridis', 'plasma', 'inferno', 'cividis'
 
