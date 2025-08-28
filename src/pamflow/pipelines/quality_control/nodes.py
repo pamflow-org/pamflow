@@ -262,9 +262,9 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
         handles=handles,
         title="Number of recordings",
         scatterpoints=1,
-        loc="upper left",  # places legend outside the map
-        bbox_to_anchor=(1, 1),
-        frameon=True
+        loc="lower right",  # use the legend’s lower-right corner as the reference
+        bbox_to_anchor=(1, -0.2), # place outside the map
+        frameon=True,
     )
 
     # Set title
