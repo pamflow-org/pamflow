@@ -152,9 +152,15 @@ def filter_observations(
         """)
 
     target_species = target_species.drop_duplicates()
-    observations = observations[
-        observations["scientificName"].isin(target_species["scientificName"])
-    ]
+    if target_species.shape[0] != 0:
+        observations = observations[
+            observations["scientificName"].isin(target_species["scientificName"])
+        ]
+    else:
+        logger.info(
+        f"Observations file was not filtered as no target species were provided."
+       )
+    
     if observations.shape[0] == 0:
         raise ValueError(f"""None of the {target_species.shape[0]} species in data/input/target_species/target_species.csv are among the detected species in 
                             data/output/species_detection/unfiltered_observations.csv. \n

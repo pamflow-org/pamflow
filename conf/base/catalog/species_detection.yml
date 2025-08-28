@@ -3,7 +3,7 @@ unfiltered_observations@pamDP:
   filepath: data/output/species_detection/unfiltered_observations.csv
   timezone: Etc/GMT+5
 target_species@pandas:
-  type: pandas.CSVDataset
+  type: pamflow.datasets.pamDP.target_species.TargetSpecies
   filepath: data/input/target_species/target_species.csv
 observations@pamDP:
   type: pamflow.datasets.pamDP.observations.Observations
