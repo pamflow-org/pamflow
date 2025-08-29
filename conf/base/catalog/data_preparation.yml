@@ -10,7 +10,7 @@ media_summary@pandas:
 
 
 field_deployments_sheet@pandas:
-  type: pandas.ExcelDataset
+  type: pamflow.datasets.pamDP.field_deployments_sheet.FieldDeployments
   filepath: data/input/field_deployments/field_deployments_sheet.xlsx
   save_args:
     sheet_name: Plantilla Usuario
