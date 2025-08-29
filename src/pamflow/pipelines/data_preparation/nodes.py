@@ -40,7 +40,7 @@ def get_media_file(input_path, field_deployments_sheet):
     logger.info(f"Preparing data from {input_path}...")
     # checking consistency between sensors found on audio root directory and field deployments sheet
     sensors_in_audio_root_directory=os.listdir(input_path)
-    sensors_in_field_deployments=field_deployments_sheet['Indicador de evento'].unique().tolist()
+    sensors_in_field_deployments=field_deployments_sheet['deploymentID'].unique().tolist()
     if set(sensors_in_audio_root_directory)!=set(sensors_in_field_deployments):
         missing_in_field_deployments = set(sensors_in_audio_root_directory) - set(sensors_in_field_deployments)
         if missing_in_field_deployments:
@@ -127,17 +127,17 @@ def get_media_summary(media):
     return media_summary
 
 
-def field_deployments_sheet_to_deployments(plantilla_usuario, media_summary):
+def field_deployments_sheet_to_deployments(field_deployments, media_summary):
     """Converts user-provided deployments templates into a standardized deployments DataFrame.
 
     This node processes a user-provided template and combines it with media summary data
     to generate a deployments DataFrame following the pamDP.deployment format. The inputs
-    correspond to the catalog entries `plantilla_usuario@pandas` and `media_summary@pandas`.
+    correspond to the catalog entries `field_deployments@pandas` and `media_summary@pandas`.
     The output is stored in the catalog as `deployments@pamDP`.
 
     Parameters
     ----------
-    plantilla_usuario : pandas.DataFrame
+    field_deployments : pandas.DataFrame
         A DataFrame containing user-provided deployments information. Loaded from the catalog
         entry `field_deployments_sheet@pandas`.
 
@@ -151,61 +151,48 @@ def field_deployments_sheet_to_deployments(plantilla_usuario, media_summary):
         A standardized deployments DataFrame following the pamDP.deployments format. Stored in
         the catalog as `deployments@pamDP`.
     """
-    plantilla_usuario["Nombre del instalador+Apellido  del instalador"] = (
-        plantilla_usuario["Nombre del instalador"]
-        + plantilla_usuario["Apellido  del instalador"]
+    field_deployments["setupBy"] = (
+        field_deployments["setupByName"]
+        + field_deployments["setupByLastName"]
     )
 
-    columns_names_map = {
-        "Indicador de evento": "deploymentID",
-        "Localidad": "locationName",
-        "Latitud": "latitude",
-        "Longitud": "longitude",
-        "Equipo de grabación": "recorderModel",
-        "Comentario de sonido": "deploymentComments",
-        "Configuración de muestreo": "recorderConfiguration",
-        "Hábitat": "habitat",
-        "Nombre del instalador+Apellido  del instalador": "setupBy",
-        "Altura de la grabadora respecto al suelo": "recorderHeight",
-    }
+    
 
-    deployments = plantilla_usuario[list(columns_names_map.keys())
-                                   +["Fecha inicial","Fecha final", 'Hora inicial','Hora final'    ]
-    ].rename(
-        columns=columns_names_map
-    )
-
-    deployments['deploymentStart']=deployments["Fecha inicial"].astype(str) + ' ' + deployments['Hora inicial'].astype(str)
-    deployments['deploymentEnd'  ]=deployments["Fecha final"  ].astype(str) + ' ' + deployments['Hora final'  ].astype(str)
-    deployments=deployments.astype({'deploymentStart':'datetime64[ns]',
+    field_deployments['deploymentStart']=field_deployments["deploymentStartDate"].astype(str) + ' ' + field_deployments["deploymentStartTime"].astype(str)
+    field_deployments['deploymentEnd'  ]=field_deployments["deploymentEndDate" ].astype(str) + ' ' + field_deployments["deploymentEndTime"  ].astype(str)
+    field_deployments=field_deployments.astype({'deploymentStart':'datetime64[ns]',
                     'deploymentEnd' :'datetime64[ns]'
                 })
 
-    deployments=deployments.drop(columns=['Fecha inicial','Fecha final', 'Hora inicial','Hora final'])
 
-    deployments["recorderID"] = None
-    deployments["locationID"] = deployments["locationName"]
-    deployments["coordinateUncertainty"] = None
-    deployments["deploymentGroups"] = None
+    field_deployments["recorderID"] = None
+    field_deployments["locationID"] = field_deployments["locationName"]
+    field_deployments["coordinateUncertainty"] = None
+    field_deployments["deploymentGroups"] = None
 
     n_recordings = media_summary["n_recordings"].sum()
     media_summary = media_summary[["deploymentID", "date_ini", "date_end"]]
 
-    deployments = deployments.merge(media_summary, on="deploymentID", how="left")
+    deployments = field_deployments.merge(media_summary, on="deploymentID", how="left")
 
-    deployments["deploymentStart"] = deployments["deploymentStart"].combine_first(
-        deployments["date_ini"]
-    )
-    deployments["deploymentEnd"] = deployments["deploymentEnd"].combine_first(
-        deployments["date_end"]
-    )
-
-    deployments = deployments.dropna(
-        subset=["deploymentStart", "deploymentEnd", "deploymentID"]
-    )
-
-    deployments = deployments.drop(columns=["date_ini", "date_end"])
+   
+    
     
     logger.info(f"Done! {len(deployments)} deployments with {n_recordings} recordings saved to pamDP format.")
-
-    return deployments
+    deployments_columns= ["deploymentID",
+    "locationID",
+    "locationName",
+    "latitude",
+    "longitude",
+    "coordinateUncertainty",
+    "deploymentStart",
+    "deploymentEnd",
+    "setupBy",
+    "recorderID",
+    "recorderModel",
+    "recorderHeight",
+    "recorderConfiguration",
+    "habitat",
+    "deploymentGroups",
+    "deploymentComments",]
+    return deployments[deployments_columns]
