@@ -231,18 +231,19 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
     cx.add_basemap(ax, crs=geoinfo_mics.crs.to_string())
 
     # --- Text annotations ---
-    for x, y, label in zip(
-        geoinfo_mics.geometry.x,
-        geoinfo_mics.geometry.y,
-        geoinfo_mics.deploymentID,
-    ):
-        ax.annotate(
-            label,
-            xy=(x, y),
-            xytext=(3, 3),
-            textcoords="offset points",
-            fontsize=text_size,
-        )
+    if text_size > 0:
+        for x, y, label in zip(
+            geoinfo_mics.geometry.x,
+            geoinfo_mics.geometry.y,
+            geoinfo_mics.deploymentID,
+        ):
+            ax.annotate(
+                label,
+                xy=(x, y),
+                xytext=(3, 3),
+                textcoords="offset points",
+                fontsize=text_size,
+            )
 
     # # --- Legend (dot size scale) ---
     # unique_n = np.unique(n)
