@@ -1,6 +1,8 @@
-# Input data: minimum required information
+# Required input data and exchange output format
 
-## File Organization
+## Input data: minimum required information
+
+### File Organization
 
 Recording files must be organized as follows:
 
@@ -21,7 +23,7 @@ Example:
 ```
 
 
-## Field deployment sheet
+### Field deployment sheet
 This file provides metadata collected during the field deployment. It should be an Excel file named `field_deployments_sheet.xlsx`, with the following column names in the first row:
 
 | Field Name              | Description | Required | Unique | Type | Example |
@@ -29,19 +31,19 @@ This file provides metadata collected during the field deployment. It should be 
 |**deploymentID**| Unique identifier for the deployment. Required for tracking and referencing specific deployments. | ✅ | ✅ | `string` | DEP001
 |**latitude**| Latitude of the deployment location in decimal degrees (WGS84). Range: -90 to 90. | ✅ |   | `float` | 5.2704 |
 |**longitude**| Longitude of the deployment location in decimal degrees (WGS84). Range: -180 to 180. | ✅ |   | `float` | 2.3849 |
-|**locationID**| Unique code that refers unambiguously to a location record. One locationID per latitude-longitude pair. |   | ✅ | `string` | LOC001 |
-| **locationName**        | Name assigned to the deployment location for easy reference. |   |   | `string` | Finca La Esperanza |
 | **recorderModel**      | Manufacturer and model of the recorder, formatted as manufacturer-model. | ✅ |   | `string` | Audiomoth v1.2.0 |
 | **recorderConfiguration** | Detailed settings used for data collection (e.g., microphone type, recording schedule). | ✅ |   | `string` | record 1 minute every 29 minutes, internal microphone |
+|**locationID**| Unique code that refers unambiguously to a location record. One locationID per latitude-longitude pair. |   | ✅ | `string` | LOC001 |
+| **locationName**        | Name assigned to the deployment location for easy reference. |   |   | `string` | Finca La Esperanza |
 | **recorderHeight**     | Height (in meters) at which the recorder was deployed. Not to be combined with `recorderDepth`.  Range: >0. |   |   | `float` | 1.2 |
 | **habitat**            | Brief description of the habitat at the deployment location. |   |   | `string` | Humid tropical rainforest |
 |**setupBy**| Name or identifier of the individual or organization responsible for deploying the recorder.|   |   | `string` | Juan Gómez |
 | **deploymentComments** | Additional comments or observations related to the deployment. |   |   | `string` | Traffic noise during installation |
 
-## Target species
+### Target species
 An optional target_species.csv with a single column (scientificName) listing one species per row. Species must be a subset of the model’s output labels. If the file is empty, no filtering is applied to detections.
 
-# Data exchange format used in `pamflow`
+## Data exchange format used in `pamflow`
 
 To manage data collected during PAM analyses and facilitate exchange with biodiversity repositories, we implemented a standard called **pamDP**.
 This standard was adapted from [camtrapDP](https://camtrap-dp.tdwg.org/) (Bubnicki et al., 2023), preserving as much as possible while incorporating specific requirements for PAM.
@@ -52,7 +54,7 @@ The data is stored in 3 main tables in `csv` format:
 * **[observations.csv](#observations)**: Records detected observations from media, including species identification, timestamps, and confidence scores.
 
 
-## Deployments
+### Deployments
 The `deployments.csv` table tracks information about sensor placements, such as location, duration, and recording settings.
 
 | Field Name              | Description | Required | Unique | Type | Example |
@@ -83,7 +85,7 @@ The `deployments.csv` table tracks information about sensor placements, such as 
 | **deploymentTags**     | Tags associated with the deployment. Multiple values separated by \|, optionally formatted as `key:value` pairs. |   |   | `string` | land cover:forest \| bait:food |
 | **deploymentComments** | Additional comments or observations related to the deployment. |   |   | `string` | traffic noise during installation |
 
-# Media
+## Media
 The `media.csv` table contains references to audio or visual recordings used for classification.
 
 | Field Name       | Description  | Required | Unique | Type | Example |
@@ -103,7 +105,7 @@ The `media.csv` table contains references to audio or visual recordings used for
 | **favorite**     | TRUE if the media file is considered of interest (e.g., an exemplar sound). |  |  | `binary` | TRUE |
 | **mediaComments** | Notes or remarks about the media file (e.g., "corrupted file"). |  |  | `string` | corrupted file |
 
-# Observations
+## Observations
 The `observations.csv` table stores classified occurrences of species or events, including metadata like behavior, vocalization details, and classification confidence. 
 
 | **Field Name** | **Description** | **Required** | **Unique** | **Type** | **Example** |
@@ -133,5 +135,5 @@ The `observations.csv` table stores classified occurrences of species or events,
 | **observationTags** | Tags (e.g., `key:value` format). | | | `string` | signalToNoise:high |
 | **observationComments** | Additional notes. | | | `string` | Loud unknown bird vocalization |
 
-# References
+## References
 * Bubnicki JW, Norton B, Baskauf SJ, Bruce T, Cagnacci F, Casaer J, Churski M, Cromsigt JPGM, Farra SD, Fiderer C, Forrester TD, Hendry H, Heurich M, Hofmeester TR, Jansen PA, Kays R, Kuijper DPJ, Liefting Y, Linnell JDC, Luskin MS, Mann C, Milotic T, Newman P, Niedballa J, Oldoni D, Ossi F, Robertson T, Rovero F, Rowcliffe M, Seidenari L, Stachowicz I, Stowell D, Tobler MW, Wieczorek J, Zimmermann F, Desmet P (2023). Camtrap DP: an open standard for the FAIR exchange and archiving of camera trap data. Remote Sensing in Ecology and Conservation. https://doi.org/10.1002/rse2.374
