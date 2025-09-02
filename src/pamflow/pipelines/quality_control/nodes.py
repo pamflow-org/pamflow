@@ -14,6 +14,7 @@ import geopandas as gpd
 import contextily as cx
 import matplotlib.dates as mdates
 import matplotlib as mpl
+from matplotlib.patches import FancyBboxPatch
 from matplotlib.colors import Normalize
 import logging
 from pamflow.pipelines.quality_control.utils import concat_audio
@@ -114,7 +115,7 @@ def plot_sensor_performance(media):
     ax.grid(alpha=0.2)
     ax.set_title(
         f"Deployment timeline: {media.deploymentID.nunique()} recorders | {media.shape[0]} files",
-        pad=10,
+        pad=10, fontsize=16, color="gray", weight="bold"
     )
     
     # Create legend handles
@@ -267,7 +268,7 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
     # )
 
     # Title
-    ax.set_title(f"Deployment locations: {len(geoinfo_mics)} recorders", pad=10)
+    ax.set_title(f"Deployment locations: {len(geoinfo_mics)} recorders", pad=10, fontsize=16, color="gray", weight="bold")
 
     # Margins
     margin_x = 0.10 * (geoinfo_mics.geometry.x.max() - geoinfo_mics.geometry.x.min())
@@ -279,6 +280,83 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
 
     # Equal aspect ratio
     ax.set_aspect('equal')
+    plt.tight_layout()
+
+    return fig
+
+def plot_survey_effort(media_summary, deployments):
+    """Plots a summary of the survey effort including number of deployments, recordings, dates, locations, and coverage."""
+
+    #%% Get data from pamDP
+    n_deployments = deployments['deploymentID'].nunique()
+    n_recordings = media_summary['n_recordings'].sum()
+    survey_dates = [pd.to_datetime(media_summary.date_ini).min().date(),
+                pd.to_datetime(media_summary.date_ini).max().date()]
+    temporal_coverage = (survey_dates[1] - survey_dates[0]).days
+    #n_locations = deployments['locationID'].nunique()
+    n_locations = deployments['deploymentID'].nunique()
+
+    # Compute spatial coverage
+    if n_locations>3:
+        gdf = gpd.GeoDataFrame(
+            deployments, 
+            geometry=gpd.points_from_xy(deployments.longitude, deployments.latitude), crs="EPSG:4326"
+        )
+        
+        # Project to UTM (automatic choice based on centroid)
+        gdf = gdf.to_crs(gdf.estimate_utm_crs())
+        polygon = gdf.union_all().convex_hull  # Convex hull polygon
+        area_km2 = round(polygon.area / 1_000_000)   # Area in km²
+        
+    else:
+        area_km2 = "N/A"
+
+    # Build table data structure
+    data = [
+        (n_deployments, "Deployments"),
+        (n_recordings, "Audio files"),
+        (f"{survey_dates[0]}\n{survey_dates[1]}", "Survey dates"),
+        (f"{temporal_coverage} days", "Temporal coverage"),
+        (n_locations, "Locations"),
+        (f"{area_km2} km$^2$", "Spatial coverage"),
+    ]
+
+    # Create figure
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.axis("off")
+
+    # Grid layout
+    cols = 2
+    rows = (len(data) + 1) // cols
+    card_w, card_h = 0.4, 0.18
+    x_margin, y_margin = 0.05, 0.05
+    x_spacing, y_spacing = 0.1, 0.1
+
+    for i, (value, label) in enumerate(data):
+        row, col = divmod(i, cols)
+        x = x_margin + col * (card_w + x_spacing)
+        y = 1 - y_margin - (row + 1) * (card_h + y_spacing)
+        
+        # Draw rounded rectangle
+        box = FancyBboxPatch((x, y), card_w, card_h,
+                            boxstyle="round,pad=0.02,rounding_size=0.05",
+                            linewidth=1, edgecolor="lightgray", facecolor="white")
+        ax.add_patch(box)
+        
+        # Add text
+        ax.text(x + card_w/2, y + card_h*0.6, value,
+                ha="center", va="center", fontsize=15, weight="bold")
+        ax.text(x + card_w/2, y + card_h*0.25, label,
+                ha="center", va="center", fontsize=12, color="gray")
+
+    # Add title before plt.show()
+    ax.text(0.05, 0.95, "Survey Effort",
+            ha="left", va="center",
+            fontsize=18, color="gray", weight="bold",
+            transform=ax.transAxes)
+    
+    ax.set_ylim(0, 1)
+    ax.set_xlim(0, 1)
     plt.tight_layout()
 
     return fig

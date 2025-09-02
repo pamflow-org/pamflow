@@ -2,6 +2,7 @@ from kedro.pipeline import Pipeline, node, pipeline
 from .nodes import (
     plot_sensor_performance,
     plot_sensor_location,
+    plot_survey_effort,
     get_timelapse
 )
 
@@ -24,6 +25,12 @@ def create_pipeline(**kwargs):
                 inputs=["media_summary@pandas","deployments@pamDP","params:sensor_location_plot"],
                 outputs="sensor_location@matplotlib",
                 name="plot_sensor_location_node",
+            ),
+            node(  # Log
+                func=plot_survey_effort,
+                inputs=["media_summary@pandas","deployments@pamDP"],
+                outputs="survey_effort@matplotlib",
+                name="plot_survey_effort_node",
             ),
             
             node(
