@@ -2,11 +2,12 @@
 
 ## File Organization
 
-Files must be organized as follows:
+Recording files must be organized as follows:
 
 - All audio should be stored in a single main folder.  
-- Inside, create one subfolder **per recorder**.  
+- Inside this main folder, create one subfolder **per recorder**.  
 - The **subfolder name must match the prefix** of the audio file names.
+- The **required** file name format is: `DEPLOYMENTID_DATE_HOUR.wav`.
 
 Example: 
 ```
@@ -21,7 +22,7 @@ Example:
 
 
 ## Field deployment sheet
-This file provides metadata collected during the field deployment. It should be an Excel sheet with the following column names in the first row:
+This file provides metadata collected during the field deployment. It should be an Excel file named `field_deployments_sheet.xlsx`, with the following column names in the first row:
 
 | Field Name              | Description | Required | Unique | Type | Example |
 |-------------------------|-------------|----------|--------|------|---------|
