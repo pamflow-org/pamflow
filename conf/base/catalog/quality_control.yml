@@ -13,6 +13,12 @@ sensor_location@matplotlib:
   save_args:
     format: png
 
+survey_effort@matplotlib:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/output/quality_control/survey_effort.pdf
+  save_args:
+    format: pdf
+
 timelapse_spectrograms@PartitionedImage:
   type: partitions.PartitionedDataset
   path: data/output/quality_control/timelapse/
