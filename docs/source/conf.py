@@ -118,7 +118,7 @@ html_title = "Passive acoustic monitoring data flow"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-html_logo = "_static/pamflow_logo_v1.png"
+html_logo = "_static/pamflow_logo_squared_white.png"
 
 
 # Custom sidebar templates, must be a dictionary that maps document names
