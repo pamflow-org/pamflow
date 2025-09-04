@@ -335,7 +335,24 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
     return manual_annotations_partitioned_dataset
 
 def plot_observations_summary(observations, media):
-    """Plots a summary of the observations including number of observations, species, recordings with/without observations, and machine/human observations."""
+    """Plots a summary of the observations including number of observations, species, recordings with/without observations, and machine/human observations.
+    
+    Parameters
+    ----------
+    observations : pandas.DataFrame
+        A DataFrame containing species observations. Loaded from the catalog
+        entry `observations@pamDP`. The DataFrame follows the pamDP.observations format.
+    
+    media : pandas.DataFrame
+        A DataFrame containing metadata of media files, following the pamDP.media format.
+        This is loaded from the catalog entry `media@pamDP`.
+    
+    Returns
+    -------
+    matplotlib.figure.Figure
+        A infographic matplotlib Figure object containing the summary of observations.
+    
+    """
 
     #%% Get data from pamDP
     n_observations = len(observations)
@@ -404,7 +421,20 @@ def plot_observations_summary(observations, media):
     return fig
 
 def plot_observations_per_species(observations):
+    """Plots a horizontal bar chart of the number of observations per species, showing the top 20 species if there are more than 20.
     
+    Parameters
+    ----------
+    observations : pandas.DataFrame
+        A DataFrame containing species observations. Loaded from the catalog
+        entry `observations@pamDP`. The DataFrame follows the pamDP.observations format.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        A matplotlib Figure object containing the horizontal bar chart.
+
+    """
     species_series = observations['scientificName'].value_counts().head(20)
     species_series.sort_values(ascending=True, inplace=True)
     total_species = len(species_series)
