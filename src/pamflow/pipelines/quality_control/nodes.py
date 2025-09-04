@@ -250,13 +250,8 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
     # Title
     ax.set_title(f"Deployment locations: {len(geoinfo_mics)} recorders", pad=10, fontsize=16, color="gray", weight="bold")
 
-    # Margins
-    margin_x = 0.10 * (geoinfo_mics.geometry.x.max() - geoinfo_mics.geometry.x.min())
-    margin_y = 0.10 * (geoinfo_mics.geometry.y.max() - geoinfo_mics.geometry.y.min())
-    ax.set_xlim(geoinfo_mics.geometry.x.min() - margin_x,
-                geoinfo_mics.geometry.x.max() + margin_x)
-    ax.set_ylim(geoinfo_mics.geometry.y.min() - margin_y,
-                geoinfo_mics.geometry.y.max() + margin_y)
+    # Add space around data (x=10%, y=10%)
+    ax.margins(x=0.1, y=0.1)
 
     # Equal aspect ratio
     ax.set_aspect('equal')
@@ -267,8 +262,8 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
 def plot_survey_effort(media_summary, deployments, media):
     """Plots a summary of the survey effort including number of deployments, recordings, dates, locations, and coverage.
     
-    The inputs correspond to the catalog entries `media_summary@pandas` and
-    `deployments@pamDP`. The output is stored in the catalog as
+    The inputs correspond to the catalog entries `media_summary@pandas`,
+    `deployments@pamDP`, and `media@pamDP`. The output is stored in the catalog as
     `survey_effort@matplotlib`.
 
     Parameters
@@ -282,6 +277,10 @@ def plot_survey_effort(media_summary, deployments, media):
         A DataFrame containing deployment metadata, including sensor locations
         (latitude and longitude). Loaded from the catalog entry `deployments@pamDP`.
         The DataFrame follows the pamDP.mdeployments format.
+    
+    media : pandas.DataFrame
+        A DataFrame containing metadata of media files, following the pamDP.media format.
+        This is loaded from the catalog entry `media@pamDP`.
 
     plot_parameters : dict
         A dictionary containing parameters for the plot, such as colormap and figure size.
