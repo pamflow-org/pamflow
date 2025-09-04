@@ -284,17 +284,44 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
 
     return fig
 
-def plot_survey_effort(media_summary, deployments):
-    """Plots a summary of the survey effort including number of deployments, recordings, dates, locations, and coverage."""
+def plot_survey_effort(media_summary, deployments, media):
+    """Plots a summary of the survey effort including number of deployments, recordings, dates, locations, and coverage.
+    
+    The inputs correspond to the catalog entries `media_summary@pandas` and
+    `deployments@pamDP`. The output is stored in the catalog as
+    `survey_effort@matplotlib`.
+
+    Parameters
+    ----------
+    media_summary : pandas.DataFrame
+        A summary DataFrame for each deployment, including the start and end dates,
+        number of recordings, and other statistics. Loaded from the catalog entry
+        `media_summary@pandas`.
+
+    deployments : pandas.DataFrame
+        A DataFrame containing deployment metadata, including sensor locations
+        (latitude and longitude). Loaded from the catalog entry `deployments@pamDP`.
+        The DataFrame follows the pamDP.mdeployments format.
+
+    plot_parameters : dict
+        A dictionary containing parameters for the plot, such as colormap and figure size.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        A grid-style infographic including number of deployments, recordings, dates, locations, and coverage. Stored in the catalog as `survey_effort@matplotlib`.
+    
+    """
 
     #%% Get data from pamDP
     n_deployments = deployments['deploymentID'].nunique()
-    n_recordings = media_summary['n_recordings'].sum()
+    n_recordings = len(media)
+    n_recording_time = round(media["fileLength"].sum() / 3600, 1)
     survey_dates = [pd.to_datetime(media_summary.date_ini).min().date(),
                 pd.to_datetime(media_summary.date_ini).max().date()]
     temporal_coverage = (survey_dates[1] - survey_dates[0]).days
-    #n_locations = deployments['locationID'].nunique()
-    n_locations = deployments['deploymentID'].nunique()
+    n_locations = deployments['locationID'].nunique()
+    #n_locations = deployments['deploymentID'].nunique()
 
     # Compute spatial coverage
     if n_locations>3:
@@ -314,7 +341,7 @@ def plot_survey_effort(media_summary, deployments):
     # Build table data structure
     data = [
         (n_deployments, "Deployments"),
-        (n_recordings, "Audio files"),
+        (f"{n_recordings} | {n_recording_time} h", "Audio files"),
         (f"{survey_dates[0]}\n{survey_dates[1]}", "Survey dates"),
         (f"{temporal_coverage} days", "Temporal coverage"),
         (n_locations, "Locations"),

@@ -28,7 +28,7 @@ def create_pipeline(**kwargs):
             ),
             node(  # Log
                 func=plot_survey_effort,
-                inputs=["media_summary@pandas","deployments@pamDP"],
+                inputs=["media_summary@pandas","deployments@pamDP", "media@pamDP"],
                 outputs="survey_effort@matplotlib",
                 name="plot_survey_effort_node",
             ),
