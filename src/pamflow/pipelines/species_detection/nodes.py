@@ -3,6 +3,8 @@ import concurrent.futures
 import pandas as pd
 import itertools as it
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch
 import logging
 from pamflow.pipelines.species_detection.utils import (
     species_detection_single_file,
@@ -331,3 +333,111 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
         if "_".join(species.split()) in excel_formats_file_names.keys()
     }
     return manual_annotations_partitioned_dataset
+
+def plot_observations_summary(observations, media):
+    """Plots a summary of the observations including number of observations, species, recordings with/without observations, and machine/human observations."""
+
+    #%% Get data from pamDP
+    n_observations = len(observations)
+    n_observations_time = round((observations.eventEnd - observations.eventStart).sum() / 60,1)
+    n_species = observations['scientificName'].nunique()
+    n_recordings = len(media)
+    n_recordings_with_observations = media["mediaID"].isin(observations["mediaID"]).sum()
+    n_recordings_without_observations = n_recordings - n_recordings_with_observations
+    percent_recordings_with_observations = round(n_recordings_with_observations/n_recordings * 100,1)
+    percent_recordings_without_observations = 100 - percent_recordings_with_observations
+    n_machine_observations = (observations.classificationMethod == 'machine').sum()
+    n_human_observations = (observations.classificationMethod == 'human').sum()
+    percent_machine_observations = round((n_machine_observations / n_observations) * 100,1)
+    percent_human_observations = round((n_human_observations / n_observations) * 100,1)
+
+    # Build table data structure
+    data = [
+        (f"{n_observations} | {n_observations_time} h", "Observations"),
+        (n_species, "Species"),
+        (f"{percent_recordings_with_observations} %", "Recordings with\nobservations"),
+        (f"{percent_recordings_without_observations} %", "Recordings without\nobservations"),
+        (f"{percent_machine_observations} %", "Machine observations"),
+        (f"{percent_human_observations} %", "Human observations"),
+    ]
+
+
+    # Create figure
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.axis("off")
+
+    # Grid layout
+    cols = 2
+    rows = (len(data) + 1) // cols
+    card_w, card_h = 0.4, 0.18
+    x_margin, y_margin = 0.05, 0.05
+    x_spacing, y_spacing = 0.1, 0.1
+
+    for i, (value, label) in enumerate(data):
+        row, col = divmod(i, cols)
+        x = x_margin + col * (card_w + x_spacing)
+        y = 1 - y_margin - (row + 1) * (card_h + y_spacing)
+        
+        # Draw rounded rectangle
+        box = FancyBboxPatch((x, y), card_w, card_h,
+                            boxstyle="round,pad=0.02,rounding_size=0.05",
+                            linewidth=1, edgecolor="lightgray", facecolor="white")
+        ax.add_patch(box)
+        
+        # Add text
+        ax.text(x + card_w/2, y + card_h*0.6, value,
+                ha="center", va="center", fontsize=15, weight="bold")
+        ax.text(x + card_w/2, y + card_h*0.25, label,
+                ha="center", va="center", fontsize=12, color="gray")
+
+    # Add title before plt.show()
+    ax.text(0.05, 0.95, "Observations Summary",
+            ha="left", va="center",
+            fontsize=18, color="gray", weight="bold",
+            transform=ax.transAxes)
+    
+    # Adjust axes
+    ax.set_ylim(0, 1)
+    ax.set_xlim(0, 1)
+    plt.tight_layout()
+    
+    return fig
+
+def plot_observations_per_species(observations):
+    
+    species_series = observations['scientificName'].value_counts().head(20)
+    species_series.sort_values(ascending=True, inplace=True)
+    total_species = len(species_series)
+
+    # if there are more than 20 species, take the top 20
+    if total_species > 20:
+        top_species = species_series.sort_values(ascending=True).head(20)
+        title = f"Number of observations per species | Top 20 of {total_species} species)"
+    else:
+        top_species = species_series.sort_values(ascending=True)
+        title = f"Number of observations per species | {total_species} species"
+    
+    # Create horizontal bar plot
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    labels = top_species.index
+    counts = top_species.values
+
+    ax.barh(labels, counts, alpha=0.85)
+
+    # Add labels
+    for i, v in enumerate(counts):
+        ax.text(v+2, i, str(v), va='center', ha='left', 
+                c='grey')
+
+    # Titles and axes labels
+    ax.set_title(title, color="gray", weight="bold", fontsize=14)
+
+    # Clean unneded elements of the plot (axes border, x axis and y ticks)
+    for spine in plt.gca().spines.values():
+        spine.set_visible(False)
+    ax.get_xaxis().set_visible(False)
+    ax.tick_params(axis="y", left=False)
+
+    plt.tight_layout()
+    return fig

@@ -6,6 +6,8 @@ from .nodes import (
     create_segments_folder,
     create_manual_annotation_formats,
     create_segments_folder,
+    plot_observations_summary,
+    plot_observations_per_species,
 )
 
 
@@ -61,6 +63,18 @@ def create_pipeline(**kwargs):
                 ],
                 outputs="manual_annotations@PartitionedDataset",
                 name="create_manual_annotation_formats_node",
+            ),
+            node(  # Log
+                func=plot_observations_summary,
+                inputs=["observations@pamDP","media@pamDP"],
+                outputs="observations_summary@matplotlib",
+                name="plot_observations_summary_node",
+            ),
+            node(  # Log
+                func=plot_observations_per_species,
+                inputs=["observations@pamDP"],
+                outputs="observations_per_species@matplotlib",
+                name="plot_observations_per_species_node",
             ),
         ]
     )

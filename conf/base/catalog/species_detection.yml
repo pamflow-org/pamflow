@@ -2,9 +2,11 @@ unfiltered_observations@pamDP:
   type: pamflow.datasets.pamDP.observations.Observations
   filepath: data/output/species_detection/unfiltered_observations.csv
   timezone: Etc/GMT+5
+
 target_species@pandas:
   type: pamflow.datasets.pamDP.target_species.TargetSpecies
   filepath: data/input/target_species/target_species.csv
+
 observations@pamDP:
   type: pamflow.datasets.pamDP.observations.Observations
   filepath: data/output/species_detection/observations.csv
@@ -30,4 +32,15 @@ manual_annotations@PartitionedDataset:
     load_args:
       sheet_name: Sheet1
   filename_suffix: ".xlsx"
-    
+
+observations_summary@matplotlib:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/output/species_detection/observations_summary.pdf
+  save_args:
+    format: pdf
+
+observations_per_species@matplotlib:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/output/species_detection/observations_per_species.png
+  save_args:
+    format: png
