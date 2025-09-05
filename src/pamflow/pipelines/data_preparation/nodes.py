@@ -108,9 +108,11 @@ def get_media_summary(media):
         statistics. This is stored in the catalog as `media_summary@pandas`.
     """
 
+    # Ensure timestamp is in datetime format and estimate duty cycle
     media["timestamp"] = pd.to_datetime(media.timestamp)
-
     media["diff"] = media["timestamp"].sort_values().diff()
+    
+    # Summarize by deploymentID
     media_summary = (
         media.groupby("deploymentID")
         .agg(
@@ -119,11 +121,14 @@ def get_media_summary(media):
             n_recordings=("deploymentID", "count"),
             time_diff=("diff", "median"),
             sample_length=("fileLength", "median"),
-            sample_rate=("sampleRate", "median"),
+            sample_rate=("sampleRate", lambda x: x.mode().iloc[0] if not x.mode().empty else None),
         )
         .reset_index()
     )
+    
+    # Compute duration of each deployment
     media_summary["duration"] = media_summary["date_end"] - media_summary["date_ini"]
+    
     return media_summary
 
 
