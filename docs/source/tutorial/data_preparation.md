@@ -10,7 +10,7 @@ In this section you will learn how to get pamflow to read this data in order to 
 
 ### Get **pamflow** to read input data
 
-The first step towards using **pamflow** is to inform where the `audio_root_directory` is located. When you installed the project as explained in the [Getting started page](../contributing_guidelines.md#getting-started),  you ended up with this folder structure
+The first step towards using **pamflow** is to inform where the `audio_root_directory` is located. When you installed the project as explained in the [Setup page](./setup.md),  you ended up with this folder structure
 
 
 ``` 
@@ -69,7 +69,7 @@ Now that your data is properly stored, you can use **pamflow** to complete your 
 
 You already got familiar with the provided data and handed it over to **pamflow**. Now you are ready to complete your second task: Extract metadata from each audio file and each passive acoustic sensor.
 
-Now that **pamflow** has access to the `audio_root_directory` and `field_deployments_sheet` we can ask it to generate the `media@pamDP` and `deployments@pamDP` formats. The former is a `.csv` containing one row per each  `.WAV` file in the `audio_root_directory` and displaying important information related to each audio. The latter, contains information about each deployed sensor. The content, schema and structure of these datasets is further explained in the [Data Exchange Formats ](../data_exchange_format.md#Observations)  section. These formats are the baseline for the rest of the processess carried out through **pamflow**.
+Now that **pamflow** has access to the `audio_root_directory` and `field_deployments_sheet`, we can ask it to generate the `media@pamDP` and `deployments@pamDP` formats. The former is a `.csv` containing one row per each  `.WAV` file in the `audio_root_directory` and displaying important information related to each audio. The latter, contains information about each deployed sensor. The content, schema and structure of these datasets is further explained in the [Data Exchange Formats ](../data_exchange_format.md#Observations)  section. These formats are the baseline for the rest of the processess carried out through **pamflow**.
 
 
 
@@ -85,7 +85,7 @@ The message
 INFO     Pipeline execution completed successfully.  
 ```
 
-will tell you the process is over and that now you are able to access `media@pamDP` and `deployments@pamDP`. It will be stored in 
+will tell you the process is over and that now you are able to access `media@pamDP` and `deployments@pamDP`. They will be stored in 
 
 ``` 
 data/
@@ -108,7 +108,8 @@ As for `deployments@pamDP` you'll find a file that looks like this
 | deploymentID | locationID   | latitude  | longitude   | deploymentStart      | deploymentEnd        | ... | recorderModel       | habitat       |
 |--------------|--------------|-----------|-------------|----------------------|----------------------|-----|---------------------|---------------|
 | MC-002       | EL REBALSE   | 2.117463  | -72.779575  | 2024-02-15T15:04:45  | 2024-03-06T15:04:45  | ... | AudioMoth v 1.2.0   | Pastos limpios|
-| MC-009       | SAN MIGUEL   | 2.059644  | -72.920236  | 2024-02-15T15:32:00  | 2024-03-06T15:32:00  | ... | AudioMoth v 1.2.0   | Pastos limpios|
+| MC-007       | SAN MIGUEL   | 2.059644  | -72.920236  | 2024-02-15T15:32:00  | 2024-03-06T15:32:00  | ... | AudioMoth v 1.2.0   | Pastos limpios|
+| MC-009       | LA TORTUGA   | 2.183335  | -72.987016  | 2024-02-16T20:48:06  | 2024-03-07T20:48:06  | ... | AudioMoth v 1.2.0   | Pastos limpios|
 | MC-013       | LA TORTUGA   | 2.183335  | -72.987016  | 2024-02-16T20:48:06  | 2024-03-07T20:48:06  | ... | AudioMoth v 1.2.0   | Pastos limpios|
 
 

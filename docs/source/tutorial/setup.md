@@ -12,10 +12,10 @@ In this section we provide useful resources for installation in any operative sy
 ***Table of Contents***: 
 1. [Install Miniconda](#install-miniconda)
 2. [Clone repository](#clone-repository)
-2. [Install required packages](#install-requiered-packages)
+2. [Install required packages](#install-required-packages)
 
 ### Install Miniconda
-Python is a programming language upon which **pamflow** is programmed. For your computer to undestand the commands inside **pamflow**'s code, Python should be installed. Instead of installing it directly we use Miniconda.Miniconda is a lightweight tool that lets you install Python and keep each project’s tools separate, so they don’t interfere with each other. For installing it, follow the tutorial that best suits you and your opperative system:
+Python is the programming language upon which **pamflow** is programmed. For your computer to undestand the commands inside **pamflow**'s code, Python should be installed. Instead of installing it directly we use Miniconda, a lightweight tool that lets you install Python and keep each project’s tools separate, so they don’t interfere with each other. For installing it, follow the tutorial that best suits you and your opperative system:
 
 | Operative System | Language | Video                                                                         |
 |------------------|----------|-------------------------------------------------------------------------------|
@@ -26,9 +26,9 @@ Python is a programming language upon which **pamflow** is programmed. For your 
 
 ### Clone repository
 
-A repository is a storage space where a project’s files and history are kept, so you can organize your work, track changes, and share it with others. The code for **pamflow** is stored in a repository, so for using it you need to download it through a process called *cloning the repository*. For doing so open any terminal on you computer and run 
+A repository is a storage space where a project’s files and history are kept, so you can organize your work, track changes, and share it with others. The code for **pamflow** is stored in a repository. For using it you need to download it through a process called *cloning the repository*. Open any terminal on you computer and run 
 ```sh
-git clone https://github.com/pamflow/pamflow
+git clone https://github.com/pamflow-org/pamflow.git
 cd pamflow
 ```
 
@@ -55,11 +55,11 @@ if in a Windows or
  ```sh
    pip install -r requirements-mac.txt
    ```
-if in a mac. This might also take a while but fortunatelly it has to be done only once. The only step you need to repeat every time you want to use your environment is activating your environment
+if in a mac. This might also take a while but fortunatelly it has to be done only once. The only step you need to repeat every time you want to use your environment is activating it.
 
 
 
 
-**pamflow** is menat to be used exclusively through a terminal in any operative system, but, optionally, you might find more friendly and confortable to interact with it through a code editor such as VS Code, PyCharm, Spider, Atom or any other of your preference. But again, this is completely optional.
+**pamflow** can be used exclusively through a terminal in any operative system, but, optionally, you might find more friendly and confortable to interact with it through a code editor such as VS Code, PyCharm, Spider, Atom or any other of your preference. But again, this is completely optional.
 
 
