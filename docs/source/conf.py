@@ -64,11 +64,12 @@ myst_enable_extensions = [
 ]
 
 myst_substitutions = {
-    "number_of_sensors": "3",
+    "number_of_sensors": "4",
     "number_of_days": "5",
     "number_of_wav_files_per_sensor": "240",
-    "number_of_wav_files": "720",
+    "number_of_wav_files": "960",
     "broken_sensor_1": "MC-013"
+    "broken_sensor_2": "MC-007"
 }
 
 # enable autosummary plugin (table of contents for modules/classes/class

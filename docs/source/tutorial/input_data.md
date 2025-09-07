@@ -1,6 +1,6 @@
 ## Input data: minimum required information for **pamflow**
 
-Now that your computer has the required programms for running **pamflow** you can focus on The Guaviare Project. In this section you will get familiar with the data collected during the project. These input files are not only part of The Guaviare Project but are also the data that **pamflow** requires in any other passive acoustic monitoring project.
+Now that your computer has the required programms for running **pamflow** you can focus on The Guaviare Project. In this section you will get familiar with the data collected on the field. These input files are not only part of The Guaviare Project but are also the data that **pamflow** requires in any other passive acoustic monitoring project.
 
 
 ***Table of Contents***: 
@@ -15,6 +15,7 @@ During The Guaviare Project {{number_of_sensors}} passive acoustic sensors where
 
 The resulting audio files are stored in an  external disk that's been delivered to you by  field researchers. The audios are organized as shown bellow
 
+```
 /guaviare_project_external_disk/pam_data_guaviare/
 ├── MC-002/
 │   ├── MC-002_20240229_000000.WAV
@@ -22,10 +23,12 @@ The resulting audio files are stored in an  external disk that's been delivered 
 │   ├── MC-002_20240229_010000.WAV
 │   ├── MC-002_20240229_013000.WAV
 │   └── MC-002_20240229_020000.WAV
+├── MC-007/ 
 ├── MC-009/  
 └── MC-013/  
+```
 
-Each of the {{number_of_sensors}} subfolders corresponds to one of the installed sensors and stores the {{ number_of_wav_files_per_sensor}} one-minute audio files collected by the sensor. These are the audio files from which **pamflow** will help you extract metadata, detected species and extract audio segments later on the tutorial. This folder containing all the audio files per sensor is called `audio_root_directory`. 
+Each of the {{number_of_sensors}} subfolders corresponds to one of the installed sensors and stores the {{ number_of_wav_files_per_sensor}} one-minute audio files collected by the sensor. These are the audio files from which **pamflow** will help you extract metadata, perform quality checks, detect species and extract audio segments. This folder containing all the audio files per sensor is called `audio_root_directory`. 
 
 > **⚠️ Warning:** Ensure the file names of the audio files meets the format above.  When working with your
 > own audio data, the audio files need to be named following the nomenclature: 
