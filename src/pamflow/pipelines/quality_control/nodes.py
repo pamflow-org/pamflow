@@ -210,6 +210,7 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
     )
 
     geoinfo_mics = geoinfo_mics.merge(media_summary, on="deploymentID", how="left")
+    geoinfo_mics["n_recordings"] = geoinfo_mics["n_recordings"].fillna(0)
     geoinfo_mics = geoinfo_mics.astype({"n_recordings": "int"})
 
     # --- Figure ---
@@ -246,27 +247,6 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
                 fontsize=text_size,
             )
 
-    # # --- Legend (dot size scale) ---
-    # unique_n = np.unique(n)
-    # if len(unique_n) == 1:
-    #     legend_values = unique_n
-    # else:
-    #     legend_values = np.linspace(n.min(), n.max(), num=3, dtype=int)
-    # legend_sizes = ((legend_values - n.min()) / (n.max() - n.min() + 1e-6)) * marker_size + 50
-
-    # handles = [
-    #     plt.scatter([], [], s=size, color=marker_color, alpha=0.7, label=f"{val}")
-    #     for size, val in zip(legend_sizes, legend_values)
-    # ]
-    # ax.legend(
-    #     handles=handles,
-    #     title="Number of recordings",
-    #     scatterpoints=1,
-    #     loc="lower right",
-    #     bbox_to_anchor=(1, -0.2),
-    #     frameon=True,
-    # )
-
     # Title
     ax.set_title(f"Deployment locations: {len(geoinfo_mics)} recorders", pad=10, fontsize=16, color="gray", weight="bold")
 
@@ -291,7 +271,7 @@ def plot_survey_effort(media_summary, deployments):
     n_deployments = deployments['deploymentID'].nunique()
     n_recordings = media_summary['n_recordings'].sum()
     survey_dates = [pd.to_datetime(media_summary.date_ini).min().date(),
-                pd.to_datetime(media_summary.date_ini).max().date()]
+                pd.to_datetime(media_summary.date_end).max().date()]
     temporal_coverage = (survey_dates[1] - survey_dates[0]).days
     #n_locations = deployments['locationID'].nunique()
     n_locations = deployments['deploymentID'].nunique()
