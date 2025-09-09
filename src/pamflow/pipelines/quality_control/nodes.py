@@ -79,7 +79,7 @@ def plot_sensor_performance(media):
     y = "deploymentID"
 
     # Order dataframe to get ordered vertical axis
-    media_out = media_out.sort_values(by=y, ascending=False)
+    media_out = media_out.sort_values(by=x, ascending=False)
 
     # Create a Normalize object for the count range
     count_min = media_out["count"].min()
