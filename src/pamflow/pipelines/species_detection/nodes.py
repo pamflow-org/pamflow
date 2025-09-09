@@ -362,7 +362,7 @@ def plot_observations_summary(observations, media):
     n_recordings_with_observations = media["mediaID"].isin(observations["mediaID"]).sum()
     n_recordings_without_observations = n_recordings - n_recordings_with_observations
     percent_recordings_with_observations = round(n_recordings_with_observations/n_recordings * 100,1)
-    percent_recordings_without_observations = 100 - percent_recordings_with_observations
+    percent_recordings_without_observations = round(100 - percent_recordings_with_observations,1)
     n_machine_observations = (observations.classificationMethod == 'machine').sum()
     n_human_observations = (observations.classificationMethod == 'human').sum()
     percent_machine_observations = round((n_machine_observations / n_observations) * 100,1)
