@@ -11,6 +11,7 @@ observations@pamDP:
   type: pamflow.datasets.pamDP.observations.Observations
   filepath: data/output/species_detection/observations.csv
   timezone: Etc/GMT+5
+
 segments@pandas:
   type: pandas.CSVDataset
   filepath: data/output/species_detection/segments.csv
