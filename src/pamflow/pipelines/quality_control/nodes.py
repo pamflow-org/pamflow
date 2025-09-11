@@ -16,12 +16,17 @@ import matplotlib.dates as mdates
 import matplotlib as mpl
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.colors import Normalize
+from matplotlib_scalebar.scalebar import ScaleBar
+from adjustText import adjust_text
 import logging
 from pamflow.pipelines.quality_control.utils import concat_audio
 import datetime
 
 logger = logging.getLogger(__name__)
 
+def format_number(n):
+    """ Formats a number with thin spaces as thousand separators for improved readability."""
+    return f"{n:,}".replace(",", "\u2009")
 
 def plot_sensor_performance(media):
     """Plots sensor performance to provide an overview of the sampling effort.
@@ -57,9 +62,12 @@ def plot_sensor_performance(media):
 
     # Sort the DataFrame based on the first date
     media_out["first_date"] = media_out.groupby("deploymentID")["timestamp"].transform(
-        "min"
+        "max"
     )
     media_out = media_out.sort_values(by="first_date")
+
+    # Get temporal coverage
+    temporal_coverage = (media.timestamp.max() - media.timestamp.min()).days
 
     # Plot settings
     # Dynamically adjust figure size
@@ -77,9 +85,6 @@ def plot_sensor_performance(media):
     )
     x = "timestamp"
     y = "deploymentID"
-
-    # Order dataframe to get ordered vertical axis
-    media_out = media_out.sort_values(by=y, ascending=False)
 
     # Create a Normalize object for the count range
     count_min = media_out["count"].min()
@@ -111,12 +116,14 @@ def plot_sensor_performance(media):
     ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))  # Every 7 days
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
 
-    # Add title and set grid
+    # Add title, set axes names and set grid
     ax.grid(alpha=0.2)
     ax.set_title(
-        f"Deployment timeline: {media.deploymentID.nunique()} recorders | {media.shape[0]} files",
+        f"Deployment timeline: {media.deploymentID.nunique()} recorders | {temporal_coverage} days",
         pad=10, fontsize=16, color="gray", weight="bold"
     )
+    ax.set_xlabel("Date", fontsize=12, labelpad=8)
+    ax.set_ylabel("Deployment", fontsize=12, labelpad=8)
     
     # Create legend handles
     legend_values = np.linspace(
@@ -155,7 +162,7 @@ def plot_sensor_performance(media):
 
     # Add legend outside the plot
     ax.legend(
-        handles=legend_handles, title="N. Rec", loc="upper left", bbox_to_anchor=(1, 1)
+        handles=legend_handles, title="Number of\nrecordings", loc="upper left", bbox_to_anchor=(1, 1)
     )
     plt.xticks(rotation=45)
     plt.tight_layout()
@@ -229,29 +236,44 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
         edgecolor=marker_color,
     )
 
+    # Add space around data (x=10%, y=10%)
+    ax.margins(x=0.15, y=0.15)
+
     # Add basemap
     cx.add_basemap(ax, crs=geoinfo_mics.crs.to_string())
 
     # --- Text annotations ---
     if text_size > 0:
+        texts = []
         for x, y, label in zip(
             geoinfo_mics.geometry.x,
             geoinfo_mics.geometry.y,
             geoinfo_mics.deploymentID,
         ):
-            ax.annotate(
-                label,
-                xy=(x, y),
-                xytext=(3, 3),
-                textcoords="offset points",
-                fontsize=text_size,
+            texts.append(
+                ax.text(
+                    x, y, label,
+                    fontsize=text_size,
+                    ha="center", va="center"
+                )
             )
+        adjust_text(
+            texts,
+            ax=ax,
+            arrowprops=dict(arrowstyle="->", color="gray", lw=0.5)  # optional arrows
+        )
 
-    # Title
-    ax.set_title(f"Deployment locations: {len(geoinfo_mics)} recorders", pad=10, fontsize=16, color="gray", weight="bold")
+    # Title and axis labels
+    ax.set_title(f"Deployment extent: {len(geoinfo_mics)} locations", pad=10, fontsize=16, color="gray", weight="bold")
+    ax.set_xlabel("Longitude", fontsize=12)
+    ax.set_ylabel("Latitude", fontsize=12)
 
-    # Add space around data (x=10%, y=10%)
-    ax.margins(x=0.1, y=0.1)
+    # Map scale - North arrow not necesary since lat/lon axes indicate direction
+    geoinfo_mics = geoinfo_mics.to_crs(epsg=3857) # Reproject to Web Mercator
+    scalebar = ScaleBar(
+        1, location="upper left", units="m", box_alpha=0, scale_loc="right", height_fraction=0.005
+        )  
+    ax.add_artist(scalebar)
 
     # Equal aspect ratio
     ax.set_aspect('equal')
@@ -320,7 +342,7 @@ def plot_survey_effort(media_summary, deployments, media):
     # Build table data structure
     data = [
         (n_deployments, "Deployments"),
-        (f"{n_recordings} | {n_recording_time} h", "Audio files"),
+        (f"{format_number(n_recordings)} | {n_recording_time} h", "Audio files"),
         (f"{survey_dates[0]}\n{survey_dates[1]}", "Survey dates"),
         (f"{temporal_coverage} days", "Temporal coverage"),
         (n_locations, "Locations"),

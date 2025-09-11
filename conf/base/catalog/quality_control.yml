@@ -3,15 +3,15 @@ sensor_performance_data@pandas:
   filepath: data/output/quality_control/sensor_performance_data.csv
 sensor_performance_figure@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/quality_control/sensor_performance.png
+  filepath: data/output/quality_control/sensor_performance.pdf
   save_args:
-    format: png
+    format: pdf
 
 sensor_location@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/quality_control/sensor_location.png
+  filepath: data/output/quality_control/sensor_location.pdf
   save_args:
-    format: png
+    format: pdf
 
 survey_effort@matplotlib:
   type: matplotlib.MatplotlibWriter
