@@ -42,6 +42,6 @@ observations_summary@matplotlib:
 
 observations_per_species@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/species_detection/observations_per_species.png
+  filepath: data/output/species_detection/observations_per_species.pdf
   save_args:
-    format: png
+    format: pdf
