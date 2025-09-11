@@ -334,6 +334,10 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
     }
     return manual_annotations_partitioned_dataset
 
+def format_number(n):
+    """ Formats a number with thin spaces as thousand separators for improved readability."""
+    return f"{n:,}".replace(",", "\u2009")
+
 def plot_observations_summary(observations, media):
     """Plots a summary of the observations including number of observations, species, recordings with/without observations, and machine/human observations.
     
@@ -370,7 +374,7 @@ def plot_observations_summary(observations, media):
 
     # Build table data structure
     data = [
-        (f"{n_observations} | {n_observations_time} h", "Observations"),
+        (f"{format_number(n_observations)} | {format_number(n_observations_time)} h", "Observations"),
         (n_species, "Species"),
         (f"{percent_recordings_with_observations} %", "Recordings with\nobservations"),
         (f"{percent_recordings_without_observations} %", "Recordings without\nobservations"),
@@ -435,34 +439,52 @@ def plot_observations_per_species(observations):
         A matplotlib Figure object containing the horizontal bar chart.
 
     """
-    species_series = observations['scientificName'].value_counts().head(20)
-    species_series.sort_values(ascending=True, inplace=True)
-    total_species = len(species_series)
+    total_species = observations['scientificName'].nunique()
+    top_species = observations['scientificName'].value_counts().head(25)
+    top_species.sort_values(ascending=True, inplace=True)
 
-    # if there are more than 20 species, take the top 20
-    if total_species > 20:
-        top_species = species_series.sort_values(ascending=True).head(20)
-        title = f"Number of observations per species | Top 20 of {total_species} species)"
+    # if there are more than 20 species, take the top 25
+    if total_species > 25:
+        title = f"Number of observations per species \n Top 25 of {total_species} species"
     else:
-        top_species = species_series.sort_values(ascending=True)
-        title = f"Number of observations per species | {total_species} species"
+        title = f"Number of observations per species \n {total_species} species"
     
-    # Create horizontal bar plot
-    fig, ax = plt.subplots(figsize=(8, 6))
-
+    # Extract species names and counts
     labels = top_species.index
     counts = top_species.values
 
-    ax.barh(labels, counts, alpha=0.85)
+    # Create figure and axis
+    fig, ax = plt.subplots(figsize=(8, 6))
+    bars = ax.barh(labels, counts, alpha=0.85)
 
-    # Add labels
-    for i, v in enumerate(counts):
-        ax.text(v+2, i, str(v), va='center', ha='left', 
-                c='grey')
+    # Add value labels: use bar patches to compute proper position and a fixed pixel offset
+    offset_px = 4  # distance in points (screen units)
+    for bar in bars:
+        w = bar.get_width()                      # width (data units)
+        y = bar.get_y() + bar.get_height() / 2   # center y position
+
+        ax.annotate(
+            f"{int(w)}",
+            xy=(w, y),
+            xytext=(offset_px, 0),               # offset in points (x,y)
+            textcoords="offset points",
+            va="center",
+            ha="left",
+            color="grey",
+            fontsize=10,
+            clip_on=False                        # allow label outside axis if needed
+        )
+
+    # Ensure there's room to display labels on the right
+    ax.set_xlim(0, counts.max() * 1.12)
 
     # Titles and axes labels
-    ax.set_title(title, color="gray", weight="bold", fontsize=14)
+    ax.set_title(title, color="gray", weight="bold", fontsize=12)
 
+    # Italicize species names (y-axis labels)
+    for label in ax.get_yticklabels():
+        label.set_fontstyle("italic")
+    
     # Clean unneded elements of the plot (axes border, x axis and y ticks)
     for spine in plt.gca().spines.values():
         spine.set_visible(False)
