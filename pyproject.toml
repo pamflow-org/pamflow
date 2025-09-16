@@ -19,9 +19,6 @@ exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
 [tool.kedro_telemetry]
 project_id = "5a88f4c090294f4598d637c111ade416"
 
-[project.optional-dependencies]
-dev = ["ruff"]
-
 [tool.ruff]
 select = [
     "F",  # Pyflakes
@@ -55,5 +52,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
+    "ruff",
+    "pytest"
 ]
