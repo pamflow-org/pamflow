@@ -14,23 +14,6 @@ from kedro.io.core import (
 )
 import pandas as pd
 
-mandatory_columns = [
-    'Indicador de evento',	
-    'Latitud',
-	'Longitud',
-	'Fecha inicial',
-	'Fecha final',
-	'Hora inicial',
-	'Hora final',
-	'Equipo de grabación',
-	'Nombre del instalador',
-    'Apellido  del instalador',
-	'Hábitat',
-    'Configuración de muestreo',
-    'Altura de la grabadora respecto al suelo',
-    'test'
-    ]
-
 from pathlib import PurePosixPath
 from typing import Any, Dict, List
 import fsspec
@@ -72,67 +55,71 @@ class FieldDeployments(ExcelDataset):
 
         self.pamdp_columns = [
                                 "deploymentID",
+                                "deploymentStartDate",
+                                "deploymentStartTime",
+                                "deploymentEndDate",
+                                "deploymentEndTime",
+                                "locationID",
                                 "locationName",
                                 "latitude",
                                 "longitude",
-                                "coordinateUncertainty",
-                                "deploymentStartDate",
-                                "deploymentEndDate",
-                                "deploymentStartTime",
-                                "deploymentEndTime",
                                 "setupByName",
                                 "setupByLastName",
+                                "recorderID",
                                 "recorderModel",
                                 "recorderHeight",
                                 "recorderConfiguration",
                                 "habitat",
                                 "deploymentComments",
 
+
                             ]
         self.required_dictionary = {
-                                "deploymentID": True,
-                                "locationName": False,
-                                "latitude": True,
-                                "longitude": True,
-                                "coordinateUncertainty": False,
+                                "deploymentID":True,
                                 "deploymentStartDate":True,
-                                "deploymentEndDate":True,
                                 "deploymentStartTime":True,
+                                "deploymentEndDate":True,
                                 "deploymentEndTime":True,
+                                "locationID":False,
+                                "locationName":False,
+                                "latitude":True,
+                                "longitude":True,
                                 "setupByName":False,
                                 "setupByLastName":False,
-                                "recorderModel": True,
-                                "recorderHeight": False,
-                                "recorderConfiguration": True,
-                                "habitat": False,
-                                "deploymentComments": False,
+                                "recorderID":False,
+                                "recorderModel":True,
+                                "recorderHeight":False,
+                                "recorderConfiguration":True,
+                                "habitat":False,
+                                "deploymentComments":False,
                             }
 
         self.unique_dictionary = {
-                                "deploymentID": True,
-                                "locationName": False,
-                                "latitude": False,
-                                "longitude": False,
-                                "coordinateUncertainty": False,
+                                "deploymentID":True,
                                 "deploymentStartDate":False,
-                                "deploymentEndDate":False,
                                 "deploymentStartTime":False,
+                                "deploymentEndDate":False,
                                 "deploymentEndTime":False,
+                                "locationID":False,
+                                "locationName":False,
+                                "latitude":False,
+                                "longitude":False,
                                 "setupByName":False,
                                 "setupByLastName":False,
-                                "recorderModel": False,
-                                "recorderHeight": False,
-                                "recorderConfiguration": False,
-                                "habitat": False,
-                                "deploymentComments": False,
+                                "recorderID":False,
+                                "recorderModel":False,
+                                "recorderHeight":False,
+                                "recorderConfiguration":False,
+                                "habitat":False,
+                                "deploymentComments":False,
                               }
 
     def _load(self):
         df = super()._load()
-        # 1. Check column names & order
+        # 1. Check minimal columns
         if not set( set(self.pamdp_columns) ).issubset(df.columns):
                 raise ValueError(
-                    f"Missing columns for field_deployments format: \n list of missing columns {set(self.pamdp_columns) - set(df.columns)}"
+                    f"Missing columns for field_deployments format: \n list of missing columns {set(self.pamdp_columns) - set(df.columns)}. \n Please use the provided template to fill in the data."
                 )
         
         # 2. Check mandatory columns for nulls
@@ -151,7 +138,7 @@ class FieldDeployments(ExcelDataset):
         return df
 
     def _save(self, df):
-        # 1. Check column names & order
+         # 1. Check minimal columns
         if set(df.columns) != set(self.pamdp_columns):
             if set(df.columns).issubset(set(self.pamdp_columns)):
                 raise ValueError(

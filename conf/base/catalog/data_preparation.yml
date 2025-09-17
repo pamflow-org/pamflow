@@ -12,10 +12,10 @@ field_deployments_sheet@pandas:
   filepath: data/input/field_deployments/field_deployments_sheet.xlsx
   save_args:
     sheet_name: field deployments
-    header: 3
+    header: 0
   load_args:
     sheet_name: field deployments
-    header: 3
+    header: 0
 
 deployments@pamDP:
   type: pamflow.datasets.pamDP.deployments.Deployments
