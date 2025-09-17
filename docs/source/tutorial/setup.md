@@ -39,25 +39,17 @@ After running the command for cloning the repository, run
 
 ```sh
 conda create -n pamflow_env python=3.10.14
-
 ```
 It might take a while and might require you to confirm you want to create the new environment by typing "Y" (yes). But don't worry, this step is only required once. When the environment is created it still needs to be activated. You can do so by running 
 
 ```sh
-   conda activate pamflow_env
+conda activate pamflow_env
 ```
 From now on every time you want to use **pamflow** you will have to activate your environment. Finally, install all the required dependencies by r unning 
    
-   ```sh
-   pip install -r requirements-win.txt
-   ```
-if in a Windows or  
- ```sh
-   pip install -r requirements-mac.txt
-   ```
-if in a mac. This might also take a while but fortunatelly it has to be done only once. The only step you need to repeat every time you want to use your environment is activating it.
-
-
+```sh
+pip install .
+```
 
 
 **pamflow** can be used exclusively through a terminal in any operative system, but, optionally, you might find more friendly and confortable to interact with it through a code editor such as VS Code, PyCharm, Spider, Atom or any other of your preference. But again, this is completely optional.
