@@ -172,9 +172,9 @@ def field_deployments_sheet_to_deployments(field_deployments, media_summary):
 
 
     n_recordings = media_summary["n_recordings"].sum()
-    media_summary = media_summary[["deploymentID", "date_ini", "date_end"]]
+    
 
-    deployments = field_deployments.merge(media_summary, on="deploymentID", how="left")
+    deployments = field_deployments.copy()
 
    
     

@@ -69,6 +69,8 @@ class FieldDeployments(ExcelDataset):
                                 "recorderModel",
                                 "recorderHeight",
                                 "recorderConfiguration",
+                                "coordinateUncertainty",
+                                "deploymentGroups",
                                 "habitat",
                                 "deploymentComments",
 
@@ -87,9 +89,11 @@ class FieldDeployments(ExcelDataset):
                                 "setupByName":False,
                                 "setupByLastName":False,
                                 "recorderID":False,
-                                "recorderModel":True,
+                                "recorderModel":False,
                                 "recorderHeight":False,
-                                "recorderConfiguration":True,
+                                "recorderConfiguration":False,
+                                "coordinateUncertainty":False,
+                                "deploymentGroups":False,
                                 "habitat":False,
                                 "deploymentComments":False,
                             }
@@ -110,6 +114,8 @@ class FieldDeployments(ExcelDataset):
                                 "recorderModel":False,
                                 "recorderHeight":False,
                                 "recorderConfiguration":False,
+                                 "coordinateUncertainty":False,
+                                "deploymentGroups":False,
                                 "habitat":False,
                                 "deploymentComments":False,
                               }
