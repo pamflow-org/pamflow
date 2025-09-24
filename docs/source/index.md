@@ -7,11 +7,6 @@
 
 Despite the widespread use of Passive Acoustic Monitoring (PAM), a lack of integrated software and standardized data practices has hindered the effective analysis and management of valuable acoustic data. **pamflow** unifies fragmented software tools and standardize data formats, unlocking the full potential of PAM for research and conservation.
 
-## Who develop *pamflow*?
-* Checkout our updated [contributor list](https://github.com/pamflow-org/pamflow/graphs/contributors).
-* [GitHub Repository](https://github.com/pamflow-org/pamflow/)
-
-
 ```{toctree}
 :maxdepth: 1
 :caption: Getting Started
@@ -21,9 +16,15 @@ beginner_tutorial/index.md
 advanced_tutorials/build_your_own_node/index.md
 
 
+
 ```{toctree}
 :maxdepth: 1
 :caption: Getting Involved
 
 getting_involved/contributing_guidelines.md
 getting_involved/data_exchange_format.md
+
+
+## Who develop *pamflow*?
+* Checkout our updated [contributor list](https://github.com/pamflow-org/pamflow/graphs/contributors).
+* [GitHub Repository](https://github.com/pamflow-org/pamflow/)
