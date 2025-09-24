@@ -20,6 +20,7 @@ tutorial/setup.md
 tutorial/index.md
 advanced_tutorials/build_your_own_node/index.md
 
+```{toctree}
 :maxdepth: 1
 :caption: Getting Involved:
 
