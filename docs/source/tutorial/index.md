@@ -1,4 +1,4 @@
-# **pamflow** Tutorial
+# Beginner's Guide
 
 Welcome to the **pamflow**'s tutorial! This guide will walk you through the steps to step for  running **pamflow** and understanding its outputs.
 
