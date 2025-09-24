@@ -170,21 +170,18 @@ def field_deployments_sheet_to_deployments(field_deployments, media_summary):
                 })
 
 
-    field_deployments["recorderID"] = None
-    field_deployments["locationID"] = field_deployments["locationName"]
-    field_deployments["coordinateUncertainty"] = None
-    field_deployments["deploymentGroups"] = None
 
     n_recordings = media_summary["n_recordings"].sum()
-    media_summary = media_summary[["deploymentID", "date_ini", "date_end"]]
+    
 
-    deployments = field_deployments.merge(media_summary, on="deploymentID", how="left")
+    deployments = field_deployments.copy()
 
    
     
     
     logger.info(f"Done! {len(deployments)} deployments with {n_recordings} recordings saved to pamDP format.")
-    deployments_columns= ["deploymentID",
+    deployments_columns= [
+    "deploymentID",
     "locationID",
     "locationName",
     "latitude",

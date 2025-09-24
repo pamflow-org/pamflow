@@ -5,5 +5,6 @@
 :caption: Contents:
 
 tutorial/index.md
+advanced_tutorials/build_your_own_node/index.md
 contributing_guidelines.md
 data_exchange_format.md
