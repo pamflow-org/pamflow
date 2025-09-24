@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="https://github.com/pamflow/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="400"/>
+</div>
+
 # pamflow: Simplified analysis for passive acoustic monitoring
 
 ## What is *pamflow*?
@@ -36,7 +40,6 @@ data_standardization/data_exchange_format.md
 
 getting_involved/contributing_guidelines.md
 ```
-
 
 ## About
 
