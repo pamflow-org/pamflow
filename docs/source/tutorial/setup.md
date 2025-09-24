@@ -1,12 +1,6 @@
 # Installation instructions
 
-Before getting started with your tasks on the Guaviare Project, you need to install the dependencies required by **pamflow**:
-
-* Miniconda
-* Required packages 
-
 In this section we provide useful resources for installation in any operative system. If you are already familiar with Python and Conda you can skip this step and [create your environment and install dependencies using PIP.](../contributing_guidelines.md#getting-started)
-
 
 
 ***Table of Contents***: 
