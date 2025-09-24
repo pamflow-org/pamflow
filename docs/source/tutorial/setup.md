@@ -1,4 +1,4 @@
-# **pamflow** minimal setup
+# Installation instructions
 
 Before getting started with your tasks on the Guaviare Project, you need to install the dependencies required by **pamflow**:
 
