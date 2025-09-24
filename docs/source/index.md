@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="https://github.com/pamflow/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="400"/>
+  <img src="https://github.com/pamflow/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="600"/>
 </div>
 
-# pamflow: Simplified analysis for passive acoustic monitoring
+# Simplified analysis for passive acoustic monitoring
 
 ## What is *pamflow*?
 **pamflow** integrates signal processing and machine listening tools into a cohesive data science framework. It ensures data adheres to FAIR principles by using established data standards, which lowers project barriers and boosts the interoperability of biodiversity records.
