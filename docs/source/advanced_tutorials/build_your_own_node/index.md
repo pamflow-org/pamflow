@@ -1,4 +1,4 @@
-# Customizing Your Workflow
+# Customizing your workflow
 
 ## How to build your own node in **pamflow** 
 

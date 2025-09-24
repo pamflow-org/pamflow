@@ -16,13 +16,13 @@ Despite the widespread use of Passive Acoustic Monitoring (PAM), a lack of integ
 :maxdepth: 1
 :caption: Getting Started:
 
-tutorial/setup.md
-tutorial/index.md
+beginner_tutorial/setup.md
+beginner_tutorial/index.md
 advanced_tutorials/build_your_own_node/index.md
 
 ```{toctree}
 :maxdepth: 1
 :caption: Getting Involved:
 
-contributing_guidelines.md
-data_exchange_format.md
+getting_involved/contributing_guidelines.md
+getting_involved/data_exchange_format.md
