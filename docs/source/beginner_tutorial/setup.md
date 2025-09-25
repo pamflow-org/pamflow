@@ -5,9 +5,9 @@ To use **pamflow** you will need to:
 ```{contents}
    :depth: 1
    :local:
+   :numbered:
 ```
-
-If you are already familiar with Python and Conda you can skip the first step and [create your environment and install dependencies using PIP.](../contributing_guidelines.md#getting-started)
+If you are already familiar with Python and Conda you can skip the first step.
 
 ## 1. Install miniconda
 Python is the programming language upon which **pamflow** is programmed. For your computer to undestand the commands inside **pamflow**'s code, Python should be installed. Instead of installing it directly we use Miniconda, a lightweight tool that lets you install Python and keep each project’s tools separate, so they don’t interfere with each other. For installing it, follow the tutorial that best suits you and your opperative system:
