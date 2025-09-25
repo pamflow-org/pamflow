@@ -4,14 +4,15 @@ Now that your computer has the required programms for running **pamflow** you ca
 
 
 ***Table of Contents***: 
-1. [Audio Root Directory](#audio-root-directory)
-2. [Field deployment](#field-deployment)
-3. [Target species](#target-species)
+1. [Download field audio recordings](#1-download-field-audio-recordings)
+2. [Audio Root Directory](#2-audio-root-directory)
+3. [Field deployment](#3-field-deployment)
+4. [Target species](#4-target-species)
 
-### Download the field audio recordings
+### 1. Download field audio recordings
 The audio recordings you'll need for this tutorial can be found on [Zenodo](https://zenodo.org/records/17148157). This sample data is provided to show you how to use pamflow. If you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
 
-### Audio Root Directory
+### 2. Audio Root Directory
 
 During The Guaviare Project {{number_of_sensors}} passive acoustic sensors where installed for {{number_of_days}} days. The sensors where programmed for recording one minute every 30 minutes so, if everything went well, for each day and each installed sensor 48 files were collected for a total number of {{ number_of_wav_files}} one-minute recordings. 
 
@@ -36,13 +37,14 @@ Each of the {{number_of_sensors}} subfolders corresponds to one of the installed
 > own audio data, the audio files need to be named following the nomenclature: 
 > {Sensor name}_{date}_{time}.WAV
 > **pamflow** will ignore files named after a different structure.
-### Field deployment
+
+### 3. Field deployment
 
 Field researchers installed the acoustic sensors and took notes on everything important regarding the installation: coordinates of the site, date and time of installation,  sensor characteristics and  ecological traits of the deployment site. 
 
 These notes were handed out to you along with the recordings in a format  called `field_deployments_sheet`. This is a `.xlsx` file with one row per installed sensor having all the previously mentioned data regarding the installation of the sensor. 
 
-### Target species
+### 4. Target species
 
 Even though there are many bird species at the monitoring site, the community is only interested in a few of them considered relevant for conservation. Along with the `devices_root_directory` and the `field_deployments_sheet`, you were given the list of relevant species for the project, namely, the `target_species`, which is a `.csv` file with only one column (`scientificName`) and one row per each one of the species considered important  for this particular project. 
 
