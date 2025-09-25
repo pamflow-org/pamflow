@@ -2,12 +2,11 @@
 
 Now that your computer has the required programms for running **pamflow** you can focus on The Guaviare Project. In this section you will download and get familiar with the data collected on the field. These input files are not only part of The Guaviare Project but are also the data that **pamflow** requires in any other passive acoustic monitoring project.
 
-
 ***Table of Contents***: 
-1. [Download field audio recordings](#1-download-field-audio-recordings)
-2. [Audio Root Directory](#2-audio-root-directory)
-3. [Field deployment](#3-field-deployment)
-4. [Target species](#4-target-species)
+1. [Download field audio recordings](#1.-download-field-audio-recordings)
+2. [Audio Root Directory](#2.-audio-root-directory)
+3. [Field deployment](#3.-field-deployment)
+4. [Target species](#4.-target-species)
 
 ### 1. Download field audio recordings
 The audio recordings you'll need for this tutorial can be found on [Zenodo](https://zenodo.org/records/17148157). This sample data is provided to show you how to use pamflow. If you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
