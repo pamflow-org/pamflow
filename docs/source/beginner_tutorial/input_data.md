@@ -3,7 +3,6 @@
 Now that your computer has the required programms for running **pamflow** you can focus on The Guaviare Project. In this section you will download and get familiar with the data collected on the field. These input files are not only part of The Guaviare Project but are also the data that **pamflow** requires in any other passive acoustic monitoring project.
 
 ***Summary***:
-
 ```{contents}
    :depth: 1
    :local:
