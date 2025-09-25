@@ -3,7 +3,7 @@ So far, out of your assigend tasks for The Guaviare Project, you have only got f
 In this section you will learn how to get pamflow to read this data in order to standardize them and extract more information.
 
 
-***Table of Contents***: 
+***Summary***: 
 1. [Get **pamflow** to read input data](#get-pamflow-to-read-input-data)
 2. [Standardized metadata from each audio and each sensor](#standardized-metadata-from-each-audio-and-each-sensor)
 
