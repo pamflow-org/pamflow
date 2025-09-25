@@ -3,7 +3,6 @@ So far, out of your assigend tasks for The Guaviare Project, you have only got f
 In this section you will learn how to get pamflow to read this data in order to standardize them and extract more information.
 
 ***Summary***:
-
 ```{contents}
    :depth: 1
    :local:

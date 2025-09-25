@@ -1,9 +1,11 @@
 # Installation instructions
 
 To use **pamflow** you will need to:
-1. [Install Miniconda](#1-install-miniconda)
-2. [Clone repository](#2-clone-repository)
-2. [Install required packages](#3-install-required-packages)
+
+```{contents}
+   :depth: 1
+   :local:
+```
 
 If you are already familiar with Python and Conda you can skip the first step and [create your environment and install dependencies using PIP.](../contributing_guidelines.md#getting-started)
 
