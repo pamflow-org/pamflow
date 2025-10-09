@@ -2,8 +2,7 @@
 
 You are almost completing your assigned tasks for The Guaviare Project. In ths new section you will learn how **pamflow** can be a great help for the remaining duites. Specifically, you will learn how to use **pamflow** for automatic species detection and identification in the collected audios, filter for the custom list of target species and store segments of the audios having relavant animal vocalizations. 
 
-
-***Table of Contents***:  
+***Summary***:  
 1. [Species detection](#species-detection)
 2. [Segments](#segments)
 3. [Data annotation](#data-annotation)

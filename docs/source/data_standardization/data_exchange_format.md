@@ -1,8 +1,6 @@
-# Required input data and exchange output format
+# Input data standards
 
-## Input data: minimum required information
-
-### File Organization
+## File organization
 
 Recording files must be organized as follows:
 
@@ -23,7 +21,7 @@ Example:
 ```
 
 
-### Field deployment sheet
+## Field deployment sheet
 This file provides metadata collected during the field deployment. It should be an Excel file named `field_deployments_sheet.xlsx`, with the following column names in the first row:
 
 | Field Name              | Description | Required | Unique | Type | Example |
@@ -40,10 +38,10 @@ This file provides metadata collected during the field deployment. It should be 
 |**setupBy**| Name or identifier of the individual or organization responsible for deploying the recorder.|   |   | `string` | Juan Gómez |
 | **deploymentComments** | Additional comments or observations related to the deployment. |   |   | `string` | Traffic noise during installation |
 
-### Target species
+## Target species
 An optional target_species.csv with a single column (scientificName) listing one species per row. Species must be a subset of the model’s output labels. If the file is empty, no filtering is applied to detections.
 
-## Data exchange format used in `pamflow`
+# Output data standards
 
 To manage data collected during PAM analyses and facilitate exchange with biodiversity repositories, we implemented a standard called **pamDP**.
 This standard was adapted from [camtrapDP](https://camtrap-dp.tdwg.org/) (Bubnicki et al., 2023), preserving as much as possible while incorporating specific requirements for PAM.
@@ -54,7 +52,7 @@ The data is stored in 3 main tables in `csv` format:
 * **[observations.csv](#observations)**: Records detected observations from media, including species identification, timestamps, and confidence scores.
 
 
-### Deployments
+## Deployments
 The `deployments.csv` table tracks information about sensor placements, such as location, duration, and recording settings.
 
 | Field Name              | Description | Required | Unique | Type | Example |

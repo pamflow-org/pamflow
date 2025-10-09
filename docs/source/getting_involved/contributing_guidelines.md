@@ -1,4 +1,4 @@
-# Contributing Guidelines
+# Contributing guidelines
 
 We welcome all contributions that help improve the code, documentation, and overall functionality. Please follow these guidelines to ensure a smooth contribution process.
 

@@ -1,8 +1,6 @@
 # Beginner's guide
 
-Welcome to the **pamflow**'s tutorial! This guide will walk you through the steps to step for  running **pamflow** and understanding its outputs.
-
-For this, we will use an immersive example with real acoustic data. As soon as you understand this toy example, you will be able to run t**pamflow** with your own data.
+This guide will walk you through the steps to step for  running **pamflow** and understanding its outputs. For this, we will use an immersive example with real acoustic data. As soon as you understand this toy example, you will be able to run t**pamflow** with your own data. The tutorial takes approximately 30 minutes to complete.
 
 ***Context: The Guaviare Project***
 *The National biodiversity institute in Colombia, the Humboldt Institute, collaborated with communities at Guaviare, Colombia to perform a communitary project on the local bird fauna. You are part of the project  and your task is to process the passively collected acoustic data, extract insights and produce relevant metrics and graphics for a report on the project. You will use **pamflow** to help you.*
