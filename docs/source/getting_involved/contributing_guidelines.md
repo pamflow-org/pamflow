@@ -1,6 +1,6 @@
 # Contributing Guidelines
 
-Thank you for your interest in contributing to this project! We welcome all contributions that help improve the code, documentation, and overall functionality. Please follow these guidelines to ensure a smooth contribution process.
+We welcome all contributions that help improve the code, documentation, and overall functionality. Please follow these guidelines to ensure a smooth contribution process.
 
 ## Table of Contents
 1. [Getting Started](#getting-started)
