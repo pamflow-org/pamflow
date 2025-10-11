@@ -10,7 +10,7 @@ To use **pamflow** you will need to:
 If you are already familiar with Python and Conda you can skip the first step.
 
 ## 1. Install miniconda
-Python is the programming language upon which **pamflow** is programmed. For your computer to undestand the commands inside **pamflow**'s code, Python should be installed. Instead of installing it directly we use Miniconda, a lightweight tool that lets you install Python and keep each project’s tools separate, so they don’t interfere with each other. For installing it, follow the tutorial that best suits you and your opperative system:
+To run **pamflow**, your computer needs Python and other required tools installed. We’ll use Miniconda to install Python and related packages— it’s a lightweight tool that keeps each project’s environment separate and avoids conflicts. Follow the installation guide for your operating system:
 
 | Operative System | Language | Video                                                                         |
 |------------------|----------|-------------------------------------------------------------------------------|
@@ -40,7 +40,7 @@ It might take a while and might require you to confirm you want to create the ne
 ```sh
 conda activate pamflow_env
 ```
-From now on every time you want to use **pamflow** you will have to activate your environment. Finally, install all the required dependencies by r unning 
+From now on every time you want to use **pamflow** you will have to activate your environment. Finally, install all the required dependencies by running 
    
 ```sh
 pip install .

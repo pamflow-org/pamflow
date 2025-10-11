@@ -13,7 +13,7 @@ This guide will walk you through the steps to step for  running **pamflow** and 
 5. Select and store audio segments with target species' vocalizations.
 
 
-On each of the followig sections you will find relevant information on how to use **pamflow** to complete all of your tasks. Next session is devoted to properly install  **pamflow** on your computer. If you are an experienced python user and want a faster, less detailed set-up you can find it here [here](../contributing_guidelines.md#getting-started).
+In the next sections, you’ll learn how to use **pamflow** to get your work done. Make sure **pamflow** and its tools are installed before you start ([instructions here](setup.md)). If you are an experienced python user and want a faster, less detailed set-up you can find it [here](../documentation/index.md).
 
 ![](../../meta/images/pamflow_intro.jpg)
 
