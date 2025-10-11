@@ -9,7 +9,7 @@ Now that your computer has the required programms for running **pamflow** you ca
 ```
 
 ### 1. Download audio recordings
-The audio recordings you'll need for this tutorial can be found on [Zenodo](https://zenodo.org/records/17148157). This sample data is provided to show you how to use pamflow. If you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
+The audio recordings you'll need for this tutorial can be found on [Zenodo](https://doi.org/10.5281/zenodo.16922848). This sample data is provided to show you how to use pamflow. If you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
 
 ### 2. Audio Root Directory
 
