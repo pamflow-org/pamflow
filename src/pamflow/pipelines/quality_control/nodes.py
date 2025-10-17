@@ -227,7 +227,7 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
     n = geoinfo_mics["n_recordings"]
 
     # --- Plot points ---
-    ax.scatter(
+    scatter_plot = ax.scatter(
         geoinfo_mics.geometry.x,
         geoinfo_mics.geometry.y,
         s=marker_size,
@@ -260,20 +260,29 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
         adjust_text(
             texts,
             ax=ax,
-            arrowprops=dict(arrowstyle="->", color="gray", lw=0.5)  # optional arrows
+            expand_points=(1.5, 1.8),   # stronger avoidance around scatter points
+            arrowprops=dict(arrowstyle="->", color="gray", lw=0.5),
+            add_objects=[scatter_plot],
         )
 
+    # Find and recolor attribution text
+    for t in ax.texts:
+        if "OpenStreetMap" in t.get_text():
+            t.set_color("gray")      # make it gray
+            t.set_alpha(0.7)         # optional transparency
+    
     # Title and axis labels
     ax.set_title(f"Deployment extent: {len(geoinfo_mics)} locations", pad=10, fontsize=16, color="gray", weight="bold")
     ax.set_xlabel("Longitude", fontsize=12)
     ax.set_ylabel("Latitude", fontsize=12)
 
-    # Map scale - North arrow not necesary since lat/lon axes indicate direction
-    geoinfo_mics = geoinfo_mics.to_crs(epsg=3857) # Reproject to Web Mercator
-    scalebar = ScaleBar(
-        1, location="upper left", units="m", box_alpha=0, scale_loc="right", height_fraction=0.005
-        )  
-    ax.add_artist(scalebar)
+    # # TODO: Sclae bar is not working because of projection issues
+    # # Map scale - North arrow not necesary since lat/lon axes indicate direction
+    # geoinfo_mics = geoinfo_mics.to_crs(epsg=3857) # Reproject to Web Mercator
+    # scalebar = ScaleBar(
+    #     1, location="upper left", units="km", box_alpha=0, scale_loc="right", height_fraction=0.005
+    #     )  
+    # ax.add_artist(scalebar)
 
     # Equal aspect ratio
     ax.set_aspect('equal')
