@@ -260,8 +260,7 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
         adjust_text(
             texts,
             ax=ax,
-            expand_points=(1.5, 1.8),   # stronger avoidance around scatter points
-            arrowprops=dict(arrowstyle="->", color="gray", lw=0.5),
+            arrowprops=dict(arrowstyle="-", color="gray", lw=0.5),
             add_objects=[scatter_plot],
         )
 
