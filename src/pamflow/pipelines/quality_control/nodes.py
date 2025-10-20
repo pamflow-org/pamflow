@@ -275,13 +275,22 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
     ax.set_xlabel("Longitude", fontsize=12)
     ax.set_ylabel("Latitude", fontsize=12)
 
-    # # TODO: Sclae bar is not working because of projection issues
-    # # Map scale - North arrow not necesary since lat/lon axes indicate direction
-    # geoinfo_mics = geoinfo_mics.to_crs(epsg=3857) # Reproject to Web Mercator
-    # scalebar = ScaleBar(
-    #     1, location="upper left", units="km", box_alpha=0, scale_loc="right", height_fraction=0.005
-    #     )  
-    # ax.add_artist(scalebar)
+    # TODO: Sclae bar is not working because of projection issues
+    # -- Map scalebar (North arrow not necesary since lat/lon axes indicate direction) --
+    #geoinfo_mics = geoinfo_mics.to_crs(epsg=3857) # Reproject to Web Mercator
+     # Compute meters per degree based on mean latitude
+    mean_lat = geoinfo_mics.geometry.y.mean()
+    meters_per_degree = 111_320 * np.cos(np.deg2rad(mean_lat))
+
+    scalebar = ScaleBar(
+        dx = meters_per_degree,
+        location="upper left", 
+        units="m", 
+        box_alpha=0, 
+        scale_loc="right", 
+        height_fraction=0.005
+        )  
+    ax.add_artist(scalebar)
 
     # Equal aspect ratio
     ax.set_aspect('equal')
