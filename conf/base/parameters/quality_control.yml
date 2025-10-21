@@ -17,9 +17,10 @@ timelapse_plot:
   noverlap: 512          # Number of overlapping points
   flims: [0, 24000]      # Frequency limits (Hz)
   db_range: 90           # Dynamic range in decibels
-  colormap: 'grey'       # Colormap options: 'grey', 'viridis', 'plasma', 'inferno', 'cividis'
+  colormap: 'viridis'    # Colormap options: 'grey', 'viridis', 'plasma', 'inferno', 'cividis'
 
 # Parameters for generating timelapses
 timelapse:
   sample_length: 5       # Length of each sample for timelapse (in seconds)
   sample_period: '30min' # Time interval between samples (e.g., '30min')
+  sample_date: null      # Specific date for timelapse (YYYY-MM-DD). If null, the date with the most data will be used.

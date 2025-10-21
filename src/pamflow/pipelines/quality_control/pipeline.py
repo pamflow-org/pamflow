@@ -40,6 +40,7 @@ def create_pipeline(**kwargs):
                     "media@pamDP",
                     "params:timelapse.sample_length",
                     "params:timelapse.sample_period",
+                    "params:timelapse.sample_date",
                     "params:timelapse_plot",
                 ],
                 outputs=[

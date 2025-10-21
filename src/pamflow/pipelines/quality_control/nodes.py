@@ -405,7 +405,7 @@ def plot_survey_effort(media_summary, deployments, media):
     return fig
 
 def get_timelapse(
-    sensor_deployment_data, media, sample_len, sample_period, plot_params
+    sensor_deployment_data, media, sample_len, sample_period, sample_date, plot_params
 ):
     """Generates audio timelapse spectrograms for each sensor deployment.
 
@@ -447,19 +447,24 @@ def get_timelapse(
         - dict: A dictionary containing spectrogram figures for each deployment, stored in the
           catalog as `timelapse_plot@matplotlib`.
     """
-    # get selected date for calculating timelapse
-    sensor_deployment_data["num_recordings_mean"] = sensor_deployment_data.groupby(
-        "timestamp"
-    )["count"].transform("mean")
+    if sample_date is not None:
+        selected_date = sample_date
+    else:
+        # Select the timestamp with the largest number of sensors and highest mean recordings
+        # This ensures the timelapse represents the best data coverage day
+        sensor_deployment_data["num_recordings_mean"] = sensor_deployment_data.groupby(
+            "timestamp"
+        )["count"].transform("mean")
 
-    sensor_deployment_data["num_sensors_by_date"] = sensor_deployment_data.groupby(
-        "timestamp"
-    )["deploymentID"].transform("nunique")
+        sensor_deployment_data["num_sensors_by_date"] = sensor_deployment_data.groupby(
+            "timestamp"
+        )["deploymentID"].transform("nunique")
 
-    selected_date = sensor_deployment_data.sort_values(
-        by=["num_sensors_by_date", "num_recordings_mean"], ascending=[False, False]
-    )["timestamp"].unique()[0]
-    # timelapse calculation
+        selected_date = sensor_deployment_data.sort_values(
+            by=["num_sensors_by_date", "num_recordings_mean"], ascending=[False, False]
+        )["timestamp"].unique()[0]
+    
+    # Timelapse data preparation
     media = media.astype({"timestamp": "datetime64[ns]"})
 
     df_timelapse = media[
@@ -478,6 +483,7 @@ def get_timelapse(
     width = plot_params["fig_width"]
     height = plot_params["fig_height"]
     colormap = plot_params["colormap"]
+    flims = plot_params["flims"]
     
     # Mix timelapse
     logger.info(f"Processing audio timelapse for {ngroups} devices:")
@@ -501,9 +507,39 @@ def get_timelapse(
             long_wav,
             fs,
             nperseg=nperseg,
-            noverlap=noverlap,  # nperseg*noverlap
+            noverlap=noverlap,
+            flims=flims,
         )
         util.plot_spectrogram(Sxx, ext, db_range, ax=ax, colorbar=False, cmap=colormap)
+        ax.text(
+            0.99, 0.98,                     # move near top-right corner
+            f"{site} | {selected_date}",
+            color="white",
+            fontsize=12,
+            fontweight="bold",
+            transform=ax.transAxes,
+            ha="right",                     # right-align the text
+            va="top",
+        )
+        # Define xtick positions and labels
+        xtick_positions = [
+            tn[0],                              # start (0h)
+            tn[int(len(tn) * 0.25)],            # 1/4 of the recording (~6h)
+            tn[int(len(tn) * 0.5)],             # 1/2 (~12h)
+            tn[int(len(tn) * 0.75)],            # 3/4 (~18h)
+            tn[-1],                             # end (~23:30h)
+        ]
+        xtick_labels = ["00:00", "06:00", "12:00", "18:00", "23:30"]
+        ax.set_xticks(xtick_positions)
+        ax.set_xticklabels(xtick_labels)
+        ax.set_xlabel("Time (hh:mm)", fontsize=12)
+        
+        # Convert y-axis to kHz
+        yticks = ax.get_yticks()
+        ax.set_yticks(yticks)  # explicitly fix tick positions
+        ax.set_yticklabels([f"{y/1000:.1f}" for y in yticks])
+        ax.set_ylabel("Frequency (kHz)", fontsize=12)
+        plt.tight_layout()
 
         # Return audio and figure
         file_name = f"{site}_timelapse_{selected_date}"
