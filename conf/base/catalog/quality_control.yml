@@ -1,6 +1,7 @@
 sensor_performance_data@pandas:
   type: pandas.CSVDataset
   filepath: data/output/quality_control/sensor_performance_data.csv
+
 sensor_performance_figure@matplotlib:
   type: matplotlib.MatplotlibWriter
   filepath: data/output/quality_control/sensor_performance.pdf
