@@ -1,6 +1,6 @@
 # Documentation
 
-## Running the entire pipeline
+## Running the workflow
 
 To run the entire workflow, you can use the following command
 
@@ -9,17 +9,44 @@ kedro run
 ```
 However, for better control and to understand each step, it's highly recommended to run the pipelines individually, especially during your first execution.
 
-## Running individual pipelines
+```bash
+kedro run --pipeline <pipeline_name>
+```
 
-### 1. Prepare data
+For a finner grained execution, run individual nodes whithin a pipeline.
+
+```bash
+kedro run --nodes <nodes_names>
+```
+
+Check the full list of posibilities to run the workflow in the [kedro documentation web page](https://docs.kedro.org/en/1.0.0/getting-started/commands_reference/#kedro-run).
+
+## Pipelines details
+
+### 1. data_preparation
 
 This pipeline prepares your raw input data for analysis, ensuring it meets the required format and standards for subsequent steps.
 
-```bash
-kedro run --pipeline=prepare_data
-```
+**Parameters**
+This pipeline requires no parameters. Adjustments to the field deployment sheet structure can be set using the **Catalog**.
 
-### 2. Revise quality of deployments and recordings
+**Catalog**
+| Dataset | Type | Path / Args |
+|----------|------|-------------|
+| `media@pamDP` | `pamflow.datasets.pamDP.media.Media` | `filepath: data/output/data_preparation/media.csv`<br>`timezone: Etc/GMT+5` |
+| `media_summary@pandas` | `pandas.CSVDataset` | `filepath: data/output/data_preparation/audio_media_summary.csv` |
+| `field_deployments_sheet@pandas` | `pamflow.datasets.pamDP.field_deployments_sheet.FieldDeployments` | `filepath: data/input/field_deployments/field_deployments_sheet.xlsx`<br>`save_args:`<br>&nbsp;&nbsp;`sheet_name: field deployments`<br>&nbsp;&nbsp;`header: 0`<br>`load_args:`<br>&nbsp;&nbsp;`sheet_name: field deployments`<br>&nbsp;&nbsp;`header: 0` |
+| `deployments@pamDP` | `pamflow.datasets.pamDP.deployments.Deployments` | `filepath: data/output/data_preparation/deployment.csv`<br>`timezone: Etc/GMT+5` |
+
+**Nodes**
+| Node name | Inputs | Outputs | Description |
+|------------|---------|-----------|--------------|
+| `get_media_file_node` | `params:audio_root_directory`, `field_deployments_sheet@pandas` | `media@pamDP` | Retrieves media files from the specified audio root directory and links them with field deployment sheet data. |
+| `get_media_summary_node` | `media@pamDP` | `media_summary@pandas` | Generates a summary of the media files (e.g., counts, durations, metadata). |
+| `field_deployments_sheet_to_deployments_node` | `field_deployments_sheet@pandas`, `media_summary@pandas` | `deployments@pamDP` | Converts the field deployments sheet and media summary into structured deployment data. |
+
+
+### 2. quality_control
 
 After the data is prepared, this pipeline performs a series of checks to verify the quality of your deployments and recordings, identifying any issues before moving on to analysis.
 
@@ -27,7 +54,7 @@ After the data is prepared, this pipeline performs a series of checks to verify 
 kedro run --pipeline=quality_control
 ```
 
-### 3. Detect species with AI
+### 3. species_detection
 
 This pipeline utilizes AI models to automatically detect and identify species within your acoustic data.
 
@@ -35,7 +62,7 @@ This pipeline utilizes AI models to automatically detect and identify species wi
 kedro run --pipeline=species_detection
 ```
 
-### 4. Compute Acoustic Indices
+### 4. acoustic_indices
 
 This step processes your audio files to calculate various acoustic indices. These indices provide a quantitative overview of the soundscape, useful for a wide range of analyses.
 
@@ -43,7 +70,7 @@ This step processes your audio files to calculate various acoustic indices. Thes
 kedro run --pipeline=acoustic_indices
 ```
 
-### 5. Generate Graphical Soundscapes
+### 5. graphical_soundscape
 
 This step allows to compute a representation of the most prominent spectro-temporal dynamics over a 24-hour window per each deployment.
 
