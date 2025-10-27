@@ -23,20 +23,13 @@ Check the full list of posibilities to run the workflow in the [kedro documentat
 
 ## Pipelines details
 
-### 1. data_preparation
+### 1. `data_preparation`
 
-This pipeline prepares your raw input data for analysis, ensuring it meets the required format and standards for subsequent steps.
+**Description**<br>
+Reads field and audio data to standardize metadata using the pamDP standard. It outputs media and deployment formats, ensuring coherence between field sheets and collected audio files for later analysis and exchange.
 
-**Parameters** <br>
-This pipeline requires no parameters. Adjustments to the field deployment sheet structure can be set using the **Catalog**.
-
-**Catalog**
-| Dataset | Type | Path / Args |
-|----------|------|-------------|
-| `media@pamDP` | `pamflow.datasets.pamDP.media.Media` | `filepath: data/output/data_preparation/media.csv`<br>`timezone: Etc/GMT+5` |
-| `media_summary@pandas` | `pandas.CSVDataset` | `filepath: data/output/data_preparation/audio_media_summary.csv` |
-| `field_deployments_sheet@pandas` | `pamflow.datasets.pamDP.field_deployments_sheet.FieldDeployments` | `filepath: data/input/field_deployments/field_deployments_sheet.xlsx`<br>`save_args:`<br>&nbsp;&nbsp;`sheet_name: field deployments`<br>&nbsp;&nbsp;`header: 0`<br>`load_args:`<br>&nbsp;&nbsp;`sheet_name: field deployments`<br>&nbsp;&nbsp;`header: 0` |
-| `deployments@pamDP` | `pamflow.datasets.pamDP.deployments.Deployments` | `filepath: data/output/data_preparation/deployment.csv`<br>`timezone: Etc/GMT+5` |
+**Parameters**<br>
+This pipeline requires no parameters. Adjustments to the field deployment sheet structure can be set using the **Catalog** entry `field_deployments_sheet@pandas`.
 
 **Nodes**
 | Node name | Inputs | Outputs | Description |
