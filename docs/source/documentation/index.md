@@ -27,7 +27,7 @@ Check the full list of posibilities to run the workflow in the [kedro documentat
 
 This pipeline prepares your raw input data for analysis, ensuring it meets the required format and standards for subsequent steps.
 
-**Parameters**
+**Parameters** <br>
 This pipeline requires no parameters. Adjustments to the field deployment sheet structure can be set using the **Catalog**.
 
 **Catalog**
@@ -41,9 +41,9 @@ This pipeline requires no parameters. Adjustments to the field deployment sheet 
 **Nodes**
 | Node name | Inputs | Outputs | Description |
 |------------|---------|-----------|--------------|
-| `get_media_file_node` | `params:audio_root_directory`, `field_deployments_sheet@pandas` | `media@pamDP` | Retrieves media files from the specified audio root directory and links them with field deployment sheet data. |
+| `get_media_file_node` | `params:audio_root_directory`<br>`field_deployments_sheet@pandas` | `media@pamDP` | Retrieves media files from the specified audio root directory and links them with field deployment sheet data. |
 | `get_media_summary_node` | `media@pamDP` | `media_summary@pandas` | Generates a summary of the media files (e.g., counts, durations, metadata). |
-| `field_deployments_sheet_to_deployments_node` | `field_deployments_sheet@pandas`, `media_summary@pandas` | `deployments@pamDP` | Converts the field deployments sheet and media summary into structured deployment data. |
+| `field_deployments_sheet_to_deployments_node` | `field_deployments_sheet@pandas`<br>`media_summary@pandas` | `deployments@pamDP` | Converts the field deployments sheet and media summary into structured deployment data. |
 
 
 ### 2. quality_control
