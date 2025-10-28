@@ -52,25 +52,40 @@ kedro run --pipeline quality_control
 **Description**<br>
 Allows a quick data exploration to flag underperforming sensors and ensure data integrity for reliable ecological analysis. It summarizes survey effort, plotting sensor locations, and checking recording timelines.
 
-**Parameters**<br>
-| Group | Name | Description | Default Value |
-|--------|------|--------------|----------------|
-| `sensor_location_plot` | `fig_height` | Figure height (in inches) | `8` |
-| `sensor_location_plot` | `fig_width` | Figure width (in inches) | `8` |
-| `sensor_location_plot` | `marker_size` | Size of the location markers | `40` |
-| `sensor_location_plot` | `marker_color` | Color of the location markers | `'slateblue'` |
-| `sensor_location_plot` | `text_size` | Size of the text annotations (if 0 or negative, no text is shown) | `9` |
-| `sensor_location_plot` | `alpha` | Transparency level of the markers | `0.7` |
-| `timelapse_plot` | `fig_height` | Figure height (in inches) | `4` |
-| `timelapse_plot` | `fig_width` | Figure width (in inches) | `15` |
-| `timelapse_plot` | `nperseg` | Number of data points per segment | `1024` |
-| `timelapse_plot` | `noverlap` | Number of overlapping points | `512` |
-| `timelapse_plot` | `flims` | Frequency limits (Hz) | `[0, 24000]` |
-| `timelapse_plot` | `db_range` | Dynamic range in decibels | `90` |
-| `timelapse_plot` | `colormap` | Colormap options: 'grey', 'viridis', 'plasma', 'inferno', 'cividis' | `'viridis'` |
-| `timelapse` | `sample_length` | Length of each sample for timelapse (in seconds) | `5` |
-| `timelapse` | `sample_period` | Time interval between samples (e.g., '30min') | `'30min'` |
-| `timelapse` | `sample_date` | Specific date for timelapse (YYYY-MM-DD). If null, the date with the most data will be used. | `null` |
+<details>
+<summary><b>Parameters</b></summary>
+#### sensor_location_plot
+
+| Name | Description | Default Value |
+|------|--------------|----------------|
+| `fig_height` | Figure height (in inches) | `8` |
+| `fig_width` | Figure width (in inches) | `8` |
+| `marker_size` | Size of the location markers | `40` |
+| `marker_color` | Color of the location markers | `'slateblue'` |
+| `text_size` | Size of the text annotations (if 0 or negative, no text is shown) | `9` |
+| `alpha` | Transparency level of the markers | `0.7` |
+
+#### timelapse_plot
+
+| Name | Description | Default Value |
+|------|--------------|----------------|
+| `fig_height` | Figure height (in inches) | `4` |
+| `fig_width` | Figure width (in inches) | `15` |
+| `nperseg` | Number of data points per segment | `1024` |
+| `noverlap` | Number of overlapping points | `512` |
+| `flims` | Frequency limits (Hz) | `[0, 24000]` |
+| `db_range` | Dynamic range in decibels | `90` |
+| `colormap` | Colormap options: 'grey', 'viridis', 'plasma', 'inferno', 'cividis' | `'viridis'` |
+
+#### timelapse
+
+| Name | Description | Default Value |
+|------|--------------|----------------|
+| `sample_length` | Length of each sample for timelapse (in seconds) | `5` |
+| `sample_period` | Time interval between samples (e.g., '30min') | `'30min'` |
+| `sample_date` | Specific date for timelapse (YYYY-MM-DD). If null, the date with the most data will be used. | `null` |
+
+<details>
 
 **Nodes**
 | Node name | Inputs | Outputs | Description |
