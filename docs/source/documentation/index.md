@@ -21,9 +21,13 @@ kedro run --nodes <nodes_names>
 
 Check the full list of posibilities to run the workflow in the [kedro documentation web page](https://docs.kedro.org/en/1.0.0/getting-started/commands_reference/#kedro-run).
 
-## Pipelines details
+## Pipeline details
 
-### 1. `data_preparation`
+### 1. Data preparation
+
+```bash
+kedro run --pipeline data_preparation
+```
 
 **Description**<br>
 Reads field and audio data to standardize metadata using the pamDP standard. It outputs media and deployment formats, ensuring coherence between field sheets and collected audio files for later analysis and exchange.
@@ -39,34 +43,78 @@ This pipeline requires no parameters. Adjustments to the field deployment sheet 
 | `field_deployments_sheet_to_deployments_node` | `field_deployments_sheet@pandas`<br>`media_summary@pandas` | `deployments@pamDP` | Converts the field deployments sheet and media summary into structured deployment data. |
 
 
-### 2. quality_control
-
-After the data is prepared, this pipeline performs a series of checks to verify the quality of your deployments and recordings, identifying any issues before moving on to analysis.
+### 2. Quality control
 
 ```bash
-kedro run --pipeline=quality_control
+kedro run --pipeline quality_control
 ```
 
-### 3. species_detection
+**Description**<br>
+Allows a quick data exploration to flag underperforming sensors and ensure data integrity for reliable ecological analysis. It summarizes survey effort, plotting sensor locations, and checking recording timelines.
 
-This pipeline utilizes AI models to automatically detect and identify species within your acoustic data.
+**Parameters**<br>
+| Group | Name | Description | Default Value |
+|--------|------|--------------|----------------|
+| `sensor_location_plot` | `fig_height` | Figure height (in inches) | `8` |
+| `sensor_location_plot` | `fig_width` | Figure width (in inches) | `8` |
+| `sensor_location_plot` | `marker_size` | Size of the location markers | `40` |
+| `sensor_location_plot` | `marker_color` | Color of the location markers | `'slateblue'` |
+| `sensor_location_plot` | `text_size` | Size of the text annotations (if 0 or negative, no text is shown) | `9` |
+| `sensor_location_plot` | `alpha` | Transparency level of the markers | `0.7` |
+| `timelapse_plot` | `fig_height` | Figure height (in inches) | `4` |
+| `timelapse_plot` | `fig_width` | Figure width (in inches) | `15` |
+| `timelapse_plot` | `nperseg` | Number of data points per segment | `1024` |
+| `timelapse_plot` | `noverlap` | Number of overlapping points | `512` |
+| `timelapse_plot` | `flims` | Frequency limits (Hz) | `[0, 24000]` |
+| `timelapse_plot` | `db_range` | Dynamic range in decibels | `90` |
+| `timelapse_plot` | `colormap` | Colormap options: 'grey', 'viridis', 'plasma', 'inferno', 'cividis' | `'viridis'` |
+| `timelapse` | `sample_length` | Length of each sample for timelapse (in seconds) | `5` |
+| `timelapse` | `sample_period` | Time interval between samples (e.g., '30min') | `'30min'` |
+| `timelapse` | `sample_date` | Specific date for timelapse (YYYY-MM-DD). If null, the date with the most data will be used. | `null` |
+
+**Nodes**
+| Node name | Inputs | Outputs | Description |
+|------------|---------|----------|--------------|
+| `plot_sensor_performance_node` | `media@pamDP` | `sensor_performance_figure@matplotlib`<br>`sensor_performance_data@pandas` | Generates visualizations and summary data of sensor performance metrics based on media data. |
+| `plot_sensor_location_node` | `media_summary@pandas`<br>`deployments@pamDP`<br>`params:sensor_location_plot` | `sensor_location@matplotlib` | Creates a map or plot showing sensor deployment locations using summarized media and deployment data. |
+| `plot_survey_effort_node` | `media_summary@pandas`<br>`deployments@pamDP`<br>`media@pamDP` | `survey_effort@matplotlib` | Produces a plot summarizing survey effort (e.g., recording hours or deployment durations). |
+| `get_timelapse_node` | `sensor_performance_data@pandas`<br>`media@pamDP`<br>`params:timelapse.sample_length`<br>`params:timelapse.sample_period`<br>`params:timelapse.sample_date`<br>`params:timelapse_plot` | `timelapse@PartitionedAudio`<br>`timelapse_spectrograms@PartitionedImage` | Generates timelapse audio samples and corresponding spectrogram images for visual and acoustic analysis. |
+
+
+### 3. Species detection
+
+**Description**<br>
+Automates species detection using a TensorFlow or BirdNET model. It filters observations based on target species, then saves customized audio segments for revision. All data follows pamDP standards.
 
 ```bash
-kedro run --pipeline=species_detection
+kedro run --pipeline species_detection
 ```
+**Parameters**<br>
 
-### 4. acoustic_indices
+**Nodes**
 
-This step processes your audio files to calculate various acoustic indices. These indices provide a quantitative overview of the soundscape, useful for a wide range of analyses.
+### 4. Acoustic indices
 
 ```bash
-kedro run --pipeline=acoustic_indices
+kedro run --pipeline acoustic_indices
 ```
 
-### 5. graphical_soundscape
+**Description**<br>
+Processes audio files to calculate various acoustic indices. These indices provide a quantitative overview of the soundscape, useful for a wide range of analyses.
 
-This step allows to compute a representation of the most prominent spectro-temporal dynamics over a 24-hour window per each deployment.
+**Parameters**<br>
+
+**Nodes**
+
+### 5. Graphical soundscape
 
 ```bash
-kedro run --pipeline=graphical_soundscape
+kedro run --pipeline graphical_soundscape
 ```
+
+**Description**<br>
+Computes a representation of the most prominent spectro-temporal dynamics over a 24-hour window per each deployment.
+
+**Parameters**<br>
+
+**Nodes**
