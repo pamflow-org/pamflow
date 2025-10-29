@@ -1,5 +1,13 @@
 # Workflow structure and execution
 
+```{toctree}
+:maxdepth: 1
+:caption: Workflow structure and execution
+index.md
+running_the_workflow.md
+pipeline_details.md
+```
+
 ## Overview
 
 This workflow provides a modular Kedro-based pipeline for ecological acoustic analysis. 
@@ -35,9 +43,3 @@ media@pamDP:
 ```
 
 Check the [Kedro documentation](https://docs.kedro.org/en/1.0.0/getting-started/kedro_concepts/) for more details.
-
-```{toctree}
-:maxdepth: 1
-:caption: Workflow structure and execution
-running_the_workflow.md
-pipeline_details.md

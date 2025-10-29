@@ -1,4 +1,4 @@
-## Running the workflow
+# Running the workflow
 
 To run the entire workflow, you can use the following command
 
