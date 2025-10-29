@@ -1,5 +1,3 @@
-# Workflow structure and execution
-
 ```{toctree}
 :maxdepth: 1
 :caption: Workflow structure and execution
@@ -8,7 +6,7 @@ running_the_workflow.md
 pipeline_details.md
 ```
 
-## Overview
+# Overview
 
 This workflow provides a modular Kedro-based pipeline for ecological acoustic analysis. 
 It standardizes field data, performs sensor quality checks, detects species, computes acoustic indices, 
