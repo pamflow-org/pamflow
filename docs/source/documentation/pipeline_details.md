@@ -1,6 +1,6 @@
-## Pipeline details
+# Pipeline details
 
-### 1. Data preparation
+## 1. Data preparation
 
 ```bash
 kedro run --pipeline data_preparation
@@ -19,7 +19,7 @@ This pipeline requires no parameters. Adjustments to the field deployment sheet 
 | `get_media_summary_node` | Generates a summary of the media files (e.g., counts, durations, metadata). | `media@pamDP` | `media_summary@pandas` |
 | `field_deployments_sheet_to_deployments_node` | Converts the field deployments sheet and media summary into structured deployment data. | `field_deployments_sheet@pandas`<br>`media_summary@pandas` | `deployments@pamDP` |
 
-### 2. Quality control
+## 2. Quality control
 
 ```bash
 kedro run --pipeline quality_control
@@ -60,7 +60,7 @@ Allows a quick data exploration to flag underperforming sensors and ensure data 
 </details>
 <br>
 
-### 3. Species detection
+## 3. Species detection
 
 **Description**<br>
 Automates species detection using a TensorFlow or BirdNET model. It filters observations based on target species, then saves customized audio segments for revision. All data follows pamDP standards.
@@ -93,7 +93,7 @@ kedro run --pipeline species_detection
 <br>
 
 
-### 4. Acoustic indices
+## 4. Acoustic indices
 
 ```bash
 kedro run --pipeline acoustic_indices
@@ -143,7 +143,7 @@ Processes audio files to calculate various acoustic indices. These indices provi
 <br>
 
 
-### 5. Graphical soundscape
+## 5. Graphical soundscape
 
 ```bash
 kedro run --pipeline graphical_soundscape
