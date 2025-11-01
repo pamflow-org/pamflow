@@ -34,8 +34,9 @@ name = "pamflow"
 version = "0.1.0"  # Add the version here
 description = "Simplified analysis for passive acoustic monitoring"
 authors = [{name = "Juan Sebastian Ulloa", email = "julloa@humboldt.org.co"}, {name = "Nicolas Betancourt", email = "nbetancourtc@humboldt.org.co"}]
+
 dependencies = [
-    # Core dependencies
+    # Common dependencies
     "birdnetlib==0.17.2",
     "contextily==1.6.2",
     "fsspec==2024.9.0",
@@ -50,7 +51,12 @@ dependencies = [
     "statsmodels==0.14.4",
     "adjusttext~=1.3.0",
     "matplotlib-scalebar~=0.9",
-    "tflite-runtime==2.14.0", 
+    
+    # Windows and Linux
+    'tflite-runtime==2.14.0; platform_system == "Windows" or platform_system == "Linux"',
+    
+    # macOS
+    'tensorflow==2.15.0; platform_system == "Darwin"',
 ]
 
 [project.optional-dependencies]
@@ -59,3 +65,7 @@ dev = [
     "pytest",
     "kedro-viz==10.0.0",
 ]
+
+[project.scripts]
+kedro = "kedro.framework.cli:main"
+pamflow = "kedro.framework.cli:main"
