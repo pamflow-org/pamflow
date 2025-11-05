@@ -19,5 +19,5 @@ field_deployments_sheet@pandas:
 
 deployments@pamDP:
   type: pamflow.datasets.pamDP.deployments.Deployments
-  filepath: data/output/data_preparation/deployment.csv
+  filepath: data/output/data_preparation/deployments.csv
   timezone: Etc/GMT+5
