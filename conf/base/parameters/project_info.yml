@@ -1,0 +1,56 @@
+# pamDP metadata template (based on pam-dp-profile.json)
+# Use this as a guide when creating a pamflow Data Package (pamDP)
+# Fields marked with ✅ are REQUIRED.
+# Fields marked with ⚙️ are OPTIONAL but recommended.
+
+# ──────────────────────────────────────────────────────────────
+# ✅ PROJECT INFORMATION
+# ──────────────────────────────────────────────────────────────
+project:
+  title: "Sonidos Naturales para la Biodiversidad"  # ✅ Project title
+  samplingDesign: "systematicRandom"                # ✅ One of: simpleRandom, systematicRandom, clusteredRandom, experimental, targeted, opportunistic
+  captureMethod:                                    # ✅ One or both of: activityDetection, timeLapse
+    - "timeLapse"
+  individualAnimals: false                          # ✅ true if individuals are identifiable
+  observationLevel: media                           # ✅ One or both: media, event
+
+  # ⚙️ Optional project metadata
+  id: "23-256"
+  acronym: "SONABIO"
+  description: >
+    Acoustic community monitoring project focused on amazonian soundscapes.
+  path: "https://sonabioproject.org"
+
+# ──────────────────────────────────────────────────────────────
+# ✅ TAXONOMIC COVERAGE
+# ──────────────────────────────────────────────────────────────
+taxonomic:
+  - scientificName: "Aves"   # ✅ See for options: http://rs.tdwg.org/dwc/terms/scientificName
+    taxonRank: "class"
+      
+# ──────────────────────────────────────────────────────────────
+# ⚙️ OPTIONAL FIELDS (Recommended for completeness)
+# ──────────────────────────────────────────────────────────────
+title: "SONABIO Data Package"     # Package title
+description: >
+  Data package derived from recordings collected in 2023
+  across study sites from Guaviare. Includes deployments, media, and observation tables.
+version: "1.0.0"
+keywords: ["PAM", "acoustics", "birds", "Amazonia"]
+homepage: "https://sonabio.org/datasets"
+sources:
+  - title: "pamflow"
+    version: "1.0"
+licenses:
+  - scope: "data"
+    name: "CC-BY-4.0"
+  - scope: "media"
+    name: "CC-BY-NC-4.0"
+bibliographicCitation: "Ulloa, J.S. et al. (2025). SONABIO Acoustic Data Package. DOI:10.xxxx/xxxxx"
+relatedIdentifiers:
+  - relationType: "IsSupplementTo"
+    relatedIdentifier: "https://doi.org/10.xxxx/relatedstudy"
+    relatedIdentifierType: "DOI"
+references:
+  - "Wearn, O.R. & Glover-Kapfer, P. (2017). Camera-trapping for conservation..."
+coordinatePrecision: 0.001
