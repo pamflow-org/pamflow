@@ -9,6 +9,8 @@ import os
 from maad import util
 import pandas as pd
 import logging
+import numpy as np
+from pamflow.datasets.pamDP.deployments import deployments_pamdp_columns
 
 logger = logging.getLogger(__name__)
 
@@ -156,45 +158,41 @@ def field_deployments_sheet_to_deployments(field_deployments, media_summary):
         A standardized deployments DataFrame following the pamDP.deployments format. Stored in
         the catalog as `deployments@pamDP`.
     """
+
+    logger.info("Converting field deployments sheet to pamDP deployments format...")
+    
+    # -- 1. Create deployments dataframe following pamDP standards -- #
+
+    # Create a new DataFrame with the schema
+    deployments = pd.DataFrame(columns=deployments_pamdp_columns)
+
+    # -- 2. Read the data from field_deployments and adjust as necessary -- #
+    # Adjust and combine recordists names
     field_deployments["setupBy"] = (
         field_deployments["setupByName"]
         + field_deployments["setupByLastName"]
     )
 
+    # Combine date and time columns into datetime fields
+    field_deployments['deploymentStart'] = pd.to_datetime(
+        field_deployments["deploymentStartDate"].astype(str) + ' ' + 
+        field_deployments["deploymentStartTime"].astype(str)
+    )
     
+    field_deployments['deploymentEnd'] = pd.to_datetime(
+        field_deployments["deploymentEndDate"].astype(str) + ' ' + 
+        field_deployments["deploymentEndTime"].astype(str)
+    )
 
-    field_deployments['deploymentStart']=field_deployments["deploymentStartDate"].astype(str) + ' ' + field_deployments["deploymentStartTime"].astype(str)
-    field_deployments['deploymentEnd'  ]=field_deployments["deploymentEndDate" ].astype(str) + ' ' + field_deployments["deploymentEndTime"  ].astype(str)
-    field_deployments=field_deployments.astype({'deploymentStart':'datetime64[ns]',
-                    'deploymentEnd' :'datetime64[ns]'
-                })
-
-
+    # 3 -- Map existing fields from field_deployments to deployments -- #
+    # Populate deployments DataFrame
+    for column in deployments_pamdp_columns:
+        if column in field_deployments.columns:
+            deployments[column] = field_deployments[column]
+        else:
+            deployments[column] = None
 
     n_recordings = media_summary["n_recordings"].sum()
-    
-
-    deployments = field_deployments.copy()
-
-   
-    
-    
     logger.info(f"Done! {len(deployments)} deployments with {n_recordings} recordings saved to pamDP format.")
-    deployments_columns= [
-    "deploymentID",
-    "locationID",
-    "locationName",
-    "latitude",
-    "longitude",
-    "coordinateUncertainty",
-    "deploymentStart",
-    "deploymentEnd",
-    "setupBy",
-    "recorderID",
-    "recorderModel",
-    "recorderHeight",
-    "recorderConfiguration",
-    "habitat",
-    "deploymentGroups",
-    "deploymentComments",]
-    return deployments[deployments_columns]
+
+    return deployments
