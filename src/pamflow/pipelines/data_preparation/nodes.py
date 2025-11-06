@@ -14,7 +14,7 @@ from pamflow.datasets.pamDP.deployments import deployments_pamdp_columns
 
 logger = logging.getLogger(__name__)
 
-def get_media_file(input_path, field_deployments_sheet):
+def get_media_file(input_path, field_deployments_sheet, timezone):
     """Retrieves and processes metadata from media files in the given directory.
 
     Parameters
@@ -35,12 +35,14 @@ def get_media_file(input_path, field_deployments_sheet):
         The DataFrame follows the pamDP.media format. Stored in catalog as
         media@pamDP.
     """
-
+    # TODO: check if file prefix is needed
     # add_file_prefix(folder_name=input_path,
     #                recursive=True
     #                )
+    
     logger.info(f"Preparing data from {input_path}...")
-    # checking consistency between sensors found on audio root directory and field deployments sheet
+    
+    # Check consistency between sensors found on audio root directory and field deployments sheet
     sensors_in_audio_root_directory=os.listdir(input_path)
     sensors_in_field_deployments=field_deployments_sheet['deploymentID'].unique().tolist()
     if set(sensors_in_audio_root_directory)!=set(sensors_in_field_deployments):
@@ -78,6 +80,11 @@ def get_media_file(input_path, field_deployments_sheet):
     media["filePublic"] = False  
     media["captureMethod"] = "activityDetection"
     media["fileLength"] = media["fileLength"].astype(float).round(3)
+
+    # Adjust date with ISO 8601 format
+    media["timestamp"] = pd.to_datetime(media["timestamp"]).dt.tz_localize(timezone)
+    media["timestamp"] = media["timestamp"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
+    
     # checking consistency between sensors found on audio root directory and media
     sensors_in_media=media['deploymentID'].unique().tolist()
     missing_in_media=set(sensors_in_audio_root_directory)-set(sensors_in_media)
