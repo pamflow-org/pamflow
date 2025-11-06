@@ -29,6 +29,11 @@ taxonomic:
     taxonRank: "class"
       
 # ──────────────────────────────────────────────────────────────
+# ✅ TIME ZONE
+# ──────────────────────────────────────────────────────────────
+timezone: "America/Bogota"   # ✅ IANA Time Zone database name
+
+# ──────────────────────────────────────────────────────────────
 # ⚙️ OPTIONAL FIELDS (Recommended for completeness)
 # ──────────────────────────────────────────────────────────────
 title: "SONABIO Data Package"     # Package title
