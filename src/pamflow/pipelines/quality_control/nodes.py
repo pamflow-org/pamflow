@@ -536,7 +536,6 @@ def get_timelapse(
         
         # Convert y-axis to kHz
         yticks = ax.get_yticks()
-        ax.set_yticks(yticks)  # explicitly fix tick positions
         ax.set_yticklabels([f"{y/1000:.1f}" for y in yticks])
         ax.set_ylabel("Frequency (kHz)", fontsize=12)
         plt.tight_layout()
