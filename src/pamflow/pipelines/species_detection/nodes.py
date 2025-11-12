@@ -10,6 +10,7 @@ from pamflow.pipelines.species_detection.utils import (
     species_detection_single_file,
     trim_audio,
 )
+from pamflow.datasets.pamDP.observations import observations_pamdp_columns
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -95,19 +96,30 @@ def species_detection_parallel(media, deployments, n_jobs):
     }
     #'common_name', 'scientific_name', 'start_time', 'end_time', 'confidence', 'label'
     observations = df_out.rename(columns=column_names_dict)
-
     observations["observationID"] = observations.index
-    observations["classificationTimestamp"] = pd.to_datetime("today")
-    observations["observationType"] = "animal"
-    observations["classificationMethod"] = "machine"
-
     observations["eventID"] = None
+    observations["observationLevel"] = "interval"
+    observations["observationType"] = "animal"
+    observations["count"] = None
+    observations["lifeStage"] = None
+    observations["sex"] = None
+    observations["behavior"] = None
+    observations["individualID"] = None
+    observations["individualPositionRadius"] = None
+    observations["frequencyLow"] = None
+    observations["frequencyHigh"] = None
+    observations["classificationMethod"] = "machine"
+    observations["classificationTimestamp"] = pd.to_datetime("today").strftime('%Y-%m-%dT%H:%M:%S')
+    observations["observationTags"] = None    
     observations["observationComments"] = None
     observations["classificationProbability"] = observations["classificationProbability"].astype(float).round(3)
     
-
     # observations['mediaID']=observations['filePath'].str.split(os.sep).str[-1]
     observations = observations.drop(columns=["common_name", "label"])
+
+    # sort columns accortding to observations_pamdp_columns
+    observations = observations[observations_pamdp_columns]
+
     logger.info(
         f"Species detection completed! Detected {observations.shape[0]} observations."
     )
