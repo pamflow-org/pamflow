@@ -25,7 +25,7 @@ segments_audio_folder@AudioFolderDataset:
 
 manual_annotations@PartitionedDataset:
   type: partitions.PartitionedDataset
-  path: data/input/manual_annotations
+  path: data/output/species_detection/manual_annotations
   dataset: 
     type: pandas.ExcelDataset
     save_args:
