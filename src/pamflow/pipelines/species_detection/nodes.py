@@ -11,6 +11,7 @@ from pamflow.pipelines.species_detection.utils import (
     trim_audio,
 )
 from pamflow.datasets.pamDP.observations import observations_pamdp_columns
+from rich.console import Console
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -45,6 +46,16 @@ def species_detection_parallel(media, deployments, n_jobs):
         as `unfiltered_observations@pamDP`.
         The DataFrame follows the pamDP.observations format.
     """
+    from rich.progress import (
+        Progress,
+        SpinnerColumn,
+        BarColumn,
+        TextColumn,
+        TimeElapsedColumn,
+        TimeRemainingColumn,
+    )
+
+    console = Console()
 
     deployments = deployments[["deploymentID", "latitude", "longitude"]]
 
@@ -56,9 +67,12 @@ def species_detection_parallel(media, deployments, n_jobs):
     logger.info(
         f"Computing species detection for {df.shape[0]} files using {n_jobs} threads"
     )
-    # Use concurrent.futures for parelell execution
+
+    # Use concurrent.futures for parallel execution and show progress with rich
+    results = []
+    errors = 0
+
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
-        # Use submit for each task
         futures = [
             executor.submit(
                 species_detection_single_file,
@@ -71,19 +85,30 @@ def species_detection_parallel(media, deployments, n_jobs):
             for idx, row in df.iterrows()
         ]
 
-        # Get results when tasks are completed
-        results = []
+        # Track completion using rich Progress
+        total = len(futures)
+        progress_columns = [
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+            TimeElapsedColumn(),
+            TimeRemainingColumn(),
+        ]
+        with Progress(*progress_columns, console=console) as progress:
+            task = progress.add_task("Detecting species...", total=total)
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    result = future.result()
+                    results.append(result)
+                except Exception as e:
+                    errors += 1
+                    console.log(f"[red]Error processing file #{errors}:[/red] {e}")
+                    logger.exception("Error during species detection task")
+                finally:
+                    progress.update(task, advance=1)
 
-        i = 0
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                result = future.result()
-
-                results.append(result)
-
-            except Exception as e:
-                i += 1
-                print(f"Error processing the {i}th: files {e}")
+    if errors:
+        console.log(f"[yellow]Completed with {errors} failed tasks.[/yellow]")
 
     # Build dataframe with results
     resultados_por_carpeta_unchained = list(it.chain.from_iterable(results))
