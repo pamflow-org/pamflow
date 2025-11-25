@@ -465,7 +465,7 @@ def get_timelapse(
         )["timestamp"].unique()[0]
     
     # Timelapse data preparation
-    media["timestamp"] = pd.to_datetime(media["timestamp"], utc=True, errors="coerce")
+    media["timestamp"] = pd.to_datetime(media["timestamp"], errors="coerce")
 
     df_timelapse = media[
         media["timestamp"].dt.date
