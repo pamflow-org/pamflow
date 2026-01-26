@@ -33,7 +33,7 @@ select = [
 name = "pamflow"
 version = "0.1.0"  # Add the version here
 description = "Simplified analysis for passive acoustic monitoring"
-authors = [{name = "Juan Sebastian Ulloa", email = "julloa@humboldt.org.co"}, {name = "Nicolas Betancourt", email = "nbetancourtc@humboldt.org.co"}]
+
 
 dependencies = [
     # Common dependencies
