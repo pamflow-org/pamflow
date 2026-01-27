@@ -178,6 +178,7 @@ def field_deployments_sheet_to_deployments(field_deployments, media_summary, tim
     # Adjust and combine recordists names
     field_deployments["setupBy"] = (
         field_deployments["setupByName"]
+        + " "
         + field_deployments["setupByLastName"]
     )
 
