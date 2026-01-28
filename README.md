@@ -34,13 +34,13 @@ pip install .
 All audio files must be stored in a dedicated directory. Each subdirectory within this directory should have a unique identifier corresponding to the ID or name of each sensor. This structure ensures that recordings are properly associated with their respective sensors.
 
 To get **pamflow** to read this data follow next section's instructions. 
-### 3.2 Metadata 
+#### 3.2 Metadata 
 Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `recorderID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files.
 
-### 3.3 Target species
+#### 3.3 Target species
 For filtering out animal detections,a  custom list og species of interest can be provided to **pamflow**. It has to be a `.csv` file with a single column (`scientificName`) containing scientific names for the target species. This file is not mandatory for **pamflow** to run. If this file is not provided, **pamflow** will leave [`observations`](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#observations) file unchanged.
 
-### 3.3 Sample toy data
+#### 3.3 Sample toy data
 
 For an example of properly formated data or to have a sample dataset to try **pamflow**, download [pamflow's beginner tutorial dataset](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7).
 
