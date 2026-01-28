@@ -11,12 +11,12 @@
 ### 1. Download or Clone This Repository
 
 ```bash
-git clone https://github.com/pamflow/pamflow.git
+git clone https://anonymous.4open.science/r/pamflow-DC88/
 cd pamflow
 ```
 
 ### 2. Set Up a Working Environment
-Ensure you have Python 3.11 installed. Then, create and activate a virtual environment:
+Ensure you have Python 3.11 installed. Then, create and activate a virtual environment using conda:
 
 ```bash
 conda create -n pamenv python=3.11
@@ -25,19 +25,24 @@ conda activate pamenv
 
 Next, install the required dependencies based on your operating system.
 
-#### On Windows:
 ```bash
-pip install -r requirements-win.txt
-```
-
-#### On macOS:
-```bash
-pip install -r requirements-mac.txt
+pip install .
 ```
 
 ### 3. Organize PAM Data
-- **Audio Data:** All audio files must be stored in a dedicated directory. Each subdirectory within this directory should have a unique identifier corresponding to the ID or name of each sensor. This structure ensures that recordings are properly associated with their respective sensors.
-- **Metadata:** Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `recorderID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files.
+#### 3.1 Audio Data
+All audio files must be stored in a dedicated directory. Each subdirectory within this directory should have a unique identifier corresponding to the ID or name of each sensor. This structure ensures that recordings are properly associated with their respective sensors.
+
+To get **pamflow** to read this data follow next section's instructions. 
+### 3.2 Metadata 
+Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `recorderID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files.
+
+### 3.3 Target species
+For filtering out animal detections,a  custom list og species of interest can be provided to **pamflow**. It has to be a `.csv` file with a single column (`scientificName`) containing scientific names for the target species. This file is not mandatory for **pamflow** to run. If this file is not provided, **pamflow** will leave [`observations`](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#observations) file unchanged.
+
+### 3.3 Sample toy data
+
+For an example of properly formated data or to have a sample dataset to try **pamflow**, download [pamflow's beginner tutorial dataset](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7).
 
 ## Getting Started
 
@@ -54,6 +59,25 @@ field_deployments_sheet@pandas:
   type: pandas.ExcelDataset
   filepath: <path to your Excel file with deployment information>
 ```
+For providing a file with species of interest, edit the `./conf/local/catalog.yml` file to define the path to your target species file:
+
+```yaml
+target_species@pandas:
+  type: pamflow.datasets.pamDP.target_species.TargetSpecies
+  filepath: <path to your .csv file with target species>
+```
+
+It is advisable to use the subfolders inside `./data/input/` to store field deployments sheet and target species file. 
+```
+data/
+├── input/                          # Input data and configurations
+│   ├── field_deployments/          
+│   ├── manual_annotations/         
+│   └── target_species/             
+│       └── target_species.csv # Target species list
+└── output
+```
+
 
 ### 2. Run Workflows
 
@@ -87,6 +111,23 @@ kedro run --pipeline=acoustic_indices
 ```bash
 kedro run --pipeline=graphical_soundscape
 ```
+
+### Access output data
+
+The outputs resulting from  running  the entire workflow or individual pipelines will be inside the corresponding subfolders within `./data/output/`.
+```
+data/
+├── input/  
+└── output/ # Generated output data from pipeline runs
+    ├── acoustic_indices/ 
+    ├── data_preparation/ 
+    ├── graphical_soundscape/ 
+    ├── quality_control/
+    └── species_detection/          
+               
+```
+
+For more information on the outputs and its interpretation visit [Pipeline details page](https://pamflow.readthedocs.io/en/latest/documentation/pipeline_details.html) on the documentation.
 
 ## License
 
