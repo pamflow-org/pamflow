@@ -35,32 +35,31 @@ To hand your input files over  to **pamflow** you will only need two out of thes
 ``` 
 conf/
 ├── local/               
-│   ├── parameters.yml
-│   └──   
 └── 
 ```
-Now open the file `conf/local/parameters.yml` and write the path to the `audio_root_directory`. The external disk provided to you is called `guaviare_project_external_disk` and inside it there is the folder we get familiar with in [previous section](./input_data.md)  called `pam_data_guaviare`. Thus, the `conf/base/parameters.yml` file should look like this now you have changed it.
+Inside `conf/local/` create two files:  `conf/local/parameters.yml` and `conf/local/catalog.yml`. On `conf/local/parameters.yml` write the path to the `audio_root_directory`. The external disk provided to you is called `guaviare_project_external_disk` and inside it there is the folder we get familiar with in [previous section](./input_data.md)  called `pam_data_guaviare`. 
+
+
+On `conf/local/parameters.yml` you will also have to indicate the timezone of you audio files. In our case they were recorded at Guaviare, Colombia and thus the corresponding time zone is `America/Bogota`. Thus, the `conf/local/parameters.yml` file should look like this now you have changed it.
 
 ```yaml
 audio_root_directory: "/media/pamResearcher/guaviare_project_external_disk/pam_data_guaviare"
+timezone: "America/Bogota"
 
 ```
 
-Now, for providing pamflow with your custom `field_deployments_sheet` and `target_species` go to the `data/` folder which should look like this
+Now, for providing pamflow with your custom `field_deployments_sheet` and `target_species` edit the `./conf/local/catalog.yml` file as follows
+```yaml
+field_deployments_sheet@pandas:
+  type: pandas.ExcelDataset
+  filepath: <path to your Excel file with deployment information>
 
-``` 
-data/
-├── input/                       # Folder containing all the input data
-│   ├── field_deployments/       # Folder containing field_deployments_sheet 
-│   └── target_species/          # Folder containing target_species
-└── output/                      # Folder containing all outputs
+target_species@pandas:
+  type: pamflow.datasets.pamDP.target_species.TargetSpecies
+  filepath: <path to your .csv file with target species>
 ```
 
-Intuitively enough, copy `field_deployments_sheet` to the path `data\input\field_deployments_sheet\field_deployments_sheet.xlsx` and `target_species` to the path `data\input\target_species\target_species.csv`.
 
-> **⚠️ Warning:** Ensure the `field_deployments_sheet` and `target_species` files are in the correct format.
-> This means to check the files are named properly: `field_deployments_sheet.xlsx` and `target_species.csv`.
-> Also make sure that the columns are properly named and the info in  `field_deployments_sheet.xlsx` is stored in a sheed called `Plantilla Usuario`.
 
 Now that your data is properly stored, you can use **pamflow** to complete your [asigned tasks](./tutorial.md)
 
