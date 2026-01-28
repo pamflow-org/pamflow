@@ -118,8 +118,9 @@ def get_media_summary(media):
     """
 
     # Ensure timestamp is in datetime format and estimate duty cycle
-    media["timestamp"] = pd.to_datetime(media.timestamp)
-    media["diff"] = media["timestamp"].sort_values().diff()
+    media["timestamp"] = pd.to_datetime(media["timestamp"])
+    media = media.sort_values(["deploymentID", "timestamp"])
+    media["diff"] = media.groupby("deploymentID")["timestamp"].diff()
     
     # Summarize by deploymentID
     media_summary = (
@@ -128,7 +129,7 @@ def get_media_summary(media):
             date_ini=("timestamp", "min"),
             date_end=("timestamp", "max"),
             n_recordings=("deploymentID", "count"),
-            time_diff=("diff", "median"),
+            time_diff=("diff", lambda x: x.dropna().median()),
             sample_length=("fileLength", "median"),
             sample_rate=("sampleRate", lambda x: x.mode().iloc[0] if not x.mode().empty else None),
         )
@@ -177,6 +178,7 @@ def field_deployments_sheet_to_deployments(field_deployments, media_summary, tim
     # Adjust and combine recordists names
     field_deployments["setupBy"] = (
         field_deployments["setupByName"]
+        + " "
         + field_deployments["setupByLastName"]
     )
 
