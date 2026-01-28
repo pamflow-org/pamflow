@@ -22,12 +22,15 @@ conda create -n pamenv python=3.11
 conda activate pamenv
 ```
 
-Next, install the required dependencies
+Next, install the required dependencies based on your OS. For windows run
 
 ```bash
-pip install .
+pip install -r requirements-win.txt
 ```
-
+For MacOS run
+```bash
+pip install -r requirements-mac.txt
+```
 ### 3. Organize PAM Data
 #### 3.1 Audio Data
 All audio files must be stored in a dedicated directory. Each subdirectory within this directory should have a unique identifier corresponding to the ID or name of each sensor. This structure ensures that recordings are properly associated with their respective sensors.
@@ -47,9 +50,16 @@ For an example of properly formated data or to have a sample dataset to try **pa
 
 ### 1. Configure Local Settings
 
+Inside the folder `./conf/local/` create the files `./conf/local/parameters.yml` and `./conf/local/catalog.yml` as follows.
+
 Edit the `./conf/local/parameters.yml` file to specify the path to your audio files:
 ```yaml
-DEVICES_ROOT_DIRECTORY: <path to your directory with audio files>
+audio_root_directory: <path to your directory with audio files>
+```
+
+Edit the `./conf/local/parameters.yml` file to specify the timezone of your audios (following `Area/City` format  ):
+```yaml
+timezone: <prefered timezone>
 ```
 
 Edit the `./conf/local/catalog.yml` file to define the path to your field deployment sheet:

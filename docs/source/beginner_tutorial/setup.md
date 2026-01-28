@@ -40,8 +40,14 @@ It might take a while and might require you to confirm you want to create the ne
 ```sh
 conda activate pamflow_env
 ```
-From now on every time you want to use **pamflow** you will have to activate your environment. Finally, install all the required dependencies by running 
+From now on every time you want to use **pamflow** you will have to activate your environment. 
    
-```sh
-pip install .
+Finally, install the required dependencies based on your OS. For windows run
+
+```bash
+pip install -r requirements-win.txt
+```
+For MacOS run
+```bash
+pip install -r requirements-mac.txt
 ```
