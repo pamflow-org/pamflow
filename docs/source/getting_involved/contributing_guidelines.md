@@ -13,10 +13,11 @@ We welcome all contributions that help improve the code, documentation, and over
 
 ## Getting Started
 1. Fork the repository and clone it locally:
-   ```sh
-   git clone https://github.com/your-username/project-name.git
-   cd project-name
-   ```
+  ```sh
+  git clone <github link to the repo>
+  cd pamflow
+  ```
+The [anonymized version of the repo](https://anonymous.4open.science/r/pamflow-DC88/) cannot be clonned and thus needs to be downloaded from the button on the upper right corner inside the link.
 2. Create a new branch for your feature or bug fix:
    ```sh
    git checkout -b feature-branch
