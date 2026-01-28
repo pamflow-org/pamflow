@@ -8,10 +8,9 @@
 
 ## Before You Begin
 
-### 1. Download or Clone This Repository
-
+### 1. Download This Repository
+On the public instance of this repository, regular github cloning is available. However, the anonymized version only allows direct ownload of the repository. Hit the `Download repository` button on the upper right corner of the page. Afterwards, change to the downloaded directory
 ```bash
-git clone https://anonymous.4open.science/r/pamflow-DC88/
 cd pamflow
 ```
 
@@ -23,7 +22,7 @@ conda create -n pamenv python=3.11
 conda activate pamenv
 ```
 
-Next, install the required dependencies based on your operating system.
+Next, install the required dependencies
 
 ```bash
 pip install .
@@ -38,7 +37,7 @@ To get **pamflow** to read this data follow next section's instructions.
 Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `recorderID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files.
 
 #### 3.3 Target species
-For filtering out animal detections,a  custom list og species of interest can be provided to **pamflow**. It has to be a `.csv` file with a single column (`scientificName`) containing scientific names for the target species. This file is not mandatory for **pamflow** to run. If this file is not provided, **pamflow** will leave [`observations`](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#observations) file unchanged.
+For filtering out animal detections, a  custom list of species of interest can be provided to **pamflow**. It has to be a `.csv` file with a single column (`scientificName`) containing scientific names for the target species. This file is not mandatory for **pamflow** to run. If this file is not provided, **pamflow** will leave [`observations`](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#observations) file unchanged.
 
 #### 3.3 Sample toy data
 
@@ -89,7 +88,7 @@ However, for the first execution, it is recommended to run one pipeline at a tim
 
 #### 2.1. Prepare data
 ```bash
-kedro run --pipeline=prepare_data
+kedro run --pipeline=data_preparation
 ```
 
 #### 2.2. Revise quality of deployments and recordings

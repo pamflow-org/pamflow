@@ -23,10 +23,10 @@ To run **pamflow**, your computer needs Python and other required tools installe
 
 A repository is a storage space where a project’s files and history are kept, so you can organize your work, track changes, and share it with others. The code for **pamflow** is stored in a repository. For using it you need to download it through a process called *cloning the repository*. Open any terminal on you computer and run 
 ```sh
-git clone https://github.com/pamflow-org/pamflow.git
+git clone <github link to the repo>
 cd pamflow
 ```
-
+The [anonymized version of the repo](https://anonymous.4open.science/r/pamflow-DC88/) cannot be clonned and thus needs to be downloaded from the button on the upper right corner inside the link.
 ## 3. Install required packages
 Now that Miniconda is installed, you can create a virtual environment and install the required packages for the download repository. A virtual environment is like a private workspace on your computer where a project can have its own copy of Python and its own tools. Virtual environments are important because they keep each project’s tools and settings separate, so you can work on different projects without them breaking or interfering with each other.
 
