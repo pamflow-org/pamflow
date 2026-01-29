@@ -24,7 +24,7 @@ The [anonymized version of the repo](https://anonymous.4open.science/r/pamflow-D
    ```
 3. Install dependencies:
    ```sh
-   pip install -r requirements.txt
+   pip install .
    ```
 
 ## How to Contribute
