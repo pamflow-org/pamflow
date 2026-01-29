@@ -22,22 +22,32 @@ conda create -n pamenv python=3.11
 conda activate pamenv
 ```
 
-Next, install the required dependencies based on your OS. For windows run
+Next, install the required dependencies 
 
 ```bash
-pip install -r requirements-win.txt
+pip install .
 ```
-For MacOS run
-```bash
-pip install -r requirements-mac.txt
-```
+
 ### 3. Organize PAM Data
 #### 3.1 Audio Data
 All audio files must be stored in a dedicated directory. Each subdirectory within this directory should have a unique identifier corresponding to the ID or name of each sensor. This structure ensures that recordings are properly associated with their respective sensors.
 
-To get **pamflow** to read this data follow next section's instructions. 
+For this data to be compatible with **pamflow** the file names of the audio files should meet the format 
+`{recorderID}_{date}_{time}.WAV`. Additionally, the initial part on files' name should correspond to the name of the parent folder. Your Audio data should look like this
+```
+/audio_data
+├── ARU_001/
+│   ├── ARU_001_20240229_000000.WAV
+│   ├── ARU_001_20240229_003000.WAV
+│   ├── ARU_001_20240229_010000.WAV
+│   ├── ARU_001_20240229_013000.WAV
+│   └── ARU_001_20240229_020000.WAV
+├── ARU_002/ 
+├── ARU_003/  
+└── ARU_004/  
+```
 #### 3.2 Metadata 
-Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `recorderID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files.
+Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `recorderID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files. Additonal minimal requirements for data estandardization are explained on the page of [Input data standards](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#field-deployment-sheet) of the documentation.
 
 #### 3.3 Target species
 For filtering out animal detections, a  custom list of species of interest can be provided to **pamflow**. It has to be a `.csv` file with a single column (`scientificName`) containing scientific names for the target species. This file is not mandatory for **pamflow** to run. If this file is not provided, **pamflow** will leave [`observations`](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#observations) file unchanged.
@@ -76,16 +86,7 @@ target_species@pandas:
   filepath: <path to your .csv file with target species>
 ```
 
-It is advisable to use the subfolders inside `./data/input/` to store field deployments sheet and target species file. 
-```
-data/
-├── input/                          # Input data and configurations
-│   ├── field_deployments/          
-│   ├── manual_annotations/         
-│   └── target_species/             
-│       └── target_species.csv # Target species list
-└── output
-```
+
 
 
 ### 2. Run Workflows

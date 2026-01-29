@@ -43,6 +43,8 @@ Field researchers installed the acoustic sensors and took notes on everything im
 
 These notes were handed out to you along with the recordings in a format  called `field_deployments_sheet`. This is a `.xlsx` file with one row per installed sensor having all the previously mentioned data regarding the installation of the sensor. 
 
+It is important that this sheet meets the requirements listed on  [Input data standards](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#field-deployment-sheet). Additionally, the values at the column `recorderID` musth matche the names of the subdirectories in the `audio_root_directory`. This ensures proper linking between metadata and recorded audio files.
+
 ### 4. Target species
 
 Even though there are many bird species at the monitoring site, the community is only interested in a few of them considered relevant for conservation. Along with the `devices_root_directory` and the `field_deployments_sheet`, you were given the list of relevant species for the project, namely, the `target_species`, which is a `.csv` file with only one column (`scientificName`) and one row per each one of the species considered important  for this particular project. 
