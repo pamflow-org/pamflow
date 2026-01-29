@@ -28,6 +28,10 @@ Next, install the required dependencies
 pip install .
 ```
 
+> **Trouble Shooting**
+> Some users might need to install
+> ffmpeg. For full instructions
+>  visit [ffmpeg page](https://www.ffmpeg.org/about.html).
 ### 3. Organize PAM Data
 #### 3.1 Audio Data
 All audio files must be stored in a dedicated directory. Each subdirectory within this directory should have a unique identifier corresponding to the ID or name of each sensor. This structure ensures that recordings are properly associated with their respective sensors.
