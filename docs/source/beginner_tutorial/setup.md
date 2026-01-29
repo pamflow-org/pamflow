@@ -42,12 +42,8 @@ conda activate pamflow_env
 ```
 From now on every time you want to use **pamflow** you will have to activate your environment. 
    
-Finally, install the required dependencies based on your OS. For windows run
+Finally, install the required dependencies 
 
 ```bash
-pip install -r requirements-win.txt
-```
-For MacOS run
-```bash
-pip install -r requirements-mac.txt
+pip install .
 ```
