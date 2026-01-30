@@ -12,6 +12,7 @@ conf/**/*credentials*
 # ignore everything in the following folders
 sample_data
 minimal_sample_data
+pamflow_tutorial_data
 data/**
 logs/**
 notebooks/**
