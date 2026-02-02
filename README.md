@@ -40,15 +40,15 @@ For this data to be compatible with **pamflow** the file names of the audio file
 `{recorderID}_{date}_{time}.WAV`. Additionally, the initial part on files' name should correspond to the name of the parent folder. Your Audio data should look like this
 ```
 /audio_data
-├── ARU_001/
-│   ├── ARU_001_20240229_000000.WAV
-│   ├── ARU_001_20240229_003000.WAV
-│   ├── ARU_001_20240229_010000.WAV
-│   ├── ARU_001_20240229_013000.WAV
-│   └── ARU_001_20240229_020000.WAV
-├── ARU_002/ 
-├── ARU_003/  
-└── ARU_004/  
+├── ARU001/
+│   ├── ARU001_20240229_000000.WAV
+│   ├── ARU001_20240229_003000.WAV
+│   ├── ARU001_20240229_010000.WAV
+│   ├── ARU001_20240229_013000.WAV
+│   └── ARU001_20240229_020000.WAV
+├── ARU002/ 
+├── ARU003/  
+└── ARU004/  
 ```
 #### 3.2 Metadata 
 Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `recorderID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files. Additonal minimal requirements for data estandardization are explained on the page of [Input data standards](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#field-deployment-sheet) of the documentation.
