@@ -71,7 +71,7 @@ Edit the `./conf/local/parameters.yml` file to specify the path to your audio fi
 audio_root_directory: <path to your directory with audio files>
 ```
 
-Edit the `./conf/local/parameters.yml` file to specify the timezone of your audios (following `Area/City` format  ):
+Edit the `./conf/local/parameters.yml` file to specify the timezone of your audios recordings using a valid IANA time zone in Area/City format (e.g., Europe/Berlin, America/Bogota)
 ```yaml
 timezone: <prefered timezone>
 ```
