@@ -28,6 +28,10 @@ Next, install the required dependencies
 pip install .
 ```
 
+> **Trouble Shooting**
+> Some users might need to install
+> ffmpeg. For full instructions
+>  visit [ffmpeg page](https://www.ffmpeg.org/about.html).
 ### 3. Organize PAM Data
 #### 3.1 Audio Data
 All audio files must be stored in a dedicated directory. Each subdirectory within this directory should have a unique identifier corresponding to the ID or name of each sensor. This structure ensures that recordings are properly associated with their respective sensors.
@@ -36,15 +40,15 @@ For this data to be compatible with **pamflow** the file names of the audio file
 `{recorderID}_{date}_{time}.WAV`. Additionally, the initial part on files' name should correspond to the name of the parent folder. Your Audio data should look like this
 ```
 /audio_data
-├── ARU_001/
-│   ├── ARU_001_20240229_000000.WAV
-│   ├── ARU_001_20240229_003000.WAV
-│   ├── ARU_001_20240229_010000.WAV
-│   ├── ARU_001_20240229_013000.WAV
-│   └── ARU_001_20240229_020000.WAV
-├── ARU_002/ 
-├── ARU_003/  
-└── ARU_004/  
+├── ARU001/
+│   ├── ARU001_20240229_000000.WAV
+│   ├── ARU001_20240229_003000.WAV
+│   ├── ARU001_20240229_010000.WAV
+│   ├── ARU001_20240229_013000.WAV
+│   └── ARU001_20240229_020000.WAV
+├── ARU002/ 
+├── ARU003/  
+└── ARU004/  
 ```
 #### 3.2 Metadata 
 Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `recorderID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files. Additonal minimal requirements for data estandardization are explained on the page of [Input data standards](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#field-deployment-sheet) of the documentation.
@@ -67,7 +71,7 @@ Edit the `./conf/local/parameters.yml` file to specify the path to your audio fi
 audio_root_directory: <path to your directory with audio files>
 ```
 
-Edit the `./conf/local/parameters.yml` file to specify the timezone of your audios (following `Area/City` format  ):
+Edit the `./conf/local/parameters.yml` file to specify the timezone of your audios recordings using a valid IANA time zone in Area/City format (e.g., Europe/Berlin, America/Bogota)
 ```yaml
 timezone: <prefered timezone>
 ```

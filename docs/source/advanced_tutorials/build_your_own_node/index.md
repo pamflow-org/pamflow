@@ -6,7 +6,7 @@ The documentation on [previous tutorial](../../tutorial/index.md) covered all ba
 
 
 ***Context: Continuation of The Guaviare Project***
-*The National biodiversity institute in Colombia, the Humboldt Institute, collaborated with communities at Guaviare, Colombia to perform a communitary project on the local bird fauna. You already processed all the passively collected acoustic data and based on your resulting insights, you now want to calculate some statistics on the detections. Instead of taking the outputs and working with them independently from **pamflow**, you will leverage its convenient architecture and functionalities to complete your task.*
+*The XXXX Institute in Colombia, collaborated with communities at Guaviare, Colombia to perform a communitary project on the local bird fauna. You already processed all the passively collected acoustic data and based on your resulting insights, you now want to calculate some statistics on the detections. Instead of taking the outputs and working with them independently from **pamflow**, you will leverage its convenient architecture and functionalities to complete your task.*
 
 ***Your tasks***: 
 1. Generate a table showing the diel activity pattern for each target species.
