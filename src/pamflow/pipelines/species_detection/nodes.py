@@ -349,6 +349,7 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
 
     excel_generic_format = segments[
         [
+            "observationID",
             "segmentsFilePath",
             "filePath",
             "classificationProbability",
