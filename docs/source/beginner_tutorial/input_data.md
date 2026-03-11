@@ -43,7 +43,7 @@ Field researchers installed the acoustic sensors and took notes on everything im
 
 These notes were handed out to you along with the recordings in a format  called `field_deployments_sheet`. This is a `.xlsx` file with one row per installed sensor having all the previously mentioned data regarding the installation of the sensor. 
 
-It is important that this sheet meets the requirements listed on  [Input data standards](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#field-deployment-sheet). Additionally, the values at the column `recorderID` musth matche the names of the subdirectories in the `audio_root_directory`. This ensures proper linking between metadata and recorded audio files.
+It is important that this sheet meets the requirements listed on  [Input data standards](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#field-deployment-sheet). Additionally, the values at the column `deploymentID` must match the names of the subdirectories in the `audio_root_directory`. This ensures proper linking between metadata and recorded audio files.
 
 ### 4. Target species
 
