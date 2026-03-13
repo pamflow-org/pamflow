@@ -11,7 +11,7 @@ Now that you extracted metadata from the audios you are ready for assessing the 
 Recall that the {{number_of_sensors}} installed sensors where  programmed for recording one minute every 30 minutes for {{number_of_days}} days. We would expect then that every sensor recorded 48 one-minute files per day. You can easilly and visually check this using **pamflow** by typing 
 
 ```bash
-kedro run --nodes plot_sensor_performance
+kedro run --nodes plot_sensor_performance_node
 ```
 
 in the command line. 
@@ -26,11 +26,19 @@ Each dot in the plot shows the total minutes recorded by one sensor on one day, 
 
 In order to check the coordinates for each sensor  **pamflow** creates a map of the deployment.  To obtain it run 
 ```bash
-kedro run --nodes plot_sensor_location
+kedro run --nodes plot_sensor_location_node
 ```
 and check for the output in `data\output\quality_control\sensor_location.png`
 
  ![](../../meta/images/sensor_location.png)
+
+## Survey effort
+Additionally, **pamflow** can create a summary card of most details relevant to the deployment. Run  
+```bash
+kedro run --nodes plot_survey_effort_node
+```
+to get it. 
+ ![](../../meta/images/survey_effort.png)
 ### Timelapses
 
 Even if all sensors recorded the correct number of files, their quality may still fall below the desired standard—for example, if something blocks the sound or the microphone is damaged. To check this without listening to every file, you can use pamflow to create a timelapse. A timelapse  is a summary of one day of acoustic activity by concatenating 5 seconds from each recording of that day (using a date with sufficient activity, chosen automatically). The result is an audio summary and corresponding spectrogram images for each sensor. To obtain this run 
