@@ -38,7 +38,7 @@ Additionally, **pamflow** can create a summary card of most details relevant to 
 kedro run --nodes plot_survey_effort_node
 ```
 to get it. 
- ![](../../meta/images/survey_effort.png)
+ ![](../../meta/images/survey_effort.jpg)
 ### Timelapses
 
 Even if all sensors recorded the correct number of files, their quality may still fall below the desired standard—for example, if something blocks the sound or the microphone is damaged. To check this without listening to every file, you can use pamflow to create a timelapse. A timelapse  is a summary of one day of acoustic activity by concatenating 5 seconds from each recording of that day (using a date with sufficient activity, chosen automatically). The result is an audio summary and corresponding spectrogram images for each sensor. To obtain this run 
