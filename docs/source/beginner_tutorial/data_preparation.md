@@ -14,14 +14,14 @@ The first step towards using **pamflow** is to inform where the `audio_root_dire
 
 
 ``` 
-kedroPamflow/
+pamflow/
 ├── conf/                # Configuration files (catalog, parameters, etc.)
 ├── data/                # Data directory (raw, intermediate, processed, etc.)
 ├── docs/                # Documentation files
 ├── logs/                # Logs generated during pipeline runs
 ├── notebooks/           # Jupyter notebooks for exploration and prototyping
 ├── src/                 # Source code for the project
-│   ├── kedroPamflow/    # Main package containing pipelines and utilities
+│   ├── pamflow/    # Main package containing pipelines and utilities
 │   └── tests/           # Unit and integration tests
 ├── .gitignore           # Git ignore file
 ├── [README.md](http://_vscodecontentref_/0)            # Project overview and setup instructions
