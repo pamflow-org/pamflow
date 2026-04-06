@@ -10,14 +10,9 @@ To use **pamflow** you will need to:
 If you are already familiar with Python, Git, and Conda you can skip the first two steps.
 
 ## 1. Install miniconda
-To run **pamflow**, your computer needs Python and other required tools installed. We’ll use Miniconda to install Python and related packages— it’s a lightweight tool that keeps each project’s environment separate and avoids conflicts. Follow the installation guide for your operating system:
+To run **pamflow**, your computer needs Python and other required tools installed. We'll use Miniconda to install Python and related packages — it's a lightweight tool that keeps each project's environment separate and avoids conflicts.
 
-| Operative System | Language | Video                                                                         |
-|------------------|----------|-------------------------------------------------------------------------------|
-| Windows          | English  | [Link to the video (Up to 2:30)](https://www.youtube.com/watch?v=EBbcsjBSEi8) |
-| Windows          | Spanish  | [Link to the video (Up to 1:35)](https://www.youtube.com/watch?v=n8HkaPEeJFs) |
-| macOS            | English  | [Link to the video (Up to 1:30)](https://www.youtube.com/watch?v=WdXdl0C0jfE) |
-| macOS            | Spanish  | [Link to the video (Up to 1:30)](https://www.youtube.com/watch?v=WdXdl0C0jfE) |
+Follow the official Miniconda installation guide for your operating system: [Installing Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install/overview).
 
 ## 2. Install Git
 
