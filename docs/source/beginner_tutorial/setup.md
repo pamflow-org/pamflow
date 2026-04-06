@@ -1,13 +1,6 @@
 # Installation instructions
 
-To use **pamflow** you will need to:
-
-```{contents}
-   :depth: 1
-   :local:
-   :numbered:
-```
-If you are already familiar with Python, Git, and Conda you can skip the first two steps.
+To use **pamflow**, follow these steps — if you are already familiar with Python, Git, and Conda, you can skip directly to [step 3](#3-clone-the-repository).
 
 ## 1. Install miniconda
 To run **pamflow**, your computer needs Python and other required tools installed. We'll use Miniconda to install Python and related packages — it's a lightweight tool that keeps each project's environment separate and avoids conflicts.
