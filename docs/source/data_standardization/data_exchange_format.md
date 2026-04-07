@@ -26,6 +26,8 @@ Example:
 ## Field deployment sheet
 This file provides metadata collected during the field deployment. It should be an Excel file named `field_deployments_sheet.xlsx`, with the below column names in the first row. See the [tutorial data](https://doi.org/10.5281/zenodo.16922848) for an example.
 
+<div style="overflow-x: auto;">
+
 | Field Name              | Description | Required | Unique | Type | Example |
 |-------------------------|-------------|----------|--------|------|---------|
 |**deploymentID**| Unique identifier for the deployment. Required for tracking and referencing specific deployments. | ✅ | ✅ | `string` | DEP001
@@ -39,6 +41,8 @@ This file provides metadata collected during the field deployment. It should be 
 | **habitat**            | Brief description of the habitat at the deployment location. |   |   | `string` | Humid tropical rainforest |
 |**setupBy**| Name or identifier of the individual or organization responsible for deploying the recorder.|   |   | `string` | Juan Gómez |
 | **deploymentComments** | Additional comments or observations related to the deployment. |   |   | `string` | Traffic noise during installation |
+
+</div>
 
 ## Target species
 
