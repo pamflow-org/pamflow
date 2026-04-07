@@ -1,5 +1,7 @@
 # Input data standards
 
+Standards may seem like an added layer of complexity, but they are what make data meaningful beyond the moment and place it was collected — enabling different teams, tools, and projects to speak the same language. In passive acoustic monitoring, where recordings are gathered across diverse sites, equipment, and research groups, a shared standard is what turns isolated audio files into comparable, reusable, and interoperable data.
+
 ## File organization
 
 Recording files must be organized as follows:
