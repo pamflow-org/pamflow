@@ -41,7 +41,14 @@ This file provides metadata collected during the field deployment. It should be 
 | **deploymentComments** | Additional comments or observations related to the deployment. |   |   | `string` | Traffic noise during installation |
 
 ## Target species
-An optional target_species.csv with a single column (scientificName) listing one species per row. Species must be a subset of the model’s output labels. If the file is empty, no filtering is applied to detections.
+
+An optional `target_species.csv` file with a single column (`scientificName`) listing one species per row. Species must be a subset of the model's output labels. If the file is not provided or is left empty, no filtering is applied and **pamflow** will return detections for all species recognized by the model — though results should be reviewed carefully in this case, as the number of detections can be large.
+
+---
+
+```{note}
+These three inputs — the audio folder, the field deployment sheet, and the target species file — are all that **pamflow** needs to run. The target species file is the only optional one.
+```
 
 # Output data standards
 
