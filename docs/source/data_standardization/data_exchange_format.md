@@ -26,23 +26,29 @@ Example:
 ## Field deployment sheet
 This file provides metadata collected during the field deployment. It should be an Excel file named `field_deployments_sheet.xlsx`, with the below column names in the first row. See the [tutorial data](https://doi.org/10.5281/zenodo.16922848) for an example.
 
-<div style="overflow-x: auto;">
+The fields listed below cover a representative set useful for most research purposes. Only 7 fields are strictly required, but providing more information is strongly advised — richer metadata greatly increases the long-term value and reusability of your data. Additional fields beyond those listed here can also be included in the sheet; following the [pamDP format](#deployments) for any extra fields is recommended for interoperability. Custom fields that do not follow pamDP naming will be preserved in your sheet but will not be carried over to the standardized pamDP output.
 
 | Field Name              | Description | Required | Unique | Type | Example |
 |-------------------------|-------------|----------|--------|------|---------|
-|**deploymentID**| Unique identifier for the deployment. Required for tracking and referencing specific deployments. | ✅ | ✅ | `string` | DEP001
-|**latitude**| Latitude of the deployment location in decimal degrees (WGS84). Range: -90 to 90. | ✅ |   | `float` | 5.2704 |
-|**longitude**| Longitude of the deployment location in decimal degrees (WGS84). Range: -180 to 180. | ✅ |   | `float` | 2.3849 |
-| **recorderModel**      | Manufacturer and model of the recorder, formatted as manufacturer-model. | ✅ |   | `string` | Audiomoth v1.2.0 |
-| **recorderConfiguration** | Detailed settings used for data collection (e.g., microphone type, recording schedule). | ✅ |   | `string` | record 1 minute every 29 minutes, internal microphone |
+|<u>**deploymentID**</u>| Unique identifier for the deployment. Required for tracking and referencing specific deployments. | ✅ | ✅ | `string` | DEP001
+|<u>**latitude**</u>| Latitude of the deployment location in decimal degrees (WGS84). Range: -90 to 90. | ✅ |   | `float` | 5.2704 |
+|<u>**longitude**</u>| Longitude of the deployment location in decimal degrees (WGS84). Range: -180 to 180. | ✅ |   | `float` | 2.3849 |
+|**coordinateUncertainty**| Uncertainty of the geographic coordinates in meters. Range: >0. |   |   | `float` | 10.0 |
+|<u>**recorderModel**</u>| Manufacturer and model of the recorder, formatted as manufacturer-model. | ✅ |   | `string` | Audiomoth v1.2.0 |
+|<u>**recorderConfiguration**</u>| Detailed settings used for data collection (e.g., microphone type, recording schedule). | ✅ |   | `string` | record 1 minute every 29 minutes, internal microphone |
 |**locationID**| Unique code that refers unambiguously to a location record. One locationID per latitude-longitude pair. |   | ✅ | `string` | LOC001 |
 | **locationName**        | Name assigned to the deployment location for easy reference. |   |   | `string` | Finca La Esperanza |
+| **recorderID** | Unique identifier of the audio recorder used. |   |   | `string` | REC01 |
 | **recorderHeight**     | Height (in meters) at which the recorder was deployed. Not to be combined with `recorderDepth`.  Range: >0. |   |   | `float` | 1.2 |
 | **habitat**            | Brief description of the habitat at the deployment location. |   |   | `string` | Humid tropical rainforest |
-|**setupBy**| Name or identifier of the individual or organization responsible for deploying the recorder.|   |   | `string` | Juan Gómez |
+|<u>**deploymentStartDate**</u>| Date when the recorder was deployed in the field. Format: `YYYY-MM-DD`. | ✅ |   | `string` | 2025-05-29 |
+|**deploymentStartTime**| Time when the recorder was deployed in the field. Format: `HH:MM:SS` (24h, local time). |  |   | `string` | 13:30:00 |
+|<u>**deploymentEndDate**</u>| Date when the recorder was retrieved or the deployment ended. Format: `YYYY-MM-DD`. | ✅  |   | `string` | 2025-06-29 |
+|**deploymentEndTime**| Time when the recorder was retrieved or the deployment ended. Format: `HH:MM:SS` (24h, local time). |   |   | `string` | 10:00:00 |
+|**setupByName**| First name of the person responsible for deploying the recorder. |   |   | `string` | Juan |
+|**setupByLastName**| Last name of the person responsible for deploying the recorder. |   |   | `string` | Gómez |
+|**deploymentGroups**| Category assigned to the deployment (e.g., treatment vs. control, survey period). |   |   | `string` | period-t0 |
 | **deploymentComments** | Additional comments or observations related to the deployment. |   |   | `string` | Traffic noise during installation |
-
-</div>
 
 ## Target species
 
