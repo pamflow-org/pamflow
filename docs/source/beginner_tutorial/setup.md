@@ -49,3 +49,12 @@ Finally, install the required dependencies:
 ```sh
 pip install .
 ```
+
+**pamflow** relies on [BirdNET](https://github.com/kahst/BirdNET-Analyzer) for audio processing and species detection, which require **FFmpeg** to handle audio files. FFmpeg is not a Python package and must be installed separately:
+
+Install it via conda (recommended, works on all platforms):
+```sh
+conda install -c conda-forge ffmpeg
+```
+
+Or follow the [official FFmpeg installation guide](https://ffmpeg.org/download.html) for your operating system.
