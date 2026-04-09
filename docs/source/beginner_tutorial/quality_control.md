@@ -4,6 +4,9 @@ Now that you have extracted metadata from the recordings, you are ready to asses
 
 ### Run quality control pipeline
 
+This pipeline facilitates an initial data exploration and spot faulty sensors. 
+To run this pipeline, just type into your terminal:
+
 ```bash
 kedro run --pipeline quality_control
 ```
@@ -36,9 +39,12 @@ Even if all recorders collected the expected number of files, recording quality 
 
 Below are two example spectrogram outputs:
 
-Spectrogram for recorder MC-002              |  Spectrogram for recorder {{broken_sensor_2}}
-:-------------------------------------------:|:-------------------------:
-![](../../meta/images/healthy_timelapse.png) |  ![](../../meta/images/broken_timelapse.png)
+Spectrogram for recorder MC-002               |
+:-------------------------------------------: |
+![](../../meta/images/healthy_timelapse.png)  |
+:-------------------------:                   |
+ Spectrogram for recorder {{broken_sensor_2}} |
+![](../../meta/images/broken_timelapse.png)   |
 
 The first spectrogram shows acoustic activity across different frequencies and times, as expected. The second shows no activity, indicating that recorder {{broken_sensor_2}} was not functioning correctly. You may want to discard these recordings in further steps to save computational resources and maintain data quality.
 
