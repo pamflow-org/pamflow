@@ -1,76 +1,45 @@
 ## Quality control
-Now that you extracted metadata from the audios you are ready for assessing the quality of them.
- Many things can go wrong during a PAM  project: a recorder can run out off battery,  break after the installation for external factors, not be installed in the right way and many more. In this section you will learn how to use **pamflow**  to check  all deployed  sensors behaved as expected.
 
-***Summary***: 
-1. [Sensor performance](#sensor-performance)
-2. [Sensor location](#sensor-location)
-3. [Timelapses](#timelapses)
+Now that you have extracted metadata from the recordings, you are ready to assess their quality. Many things can go wrong during a PAM project: a recorder can run out of battery, be damaged after installation, or not be set up correctly, among other issues. In this section you will learn how to use **pamflow** to verify that all recorders behaved as expected.
 
-### Sensor performance
-Recall that the {{number_of_sensors}} installed sensors where  programmed for recording one minute every 30 minutes for {{number_of_days}} days. We would expect then that every sensor recorded 48 one-minute files per day. You can easilly and visually check this using **pamflow** by typing 
+### Run quality control pipeline
 
 ```bash
-kedro run --nodes plot_sensor_performance_node
+kedro run --pipeline quality_control
 ```
 
-in the command line. 
+### Check recorder performance
 
-As soon as the process is over the output is stored in the path `data\output\quality_control\sensor_performance.png`
+Recall that the {{number_of_sensors}} recorders were programmed to record one minute every 30 minutes for {{number_of_days}} days, so each recorder was expected to collect 48 files per day. You can visually check this in `data/output/quality_control/sensor_performance.png`:
 
- ![](../../meta/images/sensor_performance.png)
-Each dot in the plot shows the total minutes recorded by one sensor on one day, across the {{number_of_days}} days of monitoring. The dot’s size reflects the amount of recordings: ideally, all dots should be the same size, each representing 48 minutes. Larger values may come from accidental activation before installation or incorrect programming, while smaller values may indicate battery failure or sensor malfunction. In any case, unusual values require further examination.
+![](../../meta/images/sensor_performance.png)
 
- In this case, **pamflow** helped us identify that sensor {{broken_sensor_1}} failed on one day. In further steps we might want to discard the information of this sensor on this day (or even all the recordings by this sensor) to guarentee unifromity among the compared sensors. 
-### Sensor location
+Each dot shows the total minutes recorded by one recorder on one day. Ideally, all dots should be the same size, representing 48 minutes. Larger values may indicate accidental activation before installation or incorrect programming; smaller values may indicate battery failure or malfunction. Unusual values require further examination.
 
-In order to check the coordinates for each sensor  **pamflow** creates a map of the deployment.  To obtain it run 
-```bash
-kedro run --nodes plot_sensor_location_node
-```
-and check for the output in `data\output\quality_control\sensor_location.png`
+In this case, **pamflow** identified that recorder {{broken_sensor_1}} failed on one day. In further steps you may want to discard its recordings for that day — or entirely — to ensure consistency across recorders.
 
- ![](../../meta/images/sensor_location.png)
+### Check recorder locations
 
-## Survey effort
-Additionally, **pamflow** can create a summary card of most details relevant to the deployment. Run  
-```bash
-kedro run --nodes plot_survey_effort_node
-```
-to get it. 
- ![](../../meta/images/survey_effort.jpg)
+**pamflow** generates a map of all deployment locations to help verify that coordinates are correct. Check the output at `data/output/quality_control/sensor_location.png`:
+
+![](../../meta/images/sensor_location.png)
+
+### Check survey effort
+
+**pamflow** also generates a summary card with the key details of the deployment:
+
+![](../../meta/images/survey_effort.jpg)
+
 ### Timelapses
 
-Even if all sensors recorded the correct number of files, their quality may still fall below the desired standard—for example, if something blocks the sound or the microphone is damaged. To check this without listening to every file, you can use pamflow to create a timelapse. A timelapse  is a summary of one day of acoustic activity by concatenating 5 seconds from each recording of that day (using a date with sufficient activity, chosen automatically). The result is an audio summary and corresponding spectrogram images for each sensor. To obtain this run 
+Even if all recorders collected the expected number of files, recording quality may still be compromised — for example, if the microphone is blocked or damaged. To check this without listening to every file, **pamflow** can generate a timelapse: a one-day audio summary built by concatenating 5 seconds from each recording, along with the corresponding spectrogram. Results are saved in `data/output/quality_control/timelapse/`.
 
-```bash
-kedro run --nodes get_timelapse_node
-```
+Below are two example spectrogram outputs:
 
-Both the resulting audio and spectrograms can be found  in `data\output\quality_control\timelapse`
-
-``` 
-data/
-├── input/                        
-└── output/                          
-    ├── quality_control/          
-    │   ├── timelapse/            # Timelapse outputs for quality control
-    │       ├── MC-002_timelapse_2024-03-02.png  # Spectrogram for sensor MC-002
-    │       ├── MC-002_timelapse_2024-03-02.WAV  # Timelapse audio for sensor MC-002
-    │       ├── MC-007_timelapse_2024-03-02.png  # Spectrogram for sensor MC-009
-    │       ├── MC-007_timelapse_2024-03-02.WAV  # Timelapse audio for sensor MC-009
-    │       ├── MC-009_timelapse_2024-03-02.png  # Spectrogram for sensor MC-009
-    │       ├── MC-009_timelapse_2024-03-02.WAV  # Timelapse audio for sensor MC-009
-    │       ├── MC-013_timelapse_2024-03-02.png  # Spectrogram for sensor MC-013
-    │       └── MC-013_timelapse_2024-03-02.WAV  # Timelapse audio for sensor MC-013
-    └──               
-```
-
-Bellow, you will find two  examples for the resulting timelapse spectrograms
-Spectrogram for sensor MC-002                |  Spectrogram for sensor {{broken_sensor_2}}
+Spectrogram for recorder MC-002              |  Spectrogram for recorder {{broken_sensor_2}}
 :-------------------------------------------:|:-------------------------:
 ![](../../meta/images/healthy_timelapse.png) |  ![](../../meta/images/broken_timelapse.png)
 
-In the first different signals are present in different frequencies and times. Meanwhile, the second one is not showing acoustic activity. This means that the recording quality of sensor {{broken_sensor_2}} is not as expected. You might want to discard these recordings in further steps for saving computational resources and keep the high quality of your data.
+The first spectrogram shows acoustic activity across different frequencies and times, as expected. The second shows no activity, indicating that recorder {{broken_sensor_2}} was not functioning correctly. You may want to discard these recordings in further steps to save computational resources and maintain data quality.
 
-In the [next](./species_detection.md) section you will learn how to use **pamflow** for detecting target species in your audios.
+In the [next](./species_detection.md) section you will learn how to detect target species in your recordings.
