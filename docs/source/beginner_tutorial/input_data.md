@@ -5,7 +5,9 @@ In this section you will download and explore the data collected in the field. T
 ### 1. Download tutorial data
 The audio recordings you'll need for this tutorial can be found [here](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7). 
 
-Note: This sample data is provided to show you how to use pamflow, if you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
+```{note}
+This sample data is provided to show you how to use pamflow, if you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
+```
 
 ### 2. Audio recordings
 
@@ -50,6 +52,5 @@ Even though the monitoring site hosts many bird species, the community is only i
 | Pitangus sulphuratus     |
 | Ramphastos tucanus       |
 
-```{note}
-   These are the three only inputs required to run **pamflow**. Now that you understand what they are and their structure let's move on with [data preparation](./data_preparation.md) to learn how to get **pamflow** to read them. 
-```
+
+These are the three only inputs required to run **pamflow**. Now that you understand what they are and their structure let's move on with the [data preparation](./data_preparation.md) step. 
