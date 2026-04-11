@@ -37,14 +37,12 @@ In this case, **pamflow** identified that recorder {{broken_sensor_1}} failed on
 
 Even if all recorders collected the expected number of files, recording quality may still be compromised — for example, if the microphone is blocked or damaged. To check this without listening to every file, **pamflow** can generate a timelapse: a one-day audio summary built by concatenating 5 seconds from each recording, along with the corresponding spectrogram. Results are saved in `data/output/quality_control/timelapse/`.
 
-Below are two example spectrogram outputs:
+Below are two example timelapse spectrogram outputs:
 
-Spectrogram for recorder MC-002               |
-:-------------------------------------------: |
-![](../../meta/images/healthy_timelapse.png)  |
-:-------------------------:                   |
- Spectrogram for recorder {{broken_sensor_2}} |
-![](../../meta/images/broken_timelapse.png)   |
+| **Spectrogram for recorder MC-002**               |
+| ![](../../meta/images/healthy_timelapse.png)      |
+| **Spectrogram for recorder {{broken_sensor_2}}**  |
+| ![](../../meta/images/broken_timelapse.png)       |
 
 The first spectrogram shows acoustic activity across different frequencies and times, as expected. The second shows no activity, indicating that recorder {{broken_sensor_2}} was not functioning correctly. You may want to discard these recordings in further steps to save computational resources and maintain data quality.
 
