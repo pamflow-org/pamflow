@@ -1,5 +1,6 @@
 ## Data Preparation
-You are now familiar with the data collected in the field. In this section you will learn how to load it into **pamflow** to standardize it and extract further information.
+
+In the previous step you explored the three input files **pamflow** needs. Now you will configure **pamflow** to find them and run the first pipeline to extract and standardize metadata from your recordings.
 
 ### Configure audio path and timezone
 
@@ -17,7 +18,7 @@ Copy the `field_deployments_sheet.xlsx` and `target_species.csv` files to their 
 - `field_deployments_sheet.xlsx` → `data/input/field_deployments/`
 - `target_species.csv` → `data/input/target_species/`
 
-### Standardized metadata from each audio and each sensor
+### Run the data preparation pipeline
 
 Now everything is ready to run **pamflow**'s first pipeline:
 
@@ -25,7 +26,7 @@ Now everything is ready to run **pamflow**'s first pipeline:
 kedro run --pipeline data_preparation
 ```
 
-This pipeline generates two standardized tables stored in `data/output/data_preparation/`. Their structure is described in detail in the [Data Exchange Format](../data_standardization/data_exchange_format.md#output-data-standards) section.
+This pipeline generates two standardized tables stored in `data/output/data_preparation/`.
 
 `media.csv` contains one row per audio file:
 
@@ -35,7 +36,7 @@ This pipeline generates two standardized tables stored in `data/output/data_prep
 | MC-013_20240229_063000.WAV  | MC-013       | 2024-02-29T06:30:00 | .../MC-013/MC-013_20240229_063000.WAV   | 48000      | ... | 16       | 60.0       |
 | MC-013_20240304_053000.WAV  | MC-013       | 2024-03-04T05:30:00 | .../MC-013/MC-013_20240304_053000.WAV   | 48000      | ... | 16       | 60.0       |
 
-`deployments.csv` contains one row per recorder:
+`deployments.csv` contains one row per deployment:
 
 | deploymentID | locationID   | latitude  | longitude   | deploymentStart      | deploymentEnd        | ... | recorderModel       | habitat       |
 |--------------|--------------|-----------|-------------|----------------------|----------------------|-----|---------------------|---------------|
@@ -43,5 +44,9 @@ This pipeline generates two standardized tables stored in `data/output/data_prep
 | MC-007       | SAN MIGUEL   | 2.059644  | -72.920236  | 2024-02-15T15:32:00  | 2024-03-06T15:32:00  | ... | AudioMoth v 1.2.0   | Pastos limpios|
 | MC-009       | LA TORTUGA   | 2.183335  | -72.987016  | 2024-02-16T20:48:06  | 2024-03-07T20:48:06  | ... | AudioMoth v 1.2.0   | Pastos limpios|
 | MC-013       | LA TORTUGA   | 2.183335  | -72.987016  | 2024-02-16T20:48:06  | 2024-03-07T20:48:06  | ... | AudioMoth v 1.2.0   | Pastos limpios|
+
+```{seealso}
+The structure and full schema of `media.csv` and `deployments.csv` are described in detail in the [Data Exchange Format](../data_standardization/data_exchange_format.md#output-data-standards) section.
+```
 
 In the [next](./quality_control.md) section you will learn how to check recorder behavior and performance.

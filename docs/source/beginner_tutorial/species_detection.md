@@ -1,6 +1,6 @@
 ## Species detection
 
-In this section you will run the `species_detection` pipeline, which automatically detects and identifies species in the recordings, filters results for your target species list, and extracts audio segments containing relevant vocalizations.
+In this section you will run the `species_detection` pipeline, which automatically detects and identifies species in the recordings using the [BirdNET](https://github.com/kahst/BirdNET-Analyzer) model, filters results for your target species list, and extracts audio segments containing relevant vocalizations. Additional models will be integrated in future versions of **pamflow**.
 
 To run the pipeline:
 
@@ -24,8 +24,6 @@ Each row represents one detection, with the audio file name, timestamp, species 
 | 2             | MC-002       | MC-002_20240229_003000.WAV     | Lophostrix cristata  | 51.0       | 54.0     | Birdnet 2.4   | 0.118                     | ... |
 | 3             | MC-002       | MC-002_20240229_033000.WAV     | Ciccaba virgata      | 21.0       | 24.0     | Birdnet 2.4   | 0.144                     | ... |
 | 4             | MC-002       | MC-002_20240229_033000.WAV     | Ciccaba virgata      | 30.0       | 33.0     | Birdnet 2.4   | 0.103                     | ... |
-| 5             | MC-002       | MC-002_20240229_030000.WAV     | Bubo virginianus     | 42.0       | 45.0     | Birdnet 2.4   | 0.198                     | ... |
-| 6             | MC-002       | MC-002_20240229_030000.WAV     | Bubo virginianus     | 57.0       | 60.0     | Birdnet 2.4   | 0.181                     | ... |
 | ...           | ...          | ...                            | ...                  | ...        | ...      | ...           | ...                       | ... |
 
 ### Audio segments
@@ -56,10 +54,6 @@ For example, the annotation file for *Amazona farinosa* looks like this:
 | 0.659_MC-009_20240301_073000_33.0_36.0.WAV            | .../MC-009/MC-009_20240301_073000.WAV       | 0.659                     | 33         | 36       | Amazona farinosa  |          |                |
 | 0.653_MC-009_20240301_073000_30.0_33.0.WAV            | .../MC-009/MC-009_20240301_073000.WAV       | 0.653                     | 30         | 33       | Amazona farinosa  |          |                |
 
-
-```{note}
-Detection is powered by the [BirdNET](https://github.com/kahst/BirdNET-Analyzer) model; additional models will be integrated in future versions of **pamflow**.
-```
 
 ## Wrap-up
 
