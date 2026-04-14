@@ -24,21 +24,15 @@ In this case, **pamflow** identified that recorder on deployment {{broken_sensor
 
 A map of all deployment locations is generated to help verify that coordinates are correct. Check the output at `data/output/quality_control/sensor_location.png`:
 
-<div style="max-width: 600px;">
-
 ![](../../meta/images/sensor_location.png)
 
-</div>
 
 ### Check survey effort
 
 A summary card with the key details of the deployment is also generated:
 
-<div style="max-width: 600px;">
-
 ![](../../meta/images/survey_effort.png)
 
-</div>
 
 ### Timelapses
 
