@@ -24,7 +24,7 @@ In this case, **pamflow** identified that recorder on deployment {{broken_sensor
 
 A map of all deployment locations is generated to help verify that coordinates are correct. Check the output at `data/output/quality_control/sensor_location.png`:
 
-<div style="max-width: 300px;">
+<div style="max-width: 600px;">
 
 ![](../../meta/images/sensor_location.png)
 
@@ -34,9 +34,9 @@ A map of all deployment locations is generated to help verify that coordinates a
 
 A summary card with the key details of the deployment is also generated:
 
-<div style="max-width: 300px;">
+<div style="max-width: 600px;">
 
-![](../../meta/images/survey_effort.jpg)
+![](../../meta/images/survey_effort.png)
 
 </div>
 
@@ -49,6 +49,6 @@ Below are two example timelapse spectrogram outputs:
 ![](../../meta/images/healthy_timelapse.png)
 ![](../../meta/images/broken_timelapse.png)
 
-The first spectrogram shows acoustic activity across different frequencies and times, as expected. The second shows no activity, indicating that recorder {{broken_sensor_2}} was not functioning correctly. You may want to discard these recordings in further steps to save computational resources and maintain data quality.
+The first spectrogram shows acoustic activity across different frequencies and times, as expected. The second shows no activity, indicating that recorder was not functioning correctly. You may want to discard these recordings in further steps to save computational resources and maintain data quality.
 
 In the [next](./species_detection.md) section you will learn how to detect target species in your recordings.
