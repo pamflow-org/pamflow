@@ -1,4 +1,4 @@
-## Data Preparation
+## Data preparation
 
 In the previous step you explored the three input files **pamflow** needs. Now you will configure **pamflow** to find them and run the first pipeline to extract and standardize metadata from your recordings.
 

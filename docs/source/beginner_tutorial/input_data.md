@@ -11,9 +11,9 @@ This sample data is provided to show you how to use pamflow, if you plan to use 
 
 ### 2. Audio recordings
 
-During The Guaviare Project, {{number_of_sensors}} passive acoustic recorders were installed for {{number_of_days}} days. The recorders were programmed to record one minute every 30 minutes, so if everything went as expected, each recorder collected 48 files per day, for a total of {{number_of_wav_files}} one-minute recordings.
+During The Guaviare Project, {{number_of_sensors}} recorders were deployed for {{number_of_days}} days, programmed to record one minute every 30 minutes. If everything went as expected, each deployment collected 48 files per day, for a total of {{number_of_wav_files}} one-minute recordings.
 
-The audio recordings are organized as follows:
+Inside the main folder `pam_data_guaviare/` you will find one subfolder per deployment, named after its deployment ID and containing all the audio files collected at that location:
 
 ```
 /guaviare_project_external_disk/pam_data_guaviare/
@@ -28,7 +28,7 @@ The audio recordings are organized as follows:
 └── MC-013/  
 ```
 
-Each of the {{number_of_sensors}} subfolders corresponds to one recorder and contains {{number_of_wav_files_per_sensor}} one-minute audio files. This folder is referred to as the `audio_root_directory` — you will use this name when configuring **pamflow** in the next step.
+This main folder is referred to as the `audio_root_directory` — you will use this name when configuring **pamflow** in the next step.
 
 ```{important}
    Audio file names must follow this format: `DEPLOYMENTID_DATE_TIME.WAV`
@@ -45,12 +45,16 @@ These notes were handed to you alongside the recordings as the `field_deployment
 
 Even though the monitoring site hosts many bird species, the community is only interested in a few considered relevant for conservation. Along with the `audio_root_directory` and the `field_deployments_sheet`, you were given a list of these species: the `target_species` file, a `.csv` with a single column (`scientificName`) and one row per species.
 
-| Scientific Name          |
+<div style="max-width: 300px;">
+
+| scientificName          |
 |--------------------------|
 | Amazona farinosa         |
 | Cyanocorax violaceus     |
 | Pitangus sulphuratus     |
 | Ramphastos tucanus       |
+
+</div>
 
 ```{tip}
 These three files — the audio folder, the field deployments sheet, and the target species list — are all that **pamflow** needs to run. The target species file is the only optional one; if left empty, detections will not be filtered by species.
