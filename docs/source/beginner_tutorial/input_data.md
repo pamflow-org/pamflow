@@ -1,6 +1,6 @@
-## Set up the data
+## The tutorial data
 
-In this section you will download and explore the data collected in the field. These files are the inputs that **pamflow** requires for any passive acoustic monitoring project.
+Before running any analysis, you need to gather the three files that **pamflow** requires. In this section you will download the tutorial data and get familiar with its structure.
 
 ### 1. Download tutorial data
 The audio recordings you'll need for this tutorial can be found [here](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7). 
@@ -28,9 +28,9 @@ The audio recordings are organized as follows:
 └── MC-013/  
 ```
 
-Each of the {{number_of_sensors}} subfolders corresponds to one recorder and contains {{number_of_wav_files_per_sensor}} one-minute audio files. This folder is referred to as the `audio_root_directory`.
+Each of the {{number_of_sensors}} subfolders corresponds to one recorder and contains {{number_of_wav_files_per_sensor}} one-minute audio files. This folder is referred to as the `audio_root_directory` — you will use this name when configuring **pamflow** in the next step.
 
-```{warning}
+```{important}
    Audio file names must follow this format: `DEPLOYMENTID_DATE_TIME.WAV`
    **pamflow** will ignore any files that do not match this structure.
 ```
@@ -52,5 +52,8 @@ Even though the monitoring site hosts many bird species, the community is only i
 | Pitangus sulphuratus     |
 | Ramphastos tucanus       |
 
+```{tip}
+These three files — the audio folder, the field deployments sheet, and the target species list — are all that **pamflow** needs to run. The target species file is the only optional one; if left empty, detections will not be filtered by species.
+```
 
-These are the three only inputs required to run **pamflow**. Now that you understand what they are and their structure let's move on with the [data preparation](./data_preparation.md) step. 
+Now that you understand the data and its structure, let's move on to the [next step](./data_preparation.md) to load it into **pamflow**.
