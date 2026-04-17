@@ -4,13 +4,13 @@ sensor_performance_data@pandas:
 
 sensor_performance_figure@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/quality_control/sensor_performance.pdf
+  filepath: data/output/quality_control/deployment_timeline.pdf
   save_args:
     format: pdf
 
 sensor_location@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/quality_control/sensor_location.pdf
+  filepath: data/output/quality_control/deployment_location.pdf
   save_args:
     format: pdf
 
