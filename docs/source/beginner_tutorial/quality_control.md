@@ -10,9 +10,9 @@ This pipeline generates a set of visual outputs to help you explore the data and
 kedro run --pipeline quality_control
 ```
 
-### Check recorder performance
+### Check deployment timeline
 
-Recall that the {{number_of_sensors}} recorders were programmed to record one minute every 30 minutes for {{number_of_days}} days, so each recorder was expected to collect 48 files per day. You can visually check this in `data/output/quality_control/sensor_performance.png`:
+Recall that the {{number_of_sensors}} recorders were programmed to record one minute every 30 minutes for {{number_of_days}} days, so each recorder was expected to collect 48 files per day. You can visually check this in `data/output/quality_control/deployment_timeline.pdf`:
 
 ![](../../meta/images/sensor_performance.png)
 
@@ -22,7 +22,7 @@ In this case, **pamflow** identified that recorder on deployment {{broken_sensor
 
 ### Check deployment locations
 
-A map of all deployment locations is generated to help verify that coordinates are correct. Check the output at `data/output/quality_control/sensor_location.png`:
+A map of all deployment locations is generated to help verify that coordinates are correct. Check the output at `data/output/quality_control/deployment_location.png`:
 
 ![](../../meta/images/sensor_location.png)
 
@@ -43,6 +43,6 @@ Below are two example timelapse spectrogram outputs:
 ![](../../meta/images/healthy_timelapse.png)
 ![](../../meta/images/broken_timelapse.png)
 
-The first spectrogram shows acoustic activity across different frequencies and times, as expected. The second shows no activity, indicating that recorder was not functioning correctly. You may want to discard these recordings in further steps to save computational resources and maintain data quality.
+The first spectrogram shows acoustic activity across different frequencies and times, as expected, with wind affecting lower frequency bands during the day. The second shows no activity, indicating that recorder was not functioning correctly. You may want to discard these recordings in further steps to save computational resources and maintain data quality.
 
 In the [next](./species_detection.md) section you will learn how to detect target species in your recordings.

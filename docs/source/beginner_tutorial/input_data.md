@@ -53,6 +53,10 @@ Even though the monitoring site hosts many bird species, the community is only i
 | Cyanocorax violaceus     |
 | Pitangus sulphuratus     |
 | Ramphastos tucanus       |
+| Trogon viridis           |
+| Ara severus              |
+| Nyctidromus albicollis   |
+| Lophostrix cristata      |
 
 </div>
 
