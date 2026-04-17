@@ -11,7 +11,7 @@ This sample data is provided to show you how to use pamflow, if you plan to use 
 
 ### 2. Audio recordings
 
-During The Guaviare Project, {{number_of_sensors}} recorders were deployed for {{number_of_days}} days, programmed to record one minute every 30 minutes. If everything went as expected, each deployment collected 48 files per day, for a total of {{number_of_wav_files}} one-minute recordings.
+During The Guaviare Project, {{number_of_sensors}} recorders were deployed for {{number_of_days}} days, programmed to record 30 seconds every 30 minutes. If everything went as expected, each deployment collected 48 files per day, for a total of {{number_of_wav_files}} one-minute recordings.
 
 Inside the main folder `pam_data_guaviare/` you will find one subfolder per deployment, named after its deployment ID and containing all the audio files collected at that location:
 

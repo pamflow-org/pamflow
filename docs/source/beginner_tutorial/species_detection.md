@@ -26,6 +26,10 @@ Each row represents one detection, with the audio file name, timestamp, species 
 | 4             | MC-002       | MC-002_20240229_033000.WAV     | Ciccaba virgata      | 30.0       | 33.0     | Birdnet 2.4   | 0.103                     | ... |
 | ...           | ...          | ...                            | ...                  | ...        | ...      | ...           | ...                       | ... |
 
+```{note}
+Detection confidence scores are low by default — **pamflow** reports all detections above 0.1, so results should always be reviewed carefully. For example, *Lophostrix cristata* detections in this dataset are suspicious given that the deployment site is a pasture, where this forest owl would be unexpected. The audio segments and annotation files in the following steps are designed precisely to help with this review. For further guidance on interpreting model outputs, see [Wood and Kahl (2024)](https://link.springer.com/article/10.1007/s10336-024-02144-5).
+```
+
 ### Audio segments
 
 To validate the detections, audio segments for each target species are saved in `data/output/species_detection/segments/`, with one subfolder per species. These clips can be shared with bird experts for manual review and confirmation. The number of segments selected per species can be configured in `conf/local/parameters.yml`.
