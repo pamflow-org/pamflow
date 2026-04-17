@@ -18,7 +18,7 @@ Recall that the {{number_of_sensors}} recorders were programmed to record one mi
 
 Each dot shows the total minutes recorded by one recorder on one day. Ideally, all dots should be the same size, representing 48 minutes. Larger values may indicate accidental activation before installation or incorrect programming; smaller values may indicate battery failure or malfunction. Unusual values require further examination.
 
-In this case, **pamflow** identified that recorder on deployment {{broken_sensor_1}} failed on one day. In further steps you may want to discard its recordings for that day — or entirely — to ensure consistency across recorders.
+In this figure, we can identify that deployment {{broken_sensor_1}} shows inconsistencies. In further steps you may want to discard its recordings to ensure consistency across recorders.
 
 ### Check deployment locations
 
