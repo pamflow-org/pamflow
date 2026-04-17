@@ -71,6 +71,6 @@ For example, the annotation file for *Amazona farinosa* looks like this:
 
 ## Wrap-up
 
-Congratulations on completing the tutorial! You have gone through the full **pamflow** workflow: from organizing and loading field data, to running quality checks on your recorders, detecting target species, and preparing audio segments for expert validation. These steps cover the core of what **pamflow** is designed to do — turning raw acoustic recordings into structured, reusable, and interpretable data.
+Congratulations on completing the tutorial! You have gone through the main **pamflow** workflow: from organizing and loading field data, to running quality checks on your recorders, detecting target species, and preparing audio segments for expert validation. These steps cover the core of what **pamflow** is designed to do — turning raw acoustic recordings into structured, reusable, and interpretable data.
 
 You are now ready to run **pamflow** with your own data. Note that all pipelines can also be run node by node for greater control over each step — see the [Pipeline details](../documentation/pipeline_details.md#pipeline-details) section for a full reference, including additional pipelines such as `graphical_soundscapes` and `acoustic_indices`. If you run into any issues or have suggestions, feel free to open an issue on the [GitHub repository](https://github.com/pamflow-org/pamflow). For a deeper understanding of the data formats and outputs, refer to the [Data Exchange Formats](../data_standardization/data_exchange_format.md) section.
