@@ -1,9 +1,47 @@
-# Welcome to Pamflow's documentation
+<div align="center">
+  <img src="https://github.com/pamflow/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="600"/>
+</div>
+
+# Simplified analysis for passive acoustic monitoring
+
+## What is *pamflow*?
+**pamflow** integrates signal processing and machine listening tools into a cohesive data science framework. It ensures data adheres to [FAIR principles](https://www.go-fair.org/fair-principles/) by using established data standards, which lowers project barriers and boosts the interoperability of biodiversity records.
+
+## Why *pamflow*?
+
+Despite the widespread use of Passive Acoustic Monitoring (PAM), a lack of integrated software and standardized data practices has hindered the effective analysis and management of valuable acoustic data. **pamflow** unifies fragmented software tools and standardize data formats, unlocking the full potential of PAM for research and conservation.
 
 ```{toctree}
-:maxdepth: 2
-:caption: Contents:
+:maxdepth: 1
+:caption: Getting Started
 
-tutorial/index.md
-contributing_guidelines.md
-data_exchange_format.md
+beginner_tutorial/setup.md
+beginner_tutorial/index.md
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Diving deeper
+
+documentation/index.md
+advanced_tutorials/build_your_own_node/index.md
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Data standards
+
+data_standardization/data_exchange_format.md
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Getting Involved
+
+getting_involved/contributing_guidelines.md
+```
+
+## About
+
+* Checkout our updated [contributor list](https://github.com/pamflow-org/pamflow/graphs/contributors).
+* [GitHub Repository](https://github.com/pamflow-org/pamflow/)

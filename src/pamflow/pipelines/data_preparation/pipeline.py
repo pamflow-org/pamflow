@@ -11,7 +11,7 @@ def create_pipeline(**kwargs):
         [
             node(  # Log
                 func=get_media_file,
-                inputs=["params:audio_root_directory", "field_deployments_sheet@pandas"],
+                inputs=["params:audio_root_directory", "field_deployments_sheet@pandas", "params:timezone"],
                 outputs="media@pamDP",
                 name="get_media_file_node",
             ),
@@ -24,7 +24,7 @@ def create_pipeline(**kwargs):
             
             node(  # Log
                 func=field_deployments_sheet_to_deployments,
-                inputs=["field_deployments_sheet@pandas", "media_summary@pandas"],
+                inputs=["field_deployments_sheet@pandas", "media_summary@pandas", "params:timezone"],
                 outputs="deployments@pamDP",
                 name="field_deployments_sheet_to_deployments_node",
             ),

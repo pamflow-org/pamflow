@@ -16,12 +16,17 @@ import matplotlib.dates as mdates
 import matplotlib as mpl
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.colors import Normalize
+from matplotlib_scalebar.scalebar import ScaleBar
+from adjustText import adjust_text
 import logging
 from pamflow.pipelines.quality_control.utils import concat_audio
 import datetime
 
 logger = logging.getLogger(__name__)
 
+def format_number(n):
+    """ Formats a number with thin spaces as thousand separators for improved readability."""
+    return f"{n:,}".replace(",", "\u2009")
 
 def plot_sensor_performance(media):
     """Plots sensor performance to provide an overview of the sampling effort.
@@ -57,9 +62,12 @@ def plot_sensor_performance(media):
 
     # Sort the DataFrame based on the first date
     media_out["first_date"] = media_out.groupby("deploymentID")["timestamp"].transform(
-        "min"
+        "max"
     )
     media_out = media_out.sort_values(by="first_date")
+
+    # Get temporal coverage
+    temporal_coverage = (media.timestamp.max() - media.timestamp.min()).days
 
     # Plot settings
     # Dynamically adjust figure size
@@ -111,12 +119,14 @@ def plot_sensor_performance(media):
     ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))  # Every 7 days
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
 
-    # Add title and set grid
+    # Add title, set axes names and set grid
     ax.grid(alpha=0.2)
     ax.set_title(
-        f"Deployment timeline: {media.deploymentID.nunique()} recorders | {media.shape[0]} files",
+        f"Deployment timeline: {media.deploymentID.nunique()} recorders | {temporal_coverage} days",
         pad=10, fontsize=16, color="gray", weight="bold"
     )
+    ax.set_xlabel("Date", fontsize=12, labelpad=8)
+    ax.set_ylabel("Deployment", fontsize=12, labelpad=8)
     
     # Create legend handles
     legend_values = np.linspace(
@@ -155,7 +165,7 @@ def plot_sensor_performance(media):
 
     # Add legend outside the plot
     ax.legend(
-        handles=legend_handles, title="N. Rec", loc="upper left", bbox_to_anchor=(1, 1)
+        handles=legend_handles, title="Number of\nrecordings", loc="upper left", bbox_to_anchor=(1, 1)
     )
     plt.xticks(rotation=45)
     plt.tight_layout()
@@ -220,7 +230,7 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
     n = geoinfo_mics["n_recordings"]
 
     # --- Plot points ---
-    ax.scatter(
+    scatter_plot = ax.scatter(
         geoinfo_mics.geometry.x,
         geoinfo_mics.geometry.y,
         s=marker_size,
@@ -229,29 +239,59 @@ def plot_sensor_location(media_summary, deployments, plot_parameters):
         edgecolor=marker_color,
     )
 
+    # Add space around data (x=10%, y=10%)
+    ax.margins(x=0.15, y=0.15)
+
     # Add basemap
     cx.add_basemap(ax, crs=geoinfo_mics.crs.to_string())
 
     # --- Text annotations ---
     if text_size > 0:
+        texts = []
         for x, y, label in zip(
             geoinfo_mics.geometry.x,
             geoinfo_mics.geometry.y,
             geoinfo_mics.deploymentID,
         ):
-            ax.annotate(
-                label,
-                xy=(x, y),
-                xytext=(3, 3),
-                textcoords="offset points",
-                fontsize=text_size,
+            texts.append(
+                ax.text(
+                    x, y, label,
+                    fontsize=text_size,
+                    ha="center", va="center"
+                )
             )
+        adjust_text(
+            texts,
+            ax=ax,
+            arrowprops=dict(arrowstyle="-", color="gray", lw=0.5),
+            add_objects=[scatter_plot],
+        )
 
-    # Title
-    ax.set_title(f"Deployment locations: {len(geoinfo_mics)} recorders", pad=10, fontsize=16, color="gray", weight="bold")
+    # Find and recolor attribution text
+    for t in ax.texts:
+        if "OpenStreetMap" in t.get_text():
+            t.set_color("gray")      # make it gray
+            t.set_alpha(0.7)         # optional transparency
+    
+    # Title and axis labels
+    ax.set_title(f"Deployment extent: {len(geoinfo_mics)} locations", pad=10, fontsize=16, color="gray", weight="bold")
+    ax.set_xlabel("Longitude", fontsize=12)
+    ax.set_ylabel("Latitude", fontsize=12)
 
-    # Add space around data (x=10%, y=10%)
-    ax.margins(x=0.1, y=0.1)
+    # -- Map scalebar (North arrow not necesary since lat/lon axes indicate direction) --
+    # Compute meters per degree based on mean latitude
+    mean_lat = geoinfo_mics.geometry.y.mean()
+    meters_per_degree = 111_320 * np.cos(np.deg2rad(mean_lat))
+
+    scalebar = ScaleBar(
+        dx = meters_per_degree,
+        location="upper left", 
+        units="m", 
+        box_alpha=0, 
+        scale_loc="right", 
+        height_fraction=0.005
+        )  
+    ax.add_artist(scalebar)
 
     # Equal aspect ratio
     ax.set_aspect('equal')
@@ -320,7 +360,7 @@ def plot_survey_effort(media_summary, deployments, media):
     # Build table data structure
     data = [
         (n_deployments, "Deployments"),
-        (f"{n_recordings} | {n_recording_time} h", "Audio files"),
+        (f"{format_number(n_recordings)} | {n_recording_time} h", "Audio files"),
         (f"{survey_dates[0]}\n{survey_dates[1]}", "Survey dates"),
         (f"{temporal_coverage} days", "Temporal coverage"),
         (n_locations, "Locations"),
@@ -368,7 +408,7 @@ def plot_survey_effort(media_summary, deployments, media):
     return fig
 
 def get_timelapse(
-    sensor_deployment_data, media, sample_len, sample_period, plot_params
+    sensor_deployment_data, media, sample_len, sample_period, sample_date, plot_params
 ):
     """Generates audio timelapse spectrograms for each sensor deployment.
 
@@ -410,20 +450,25 @@ def get_timelapse(
         - dict: A dictionary containing spectrogram figures for each deployment, stored in the
           catalog as `timelapse_plot@matplotlib`.
     """
-    # get selected date for calculating timelapse
-    sensor_deployment_data["num_recordings_mean"] = sensor_deployment_data.groupby(
-        "timestamp"
-    )["count"].transform("mean")
+    if sample_date is not None:
+        selected_date = sample_date
+    else:
+        # Select the timestamp with the largest number of sensors and highest mean recordings
+        # This ensures the timelapse represents the best data coverage day
+        sensor_deployment_data["num_recordings_mean"] = sensor_deployment_data.groupby(
+            "timestamp"
+        )["count"].transform("mean")
 
-    sensor_deployment_data["num_sensors_by_date"] = sensor_deployment_data.groupby(
-        "timestamp"
-    )["deploymentID"].transform("nunique")
+        sensor_deployment_data["num_sensors_by_date"] = sensor_deployment_data.groupby(
+            "timestamp"
+        )["deploymentID"].transform("nunique")
 
-    selected_date = sensor_deployment_data.sort_values(
-        by=["num_sensors_by_date", "num_recordings_mean"], ascending=[False, False]
-    )["timestamp"].unique()[0]
-    # timelapse calculation
-    media = media.astype({"timestamp": "datetime64[ns]"})
+        selected_date = sensor_deployment_data.sort_values(
+            by=["num_sensors_by_date", "num_recordings_mean"], ascending=[False, False]
+        )["timestamp"].unique()[0]
+    
+    # Timelapse data preparation
+    media["timestamp"] = pd.to_datetime(media["timestamp"], errors="coerce")
 
     df_timelapse = media[
         media["timestamp"].dt.date
@@ -441,6 +486,7 @@ def get_timelapse(
     width = plot_params["fig_width"]
     height = plot_params["fig_height"]
     colormap = plot_params["colormap"]
+    flims = plot_params["flims"]
     
     # Mix timelapse
     logger.info(f"Processing audio timelapse for {ngroups} devices:")
@@ -464,9 +510,42 @@ def get_timelapse(
             long_wav,
             fs,
             nperseg=nperseg,
-            noverlap=noverlap,  # nperseg*noverlap
+            noverlap=noverlap,
+            flims=flims,
         )
         util.plot_spectrogram(Sxx, ext, db_range, ax=ax, colorbar=False, cmap=colormap)
+        ax.text(
+            0.99, 0.98,                     # move near top-right corner
+            f"{site} | {selected_date}",
+            color="white",
+            fontsize=12,
+            fontweight="bold",
+            transform=ax.transAxes,
+            ha="right",                     # right-align the text
+            va="top",
+        )
+        # Define xtick positions and labels
+        xtick_positions = [
+            tn[0],                              # start (0h)
+            tn[int(len(tn) * 0.25)],            # 1/4 of the recording (~6h)
+            tn[int(len(tn) * 0.5)],             # 1/2 (~12h)
+            tn[int(len(tn) * 0.75)],            # 3/4 (~18h)
+            tn[-1],                             # end (~23:30h)
+        ]
+        xtick_labels = ["00:00", "06:00", "12:00", "18:00", "23:30"]
+        ax.set_xticks(xtick_positions)
+        ax.set_xticklabels(xtick_labels)
+        ax.set_xlabel("Time (hh:mm)", fontsize=12)
+        
+        # Convert y-axis to kHz
+        yticks = list(ax.get_yticks())
+        # ensure top tick is not above flims[1]
+        if (len(yticks) > 0) & (yticks[-1] > flims[1]):
+            yticks = yticks[:-1]
+        ax.set_yticks(yticks)  # explicitly fix tick positions
+        ax.set_yticklabels([f"{y/1000:.1f}" for y in yticks])
+        ax.set_ylabel("Frequency (kHz)", fontsize=12)
+        plt.tight_layout()
 
         # Return audio and figure
         file_name = f"{site}_timelapse_{selected_date}"

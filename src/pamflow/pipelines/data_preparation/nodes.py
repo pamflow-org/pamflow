@@ -9,10 +9,12 @@ import os
 from maad import util
 import pandas as pd
 import logging
+import numpy as np
+from pamflow.datasets.pamDP.deployments import deployments_pamdp_columns
 
 logger = logging.getLogger(__name__)
 
-def get_media_file(input_path, field_deployments_sheet):
+def get_media_file(input_path, field_deployments_sheet, timezone):
     """Retrieves and processes metadata from media files in the given directory.
 
     Parameters
@@ -33,12 +35,14 @@ def get_media_file(input_path, field_deployments_sheet):
         The DataFrame follows the pamDP.media format. Stored in catalog as
         media@pamDP.
     """
-
+    # TODO: check if file prefix is needed
     # add_file_prefix(folder_name=input_path,
     #                recursive=True
     #                )
+    
     logger.info(f"Preparing data from {input_path}...")
-    # checking consistency between sensors found on audio root directory and field deployments sheet
+    
+    # Check consistency between sensors found on audio root directory and field deployments sheet
     sensors_in_audio_root_directory=os.listdir(input_path)
     sensors_in_field_deployments=field_deployments_sheet['deploymentID'].unique().tolist()
     if set(sensors_in_audio_root_directory)!=set(sensors_in_field_deployments):
@@ -76,6 +80,11 @@ def get_media_file(input_path, field_deployments_sheet):
     media["filePublic"] = False  
     media["captureMethod"] = "activityDetection"
     media["fileLength"] = media["fileLength"].astype(float).round(3)
+
+    # Adjust date with ISO 8601 format
+    media["timestamp"] = pd.to_datetime(media["timestamp"]).dt.tz_localize(timezone)
+    media["timestamp"] = media["timestamp"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
+    
     # checking consistency between sensors found on audio root directory and media
     sensors_in_media=media['deploymentID'].unique().tolist()
     missing_in_media=set(sensors_in_audio_root_directory)-set(sensors_in_media)
@@ -109,8 +118,9 @@ def get_media_summary(media):
     """
 
     # Ensure timestamp is in datetime format and estimate duty cycle
-    media["timestamp"] = pd.to_datetime(media.timestamp)
-    media["diff"] = media["timestamp"].sort_values().diff()
+    media["timestamp"] = pd.to_datetime(media["timestamp"])
+    media = media.sort_values(["deploymentID", "timestamp"])
+    media["diff"] = media.groupby("deploymentID")["timestamp"].diff()
     
     # Summarize by deploymentID
     media_summary = (
@@ -119,7 +129,7 @@ def get_media_summary(media):
             date_ini=("timestamp", "min"),
             date_end=("timestamp", "max"),
             n_recordings=("deploymentID", "count"),
-            time_diff=("diff", "median"),
+            time_diff=("diff", lambda x: x.dropna().median()),
             sample_length=("fileLength", "median"),
             sample_rate=("sampleRate", lambda x: x.mode().iloc[0] if not x.mode().empty else None),
         )
@@ -132,7 +142,7 @@ def get_media_summary(media):
     return media_summary
 
 
-def field_deployments_sheet_to_deployments(field_deployments, media_summary):
+def field_deployments_sheet_to_deployments(field_deployments, media_summary, timezone):
     """Converts user-provided deployments templates into a standardized deployments DataFrame.
 
     This node processes a user-provided template and combines it with media summary data
@@ -156,48 +166,48 @@ def field_deployments_sheet_to_deployments(field_deployments, media_summary):
         A standardized deployments DataFrame following the pamDP.deployments format. Stored in
         the catalog as `deployments@pamDP`.
     """
+
+    logger.info("Converting field deployments sheet to pamDP deployments format...")
+    
+    # -- 1. Create deployments dataframe following pamDP standards -- #
+
+    # Create a new DataFrame with the schema
+    deployments = pd.DataFrame(columns=deployments_pamdp_columns)
+
+    # -- 2. Read the data from field_deployments and adjust as necessary -- #
+    # Adjust and combine recordists names
     field_deployments["setupBy"] = (
         field_deployments["setupByName"]
+        + " "
         + field_deployments["setupByLastName"]
     )
 
+    # Combine date and time columns into datetime fields
+    field_deployments['deploymentStart'] = pd.to_datetime(
+        field_deployments["deploymentStartDate"].astype(str) + ' ' + 
+        field_deployments["deploymentStartTime"].astype(str)
+    )
     
+    field_deployments['deploymentEnd'] = pd.to_datetime(
+        field_deployments["deploymentEndDate"].astype(str) + ' ' + 
+        field_deployments["deploymentEndTime"].astype(str)
+    )
 
-    field_deployments['deploymentStart']=field_deployments["deploymentStartDate"].astype(str) + ' ' + field_deployments["deploymentStartTime"].astype(str)
-    field_deployments['deploymentEnd'  ]=field_deployments["deploymentEndDate" ].astype(str) + ' ' + field_deployments["deploymentEndTime"  ].astype(str)
-    field_deployments=field_deployments.astype({'deploymentStart':'datetime64[ns]',
-                    'deploymentEnd' :'datetime64[ns]'
-                })
+    # Adjust date with ISO 8601 format
+    field_deployments["deploymentStart"] = pd.to_datetime(field_deployments["deploymentStart"]).dt.tz_localize('America/Bogota')
+    field_deployments["deploymentStart"] = field_deployments["deploymentStart"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
+    field_deployments["deploymentEnd"] = pd.to_datetime(field_deployments["deploymentEnd"]).dt.tz_localize('America/Bogota')
+    field_deployments["deploymentEnd"] = field_deployments["deploymentEnd"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
 
-
-    field_deployments["recorderID"] = None
-    field_deployments["locationID"] = field_deployments["locationName"]
-    field_deployments["coordinateUncertainty"] = None
-    field_deployments["deploymentGroups"] = None
+    # 3 -- Map existing fields from field_deployments to deployments -- #
+    # Populate deployments DataFrame
+    for column in deployments_pamdp_columns:
+        if column in field_deployments.columns:
+            deployments[column] = field_deployments[column]
+        else:
+            deployments[column] = None
 
     n_recordings = media_summary["n_recordings"].sum()
-    media_summary = media_summary[["deploymentID", "date_ini", "date_end"]]
-
-    deployments = field_deployments.merge(media_summary, on="deploymentID", how="left")
-
-   
-    
-    
     logger.info(f"Done! {len(deployments)} deployments with {n_recordings} recordings saved to pamDP format.")
-    deployments_columns= ["deploymentID",
-    "locationID",
-    "locationName",
-    "latitude",
-    "longitude",
-    "coordinateUncertainty",
-    "deploymentStart",
-    "deploymentEnd",
-    "setupBy",
-    "recorderID",
-    "recorderModel",
-    "recorderHeight",
-    "recorderConfiguration",
-    "habitat",
-    "deploymentGroups",
-    "deploymentComments",]
-    return deployments[deployments_columns]
+
+    return deployments

@@ -2,7 +2,7 @@
 Now that you extracted metadata from the audios you are ready for assessing the quality of them.
  Many things can go wrong during a PAM  project: a recorder can run out off battery,  break after the installation for external factors, not be installed in the right way and many more. In this section you will learn how to use **pamflow**  to check  all deployed  sensors behaved as expected.
 
-***Table of Contents***: 
+***Summary***: 
 1. [Sensor performance](#sensor-performance)
 2. [Sensor location](#sensor-location)
 3. [Timelapses](#timelapses)
