@@ -31,7 +31,7 @@ select = [
 
 [project]
 name = "pamflow"
-version = "0.1.0"  # Add the version here
+version = "0.9.0"  # Add the version here
 description = "Simplified analysis for passive acoustic monitoring"
 
 
