@@ -8,6 +8,10 @@ observations@pamDP:
   filepath: data/output/species_detection/observations.csv
   timezone: Etc/GMT+5
 
+target_species@pandas:
+  type: pandas.CSVDataset
+  filepath: data/input/target_species/target_species.csv
+
 segments@pandas:
   type: pandas.CSVDataset
   filepath: data/output/species_detection/segments.csv
