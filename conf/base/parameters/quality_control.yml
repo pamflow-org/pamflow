@@ -21,6 +21,6 @@ timelapse_plot:
 
 # Parameters for generating timelapses
 timelapse:
-  sample_length: 5       # Length of each sample for timelapse (in seconds)
+  sample_length: 1       # Length of each sample for timelapse (in seconds)
   sample_period: '30min' # Time interval between samples (e.g., '30min')
   sample_date: null      # Specific date for timelapse (YYYY-MM-DD). If null, the date with the most data will be used.

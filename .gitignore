@@ -13,6 +13,7 @@ conf/**/*credentials*
 sample_data
 pamflow_tutorial_data
 minimal_sample_data
+pamflow_tutorial_data
 data/**
 logs/**
 notebooks/**
