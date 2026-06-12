@@ -1,0 +1,6 @@
+field_deployments_sheet@pandas:  
+  type: pandas.ExcelDataset  
+  filepath: "complete/with/custom/path"  
+target_species@pandas:  
+  type: pamflow.datasets.pamDP.target_species.TargetSpecies  
+  filepath: "complete/with/custom/path"
