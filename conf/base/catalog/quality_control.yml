@@ -1,35 +1,35 @@
 sensor_performance_data@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/quality_control/sensor_performance_data.csv
+  filepath: ${globals:output_dir}/quality_control/sensor_performance_data.csv
 
 sensor_performance_figure@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/quality_control/deployment_timeline.pdf
+  filepath: ${globals:output_dir}/quality_control/deployment_timeline.pdf
   save_args:
     format: pdf
 
 sensor_location@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/quality_control/deployment_location.pdf
+  filepath: ${globals:output_dir}/quality_control/deployment_location.pdf
   save_args:
     format: pdf
 
 survey_effort@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/quality_control/survey_effort.pdf
+  filepath: ${globals:output_dir}/quality_control/survey_effort.pdf
   save_args:
     format: pdf
 
 timelapse_spectrograms@PartitionedImage:
   type: partitions.PartitionedDataset
-  path: data/output/quality_control/timelapse/
+  path: ${globals:output_dir}/quality_control/timelapse/
   dataset:
     type: matplotlib.MatplotlibWriter
   filename_suffix: ".png"
 
 timelapse@PartitionedAudio:
   type: partitions.PartitionedDataset
-  path: data/output/quality_control/timelapse/
+  path: ${globals:output_dir}/quality_control/timelapse/
   dataset:
     type: pamflow.datasets.audio_dataset.SoundDataset
   filename_suffix: ".WAV"
