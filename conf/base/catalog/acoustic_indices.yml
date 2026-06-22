@@ -1,5 +1,5 @@
 acoustic_indices@PartitionedDataset:
   type: partitions.PartitionedDataset
-  path: data/output/acoustic_indices/
+  path: ${globals:output_dir}/acoustic_indices/
   filename_suffix: ".csv"
   dataset: pandas.CSVDataset

@@ -1,12 +1,12 @@
 graphical_soundscape@PartitionedDataset:
   type: partitions.PartitionedDataset
-  path: data/output/graphical_soundscape/
+  path: ${globals:output_dir}/graphical_soundscape/
   filename_suffix: ".csv"
   dataset: pandas.CSVDataset
 
 graph_plot@PartitionedImage:
   type: partitions.PartitionedDataset
-  path: data/output/graphical_soundscape/
+  path: ${globals:output_dir}/graphical_soundscape/
   dataset:
     type: matplotlib.MatplotlibWriter
   filename_suffix: ".png"
