@@ -1,0 +1,6 @@
+DwC_eventos@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/export/DwC_eventos.csv
+CSA_eventos@pandas:
+  type: pandas.CSVDataset
+  filepath: data/output/export/CSA_eventos.csv
