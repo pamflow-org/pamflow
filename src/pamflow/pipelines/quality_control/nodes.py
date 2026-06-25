@@ -551,8 +551,17 @@ def get_timelapse(
         file_name = f"{site}_timelapse_{selected_date}"
         yield {file_name: (long_wav, fs)}, {file_name: fig}
         
-        # Close the plot to free up memory
+        # Close the plot and free up memory
         plt.close(fig)
+        del long_wav
+        del fig
+        del Sxx
+        del tn, fn, ext
+        del df_site
+        del ax
 
+        # Force garbage collection
+        import gc
+        gc.collect()
 
 

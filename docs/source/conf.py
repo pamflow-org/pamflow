@@ -82,8 +82,11 @@ templates_path = ["_templates"]
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-#source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
-source_suffix=[".md"]
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'myst',
+}
+# source_suffix=[".md"]
 # The master toctree document.
 master_doc = "index"
 
@@ -109,7 +112,9 @@ pygments_style = "sphinx"
 #
 
 html_theme = "sphinx_rtd_theme"
-#html_theme = "alabaster"
+html_static_path = ['_static']
+html_css_files = ['custom.css']
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.

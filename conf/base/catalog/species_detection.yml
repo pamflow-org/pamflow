@@ -1,31 +1,31 @@
 unfiltered_observations@pamDP:
   type: pamflow.datasets.pamDP.observations.Observations
-  filepath: data/output/species_detection/unfiltered_observations.csv
+  filepath: ${globals:output_dir}/species_detection/unfiltered_observations.csv
   timezone: Etc/GMT+5
-
-target_species@pandas:
-  type: pamflow.datasets.pamDP.target_species.TargetSpecies
-  filepath: data/input/target_species/target_species.csv
 
 observations@pamDP:
   type: pamflow.datasets.pamDP.observations.Observations
-  filepath: data/output/species_detection/observations.csv
+  filepath: ${globals:output_dir}/species_detection/observations.csv
   timezone: Etc/GMT+5
+
+target_species@pandas:
+  type: pandas.CSVDataset
+  filepath: data/input/target_species/target_species.csv
 
 segments@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/species_detection/segments.csv
+  filepath: ${globals:output_dir}/species_detection/segments.csv
 
 segments_audio_folder@AudioFolderDataset:
   type: partitions.PartitionedDataset
-  path: data/output/species_detection/segments
+  path: ${globals:output_dir}/species_detection/segments
   dataset:
     type: pamflow.datasets.audio_dataset.SoundDataset
   filename_suffix: ".WAV"
 
 manual_annotations@PartitionedDataset:
   type: partitions.PartitionedDataset
-  path: data/output/species_detection/manual_annotations
+  path: ${globals:output_dir}/species_detection/manual_annotations
   dataset: 
     type: pandas.ExcelDataset
     save_args:
@@ -36,12 +36,12 @@ manual_annotations@PartitionedDataset:
 
 observations_summary@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/species_detection/observations_summary.pdf
+  filepath: ${globals:output_dir}/species_detection/observations_summary.pdf
   save_args:
     format: pdf
 
 observations_per_species@matplotlib:
   type: matplotlib.MatplotlibWriter
-  filepath: data/output/species_detection/observations_per_species.pdf
+  filepath: ${globals:output_dir}/species_detection/observations_per_species.pdf
   save_args:
     format: pdf

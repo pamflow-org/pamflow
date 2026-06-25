@@ -1,11 +1,11 @@
 media@pamDP:
   type:  pamflow.datasets.pamDP.media.Media
-  filepath: data/output/data_preparation/media.csv
+  filepath: ${globals:output_dir}/data_preparation/media.csv
   timezone: Etc/GMT+5
 
 media_summary@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/data_preparation/audio_media_summary.csv
+  filepath: ${globals:output_dir}/data_preparation/audio_media_summary.csv
 
 field_deployments_sheet@pandas:
   type: pamflow.datasets.pamDP.field_deployments_sheet.FieldDeployments
@@ -17,5 +17,5 @@ field_deployments_sheet@pandas:
 
 deployments@pamDP:
   type: pamflow.datasets.pamDP.deployments.Deployments
-  filepath: data/output/data_preparation/deployments.csv
+  filepath: ${globals:output_dir}/data_preparation/deployments.csv
   timezone: Etc/GMT+5

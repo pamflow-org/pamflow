@@ -1,28 +1,24 @@
 # Beginner's guide
 
-This guide will walk you through the steps to step for  running **pamflow** and understanding its outputs. For this, we will use an immersive example with real acoustic data. As soon as you understand this toy example, you will be able to run t**pamflow** with your own data. The tutorial takes approximately 30 minutes to complete.
+This guide will walk you through the steps for running **pamflow** using a real-world example with actual acoustic data. Once you are familiar with this example, you will be able to run **pamflow** with your own data. The tutorial takes approximately 30 minutes to complete.
+
+Make sure **pamflow** is installed before you start — follow the [installation instructions](setup.md). A technical reference for experienced users is available in the [documentation](../documentation/index.md).
 
 ***Context: The Guaviare Project***
-*The National biodiversity institute in Colombia, the Humboldt Institute, collaborated with communities at Guaviare, Colombia to perform a communitary project on the local bird fauna. You are part of the project  and your task is to process the passively collected acoustic data, extract insights and produce relevant metrics and graphics for a report on the project. You will use **pamflow** to help you.*
+*The XXXX Institute in Colombia collaborated with communities in Guaviare, Colombia to conduct a community monitoring project on local bird fauna using passive acoustic monitoring (PAM). You are part of the project and your task is to process the audio recordings, extract insights, and produce relevant metrics and visualizations for a project report.*
 
-***Your tasks***: 
-1. Get familiar with the collected data.
-2. Extract metadata from each audio file and each passive acoustic sensor.
-3. Check that all sensors behaved as expected.
-4. Report for presence of target species in the audios.
-5. Select and store audio segments with target species' vocalizations.
+***Your tasks***:
+1. Download and explore the data collected in the field.
+2. Configure **pamflow** and prepare the data for processing.
+3. Verify that all recorders performed as expected during the deployment.
+4. Automatically detect target bird species in the recordings using BirdNET.
+5. Extract and organize audio segments for expert validation.
 
-
-In the next sections, you’ll learn how to use **pamflow** to get your work done. Make sure **pamflow** and its tools are installed before you start ([instructions here](setup.md)). If you are an experienced python user and want a faster, less detailed set-up you can find it [here](../documentation/index.md).
-
-![](../../meta/images/pamflow_intro.jpg)
-
-
+![The Guaviare Project illustrative image](../../meta/images/pamflow_intro.jpg)
 
 ```{toctree}
 :maxdepth: 1
 :caption: Tutorial
-setup.md
 input_data.md
 data_preparation.md
 quality_control.md
