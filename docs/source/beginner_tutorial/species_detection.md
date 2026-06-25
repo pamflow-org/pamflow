@@ -1,77 +1,65 @@
 ## Species detection
 
-You are almost completing your assigned tasks for The Guaviare Project. In ths new section you will learn how **pamflow** can be a great help for the remaining duites. Specifically, you will learn how to use **pamflow** for automatic species detection and identification in the collected audios, filter for the custom list of target species and store segments of the audios having relavant animal vocalizations. 
+In this section you will run the `species_detection` pipeline, which automatically detects and identifies species in the recordings using the [BirdNET](https://github.com/kahst/BirdNET-Analyzer) model, filters results for your target species list, and extracts audio segments containing relevant vocalizations. Additional models will be integrated in future versions of **pamflow**.
 
-***Summary***:  
-1. [Species detection](#species-detection)
-2. [Segments](#segments)
-3. [Data annotation](#data-annotation)
-
-### Species detection
-Passive acoustic monitoring is a useful tool for assessing species presence. Using **pamflow** you can automatically process all your audiofiles in `audio_root_directory` looking for bird vocalizations. Additionally, **pamflow** will filter for the animals specified in `target_species`.  To get **pamflow** to analyze the audios in search for animal vocalizations run 
+To run the pipeline:
 
 ```bash
-kedro run --nodes "species_detection_node, filter_observations_node"
+kedro run --pipeline species_detection
 ```
 
-this will output two files: `unfiltered_observations@pamDP` and `observations@pamDP` which follow the [observation data format](../data_exchange_format.md#getting-started) and will be stored in `data/output/species_detection/unfiltered_observations.csv` and `data/output/species_detection/observations.csv respectively`. As suggested by their names, `unfiltered_observations@pamDP` stores every detection regardless of the animal detected whereas `observations@pamDP` acconts for detections exclusively for those species in `target_species`. Each detection specifies the file and timestamp of the vocalization, along with the detected animal’s scientific name and the confidence level of the identification (classification probability). You can learn the specifics  of the `observations@pamDP` format bellow (column content, data constraints, schema...) on the [Data Exchange Formats ](../data_exchange_format.md#Observations)  section.
+### Detection outputs
 
-| File Name                     | Start Time | End Time | Scientific Name         | ... | classificationProbability |
-|-------------------------------|------------|----------|-------------------------|-----|---------------------------|
-| MC-002_20240302_073000.wav    | 00:36.0    | 00:39.0  | Amazona farinosa        | ... | 0.168                     |
-| MC-002_20240302_073000.wav    | 00:42.0    | 00:45.0  | Cyanocorax violaceus    | ... | 0.285                     |
-| MC-009_20240302_073000.wav    | 00:57.0    | 01:00.0  | Pitangus sulphuratus    | ... | 0.142                     |
-| MC-013_20240302_073000.wav    | 00:36.0    | 00:39.0  | Ramphastos tucanus      | ... | 0.762                     |
-| ...                           | ...        | ...      | ...                     | ... | ...                       |
+The pipeline produces two summary figures and two output files.
 
-### Segments
+The figures are stored in `data/output/species_detection/`:
 
-Now that the species of interest to the project have been spotted in the audios, the bird experts need to listen to some of these detections to confirm them. Instead of having the experts reading the `observations@pamDP` file to select some of the detections, looking for the original audiofiles and going to the exact second where the detection started, you can use **pamflow** to select and store the segment of each audio where there is a relevant detection. By running
+- `observations_summary.pdf` — a high-level summary showing total observations, number of species detected, and the proportion of recordings with detections
+- `observations_per_species.pdf` — a bar chart showing the number of detections per species
 
-```bash
-kedro run --nodes "create_segments_node, create_segments_folder_node"
+![](../../meta/images/observations_summary.png) ![](../../meta/images/observations_per_species.png)
+
+The output files are also stored in `data/output/species_detection/`:
+
+
+- `unfiltered_observations.csv` — all detections regardless of species
+- `observations.csv` — detections filtered to your `target_species` list only (see [Input data](./input_data.md#target-species))
+
+Each row represents one detection, with the audio file name, timestamp, species scientific name, and the model's confidence score. You can learn more about the file format in the [Data Exchange Formats](../data_standardization/data_exchange_format.md#Observations) section.
+
+| observationID | deploymentID | mediaID                        | scientificName       | eventStart | eventEnd | classifiedBy  | classificationProbability | ... |
+|---------------|--------------|--------------------------------|----------------------|------------|----------|---------------|---------------------------|-----|
+| 0             | MC-002       | MC-002_20240229_003000.WAV     | Lophostrix cristata  | 12.0       | 15.0     | Birdnet 2.4   | 0.191                     | ... |
+| 1             | MC-002       | MC-002_20240229_003000.WAV     | Lophostrix cristata  | 42.0       | 45.0     | Birdnet 2.4   | 0.112                     | ... |
+| 2             | MC-002       | MC-002_20240229_003000.WAV     | Lophostrix cristata  | 51.0       | 54.0     | Birdnet 2.4   | 0.118                     | ... |
+| 3             | MC-002       | MC-002_20240229_033000.WAV     | Ciccaba virgata      | 21.0       | 24.0     | Birdnet 2.4   | 0.144                     | ... |
+| 4             | MC-002       | MC-002_20240229_033000.WAV     | Ciccaba virgata      | 30.0       | 33.0     | Birdnet 2.4   | 0.103                     | ... |
+| ...           | ...          | ...                            | ...                  | ...        | ...      | ...           | ...                       | ... |
+
+```{note}
+Detection confidence scores are low by default — **pamflow** reports all detections above 0.1, so results should always be reviewed carefully. For example, *Lophostrix cristata* detections in this dataset are suspicious given that the deployment site is a pasture, where this forest owl would be unexpected. The audio segments and annotation files in the following steps are designed precisely to help with this review. For further guidance on interpreting model outputs, see [Wood and Kahl (2024)](https://link.springer.com/article/10.1007/s10336-024-02144-5).
 ```
 
-**pamflow** will randomly select a custom number of segments for each species out of the detections in `observations@pamDP`. The info of the selected segments will be stored in `segments@pandas` and the actual segments are now stored in `data/output/species_detection/segments`. Inside this path, one folder for each species in `target_species` will contain the corresponding audios for the segments.
+### Audio segments
 
-``` 
-data/
-├── input/                        
-└── output/                       
-    ├──  species_detection/                    
-        └── segments/                    
-            ├── Amazona_farinosa/        
-            │   ├── 0.142_MC-002_20240302_073000_57.0_60.0.WAV
-            │   ├── 0.168_MC-009_20240302_073000_36.0_39.0.WAV
-            │   │            ...
-            │   └── 0.762_MC-013_20240302_073000_42.0_45.0.WAV      
-            ├── Cyanocorax_violaceus/    
-            ├── Pitangus_sulphuratus/    
-            └── Ramphastos_tucanus/              
-```
-Each file name follows the structure `<classification probability>_<original file name>_<start time>_<end time>.WAV`. 
+To validate the detections, audio segments for each target species are saved in `data/output/species_detection/segments/`, with one subfolder per species. These clips can be shared with bird experts for manual review and confirmation. The number of segments selected per species can be configured in `conf/local/parameters.yml`.
 
-### Data annotation 
+Each clip is named following this structure:
 
-The segments are now ready for the experts to listen and confirm the detections. In order to make verification easier for them, **pamflow** can generate excel files referencing each of the segments. As soon as an expert determines if a particular detection is accurate or not, she only needs to type true or false on the format.  Additionally, if an observation is not accurate, experts can type the actual species in the segment (if known) on the column `detectedSpecies`. For generating these formats run 
+`<classificationProbability>_<originalFileName>_<startTime>_<endTime>.WAV`
 
-```bash
-kedro run --nodes "create_manual_annotation_formats_node"
-```
+This makes it easy to identify the source recording, the time of the vocalization, and the model's confidence in its identification.
 
-This will create one excel file per species in the folder `data/input/manual_annotations`:
+### Data annotation
 
+To make expert review straightforward, one Excel file per target species is generated in `data/input/manual_annotations/`. Each file lists the selected audio segments for that species. Once the audio clips have been reviewed, the expert only needs to fill in two columns:
 
-``` 
-data/
-├── input/                        
-│   └── manual_annotations/       # Folder containing manual annotation files for each species
-│       ├── Amazona_farinosa_manual_annotations.xlsx
-│       ├── Cyanocorax_violaceus_manual_annotations.xlsx
-│       ├── Pitangus_sulphuratus_manual_annotations.xlsx
-│       └── Ramphastos_tucanus_manual_annotations.xlsx
-└── output/             
-```
+- `positive` — type `true` if the detection is correct, `false` if not
+- `detectedSpecies` — if the detection is incorrect, type the actual species name (if known)
+
+The completed annotation files feed back into **pamflow** in subsequent steps to refine and validate the final results.
+
+For example, the annotation file for *Amazona farinosa* looks like this:
 
 | segmentsFilePath                                      | filePath                                    | classificationProbability | eventStart | eventEnd | scientificName     | positive | detectedSpecies |
 |-------------------------------------------------------|---------------------------------------------|---------------------------|------------|----------|-------------------|----------|----------------|
@@ -79,3 +67,10 @@ data/
 | 0.684_MC-009_20240301_073000_0.0_3.0.WAV              | .../MC-009/MC-009_20240301_073000.WAV       | 0.684                     | 0          | 3        | Amazona farinosa  |          |                |
 | 0.659_MC-009_20240301_073000_33.0_36.0.WAV            | .../MC-009/MC-009_20240301_073000.WAV       | 0.659                     | 33         | 36       | Amazona farinosa  |          |                |
 | 0.653_MC-009_20240301_073000_30.0_33.0.WAV            | .../MC-009/MC-009_20240301_073000.WAV       | 0.653                     | 30         | 33       | Amazona farinosa  |          |                |
+
+
+## Wrap-up
+
+Congratulations on completing the tutorial! You have gone through the main **pamflow** workflow: from organizing and loading field data, to running quality checks on your recorders, detecting target species, and preparing audio segments for expert validation. These steps cover the core of what **pamflow** is designed to do — turning raw acoustic recordings into structured, reusable, and interpretable data.
+
+You are now ready to run **pamflow** with your own data. Note that all pipelines can also be run node by node for greater control over each step — see the [Pipeline details](../documentation/pipeline_details.md#pipeline-details) section for a full reference, including additional pipelines such as `graphical_soundscapes` and `acoustic_indices`. If you run into any issues or have suggestions, feel free to open an issue on the [GitHub repository](https://github.com/pamflow-org/pamflow). For a deeper understanding of the data formats and outputs, refer to the [Data Exchange Formats](../data_standardization/data_exchange_format.md) section.

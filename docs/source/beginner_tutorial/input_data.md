@@ -1,21 +1,19 @@
-## Set up the data
+## The tutorial data
 
-Now that your computer has the required programms for running **pamflow** you can focus on The Guaviare Project. In this section you will download and get familiar with the data collected on the field. These input files are not only part of The Guaviare Project but are also the data that **pamflow** requires in any other passive acoustic monitoring project.
+Before running any analysis, you need to gather the three files that **pamflow** requires. In this section you will download the tutorial data and get familiar with its structure.
 
-***Summary***:
-```{contents}
-   :depth: 1
-   :local:
+### 1. Download tutorial data
+The audio recordings you'll need for this tutorial can be found [here](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7). 
+
+```{note}
+This sample data is provided to show you how to use pamflow, if you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
 ```
 
-### 1. Download audio recordings
-The audio recordings you'll need for this tutorial can be found on [Zenodo](https://doi.org/10.5281/zenodo.16922848). This sample data is provided to show you how to use pamflow. If you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
+### 2. Audio recordings
 
-### 2. Audio Root Directory
+During The Guaviare Project, {{number_of_sensors}} recorders were deployed for {{number_of_days}} days, programmed to record 30 seconds every 30 minutes. If everything went as expected, each deployment collected 48 files per day, for a total of {{number_of_wav_files}} one-minute recordings.
 
-During The Guaviare Project {{number_of_sensors}} passive acoustic sensors where installed for {{number_of_days}} days. The sensors where programmed for recording one minute every 30 minutes so, if everything went well, for each day and each installed sensor 48 files were collected for a total number of {{ number_of_wav_files}} one-minute recordings. 
-
-The resulting audio files are stored in an  external disk that's been delivered to you by  field researchers. The audios are organized as shown bellow
+Inside the main folder `pam_data_guaviare/` you will find one subfolder per deployment, named after its deployment ID and containing all the audio files collected at that location:
 
 ```
 /guaviare_project_external_disk/pam_data_guaviare/
@@ -30,29 +28,40 @@ The resulting audio files are stored in an  external disk that's been delivered 
 └── MC-013/  
 ```
 
-Each of the {{number_of_sensors}} subfolders corresponds to one of the installed sensors and stores the {{ number_of_wav_files_per_sensor}} one-minute audio files collected by the sensor. These are the audio files from which **pamflow** will help you extract metadata, perform quality checks, detect species and extract audio segments. This folder containing all the audio files per sensor is called `audio_root_directory`. 
+This main folder is referred to as the `audio_root_directory` — you will use this name when configuring **pamflow** in the next step.
 
-> **⚠️ Warning:** Ensure the file names of the audio files meets the format above.  When working with your
-> own audio data, the audio files need to be named following the nomenclature: 
-> {Sensor name}_{date}_{time}.WAV
-> **pamflow** will ignore files named after a different structure.
+```{important}
+   Audio file names must follow this format: `DEPLOYMENTID_DATE_TIME.WAV`
+   **pamflow** will ignore any files that do not match this structure.
+```
 
-### 3. Field deployment
+### 3. Field deployments sheet
 
-Field researchers installed the acoustic sensors and took notes on everything important regarding the installation: coordinates of the site, date and time of installation,  sensor characteristics and  ecological traits of the deployment site. 
+Field researchers installed the recorders and noted key information about each deployment: site coordinates, installation date and time, recorder settings, and habitat characteristics.
 
-These notes were handed out to you along with the recordings in a format  called `field_deployments_sheet`. This is a `.xlsx` file with one row per installed sensor having all the previously mentioned data regarding the installation of the sensor. 
+These notes were handed to you alongside the recordings as the `field_deployments_sheet` — a `.xlsx` file with one row per recorder containing the above information.
 
-### 4. Target species
+### 4. Target species list
 
-Even though there are many bird species at the monitoring site, the community is only interested in a few of them considered relevant for conservation. Along with the `devices_root_directory` and the `field_deployments_sheet`, you were given the list of relevant species for the project, namely, the `target_species`, which is a `.csv` file with only one column (`scientificName`) and one row per each one of the species considered important  for this particular project. 
+Even though the monitoring site hosts many bird species, the community is only interested in a few considered relevant for conservation. Along with the `audio_root_directory` and the `field_deployments_sheet`, you were given a list of these species: the `target_species` file, a `.csv` with a single column (`scientificName`) and one row per species.
 
-| Scientific Name          |
+<div style="max-width: 300px;">
+
+| scientificName          |
 |--------------------------|
 | Amazona farinosa         |
 | Cyanocorax violaceus     |
 | Pitangus sulphuratus     |
 | Ramphastos tucanus       |
+| Trogon viridis           |
+| Ara severus              |
+| Nyctidromus albicollis   |
+| Lophostrix cristata      |
 
+</div>
 
-These are the three only inputs required to run **pamflow**. Now that you understand what they are and their structure let's move on with [next section](./data_preparation.md) to learn how to get **pamflow** to read them. 
+```{tip}
+These three files — the audio folder, the field deployments sheet, and the target species list — are all that **pamflow** needs to run. The target species file is the only optional one; if left empty, detections will not be filtered by species.
+```
+
+Now that you understand the data and its structure, let's move on to the [next step](./data_preparation.md) to load it into **pamflow**.
