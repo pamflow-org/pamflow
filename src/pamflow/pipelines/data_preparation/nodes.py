@@ -66,10 +66,10 @@ def get_metadata_dir(path_dir, verbose=True):
 
     # Get metadata for each file
     df_metadata = pd.DataFrame()
-
     records = []
     total = len(flist_wav)
     step = max(1, total // 10)  # 20 messages = every 5%
+    logger.info("-- Processing %d audio files --", total)
 
     for i, file in enumerate(flist_wav, start=1):
         records.append(util.get_metadata_file(file, verbose=False))
