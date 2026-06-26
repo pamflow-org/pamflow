@@ -6,6 +6,8 @@ Utilitary functions to manage, check and preprocess large sampling data assiciat
 """
 
 import os
+import glob
+from pathlib import Path
 from maad import util
 import pandas as pd
 import logging
@@ -13,6 +15,78 @@ import numpy as np
 from pamflow.datasets.pamDP.deployments import deployments_pamdp_columns
 
 logger = logging.getLogger(__name__)
+
+def ensure_directory(path_str):
+    """ Ensure that path provided is a directory """
+    # Create a Path object from the input string
+    path = Path(path_str)
+    
+    # Check if the path exists and is a directory
+    if path.is_dir():
+        return path
+    elif path.exists():
+        # If the path exists but is not a directory, raise an error
+        raise ValueError(f"'{path_str}' exists but is not a directory.")
+    else:
+        # If the path does not exist, try adding a '/' at the end and check again
+        path_with_slash = path / ''
+        if path_with_slash.is_dir():
+            return path_with_slash
+        else:
+            raise ValueError(f"'{path_str}' does not exist as a directory.")
+
+
+def get_metadata_dir(path_dir, verbose=True):
+    """
+    Get metadata asociated with audio recordings in a directory. Metadata includes basic 
+    information of the audio file format (sample rate, number of channels, bit depth and 
+    file size), and date information from the filename. Note however, that this function 
+    is intended for use only with audio files with a self-describing header.
+
+    Parameters
+    ----------
+    path_dir : str
+        Path of either a directory or a file. it will select all wav files in the parent folder
+        (of either the file or directory in path_dir). The search for file is performed recursively.
+    verbose : boolean, optional
+        Output file progress. The default is False.
+
+    Returns
+    -------
+    df_metadata : pandas.DataFrame
+        Dataframe with metadata, files as rows and metadata as columns.
+    
+    """
+
+    # Verify that input is a directory
+    path_dir = ensure_directory(path_dir)
+
+    # List all files recursively and select only wav files.
+    flist_wav = glob.glob(f"{path_dir}/**/*.[Ww][Aa][Vv]", recursive=True)
+
+    # Get metadata for each file
+    df_metadata = pd.DataFrame()
+
+    records = []
+    total = len(flist_wav)
+    step = max(1, total // 10)  # 20 messages = every 5%
+
+    for i, file in enumerate(flist_wav, start=1):
+        records.append(util.get_metadata_file(file, verbose=False))
+
+        if i % step == 0 or i == total:
+            logger.info(
+                "Processed %d/%d audio files (%.0f%%)",
+                i,
+                total,
+                100 * i / total,
+            )
+
+    df_metadata = pd.DataFrame.from_records(records)
+    
+    return df_metadata
+
+
 
 def get_media_file(input_path, field_deployments_sheet, timezone):
     """Retrieves and processes metadata from media files in the given directory.
@@ -60,7 +134,7 @@ def get_media_file(input_path, field_deployments_sheet, timezone):
                 "found on Field Deployments Sheet, won't be fully processed because they have no corresponding folder "
                 "on Audio Root Directory."
             )
-    metadata = util.get_metadata_dir(input_path, False)
+    metadata = get_metadata_dir(input_path, False)
     metadata.dropna(inplace=True)  # remove problematic files
     columns_names_dict = {
         "path_audio": "filePath",
