@@ -1,6 +1,6 @@
 ## Multi‐Season Configuration
 
-Kedro supports multiple seasonal configurations through environments and a global output path variable.
+Passive acoustic monitoring projects are typically repeated over multiple seasons or years. Maintaining a reproducible analysis workflow is therefore essential. `pamflow` addresses this need by leveraging the Kedro framework, which supports season-specific configurations through environments while allowing shared settings, such as a global output path, to be defined once.
 
 ### Directory Structure
 
