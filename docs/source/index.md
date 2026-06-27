@@ -24,7 +24,7 @@ beginner_tutorial/index.md
 :caption: Diving deeper
 
 documentation/index.md
-advanced_tutorials/build_your_own_node/index.md
+advanced_tutorials/index.md
 ```
 
 ```{toctree}
