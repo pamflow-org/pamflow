@@ -1,4 +1,4 @@
-## Create a custom pipeline in pamflow
+## Create a custom pipeline
 
 Adding a new pipeline in pamflow is simple by using the Kedro CLI tools. Here is the straightforward, step-by-step process:
 
