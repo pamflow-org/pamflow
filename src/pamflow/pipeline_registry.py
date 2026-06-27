@@ -1,20 +1,15 @@
 """Project pipelines."""
 
 from typing import Dict
-
-from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
-
 from pamflow.pipelines.data_preparation import pipeline as data_preparation
 from pamflow.pipelines.quality_control import pipeline as quality_control
-from pamflow.pipelines.graphical_soundscape import (
-    pipeline as graphical_soundscape,
-)
+from pamflow.pipelines.graphical_soundscape import pipeline as graphical_soundscape
 from pamflow.pipelines.acoustic_indices import pipeline as acoustic_indices
 from pamflow.pipelines.species_detection import pipeline as species_detection
 from pamflow.pipelines.data_science import pipeline as data_science
 from pamflow.pipelines.export import pipeline as export
-
+from pamflow.pipelines.filter_media.pipeline import with_filter_media
 
 def register_pipelines() -> Dict[str, Pipeline]:
     """Register the project's pipelines.
@@ -35,7 +30,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         + graphical_soundscape_pipeline
         + acoustic_indices_pipeline
         + species_detection_pipeline
-        +quality_control_pipeline
+        + quality_control_pipeline
     )  # no incluir data_science
 
     return {
@@ -44,9 +39,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
         + data_science_pipeline,  # +species_detection_pipeline_pipeline+acousti...,
         "data_preparation": data_preparation_pipeline,
         "quality_control":quality_control_pipeline,
-        "graphical_soundscape": graphical_soundscape_pipeline,
-        "acoustic_indices": acoustic_indices_pipeline,
-        "species_detection": species_detection_pipeline,
+        "graphical_soundscape": with_filter_media(graphical_soundscape_pipeline),
+        "acoustic_indices": with_filter_media(acoustic_indices_pipeline),
+        "species_detection": with_filter_media(species_detection_pipeline),
         "data_science": data_science_pipeline,
         "export": export_pipeline,
     }

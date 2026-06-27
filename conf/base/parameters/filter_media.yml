@@ -1,0 +1,5 @@
+# Parameters for pipeline 'filter_media'. This pipeline allows to filter the 
+# processing of cpu-intensive tasks to selected deployments listed in 
+# deployments_filter. If empty, all deployments are selected.
+
+deployments_filter: []  # empty = all deployments
