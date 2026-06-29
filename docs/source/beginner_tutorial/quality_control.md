@@ -7,7 +7,7 @@ Now that you have extracted metadata from the recordings, you are ready to asses
 This pipeline generates a set of visual outputs to help you explore the data and identify any deployments that may have not performed as expected. To run it:
 
 ```bash
-kedro run --pipeline quality_control
+pamflow run --pipeline quality_control
 ```
 
 ### Check deployment timeline

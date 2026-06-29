@@ -5,7 +5,7 @@ In this section you will run the `species_detection` pipeline, which automatical
 To run the pipeline:
 
 ```bash
-kedro run --pipeline species_detection
+pamflow run --pipeline species_detection
 ```
 
 ### Detection outputs
