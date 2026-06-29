@@ -110,13 +110,13 @@ The `audio_root_directory` should point to the directory containing all audio re
 
 Single season (uses `conf/base/globals.yml`):
 ```bash
-kedro run
+pamflow run
 ```
 
 Specific season:
 ```bash
-kedro run --env=dry_2023
-kedro run --env=wet_2024
+pamflow run --env=dry_2023
+pamflow run --env=wet_2024
 ```
 
 Kedro merges `conf/base/` with the selected environment, with the environment values taking precedence. Each season writes to its own output folder, making reruns safe without overwriting previous results.

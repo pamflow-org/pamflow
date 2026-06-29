@@ -3,7 +3,7 @@
 ## 1. Data preparation
 
 ```bash
-kedro run --pipeline data_preparation
+pamflow run --pipeline data_preparation
 ```
 
 **Description**<br>
@@ -22,7 +22,7 @@ This pipeline requires no parameters. Adjustments to the field deployment sheet 
 ## 2. Quality control
 
 ```bash
-kedro run --pipeline quality_control
+pamflow run --pipeline quality_control
 ```
 
 **Description**<br>
@@ -66,7 +66,7 @@ Allows a quick data exploration to flag underperforming sensors and ensure data 
 Automates species detection using a TensorFlow or BirdNET model. It filters observations based on target species, then saves customized audio segments for revision. All data follows pamDP standards.
 
 ```bash
-kedro run --pipeline species_detection
+pamflow run --pipeline species_detection
 ```
 **Nodes**
 | Node name | Description | Inputs | Outputs |
@@ -96,7 +96,7 @@ kedro run --pipeline species_detection
 ## 4. Acoustic indices
 
 ```bash
-kedro run --pipeline acoustic_indices
+pamflow run --pipeline acoustic_indices
 ```
 
 **Description**<br>
@@ -146,7 +146,7 @@ Processes audio files to calculate various acoustic indices. These indices provi
 ## 5. Graphical soundscape
 
 ```bash
-kedro run --pipeline graphical_soundscape
+pamflow run --pipeline graphical_soundscape
 ```
 
 **Description**<br>

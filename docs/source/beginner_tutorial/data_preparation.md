@@ -23,7 +23,7 @@ Copy the `field_deployments_sheet.xlsx` and `target_species.csv` files to their 
 Now everything is ready to run **pamflow**'s first pipeline:
 
 ```bash
-kedro run --pipeline data_preparation
+pamflow run --pipeline data_preparation
 ```
 
 This pipeline generates two standardized tables stored in `data/output/data_preparation/`.

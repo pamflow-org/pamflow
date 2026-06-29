@@ -94,7 +94,7 @@ kedro registry list
 Then, run only your new pipeline to test it:
 
 ```bash
-kedro run --pipeline [pipeline_name]
+pamflow run --pipeline [pipeline_name]
 ```
 
 ---
