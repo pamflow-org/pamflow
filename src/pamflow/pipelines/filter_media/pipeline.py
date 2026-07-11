@@ -12,7 +12,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         node(
             func=filter_media,
             inputs=["media@pamDP", "params:deployments_filter"],
-            outputs="media_work",
+            outputs="media_work@pamDP",
             name="filter_media_node",
         )
     ])

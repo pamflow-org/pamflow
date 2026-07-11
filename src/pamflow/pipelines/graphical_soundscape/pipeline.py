@@ -7,7 +7,7 @@ def create_pipeline(**kwargs):
         [
             node(  # Log
                 func=graphical_soundscape_pamflow,
-                inputs=["media_work", "params:graphical_soundscape_parameters"],
+                inputs=["media_work@pamDP", "params:graphical_soundscape_parameters"],
                 outputs=["graphical_soundscape@PartitionedDataset", "graph_plot@PartitionedImage"],
                 name="graphical_soundscape_node",
             ),

@@ -3,6 +3,11 @@ media@pamDP:
   filepath: ${globals:output_dir}/data_preparation/media.csv
   timezone: Etc/GMT+5
 
+media_work@pamDP:
+  type:  pamflow.datasets.pamDP.media.Media
+  filepath: ${globals:output_dir}/data_preparation/media_work.csv
+  timezone: Etc/GMT+5
+
 media_summary@pandas:
   type: pandas.CSVDataset
   filepath: ${globals:output_dir}/data_preparation/audio_media_summary.csv

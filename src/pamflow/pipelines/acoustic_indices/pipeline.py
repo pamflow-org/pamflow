@@ -7,7 +7,7 @@ def create_pipeline(**kwargs):
         [
             node(  # Log
                 func=compute_indices,
-                inputs=["media_work", "params:acoustic_indices"],
+                inputs=["media_work@pamDP", "params:acoustic_indices"],
                 outputs="acoustic_indices@PartitionedDataset",
                 name="compute_indices_node",
             )
