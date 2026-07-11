@@ -1,2 +1,2 @@
 timezone: "America/Bogota"
-audio_root_directory: "/Volumes/lacie_macosx/Dropbox/PostDoc/iavh/pamflow-proyect/tutorial_dataset/input_data/sample_audios"
+audio_root_directory: "/complete/path/to/audio/files"
