@@ -218,7 +218,7 @@ def filter_observations(
     return observations
 
 
-def create_segments(observations, media, segment_size):
+def create_segments(observations, media, segment_size, segment_length):
     """Creates audio segments for species observations.
 
     This node processes filtered species observations and media metadata to generate
@@ -241,6 +241,11 @@ def create_segments(observations, media, segment_size):
         The number of segments to sample per species. Passed as
         `params:species_detection_parameters.segment_size`.
 
+    segment_length : float
+        The length in seconds of each extracted segment, centered on the original
+        detection window (eventStart/eventEnd) and clipped to stay within
+        [0, fileLength]. Passed as `params:species_detection_parameters.segment_length`.
+
     Returns
     -------
     pandas.DataFrame
@@ -251,13 +256,28 @@ def create_segments(observations, media, segment_size):
 
     # Sample segment_size rows per each species in observations
     observations = observations.merge(
-        media[["mediaID", "filePath"]], on="mediaID", how="left"
+        media[["mediaID", "filePath", "fileLength"]], on="mediaID", how="left"
     )
+
     segments = (
         observations.groupby(["scientificName"])
         .apply(lambda x: x.sample(int(segment_size)))
         .reset_index(drop=True)
     )
+
+    # Center the requested segment_length on the original detection window
+    event_center = (segments["eventStart"] + segments["eventEnd"]) / 2
+    raw_start = event_center - segment_length / 2
+    raw_end = event_center + segment_length / 2
+
+    # Clip to media bounds, then shift the window to preserve segment_length
+    # where possible (instead of just truncating one side)
+    start = np.clip(raw_start, 0, segments["fileLength"] - segment_length)
+    start = np.clip(start, 0, None)  # handles segment_length > fileLength
+    end = np.clip(start + segment_length, None, segments["fileLength"])
+
+    segments["segmentStart"] = start
+    segments["segmentEnd"] = end
 
     segments["classificationProbabilityRounded"] = (
         segments["classificationProbability"].round(3).astype(str).str.ljust(5, "0")
@@ -267,6 +287,9 @@ def create_segments(observations, media, segment_size):
         lambda x: f"{x['classificationProbabilityRounded']}_{x['mediaID'].replace('.WAV', '')}_{x['eventStart']}_{x['eventEnd']}.WAV",
         axis=1,
     )
+
+    # Drop unnecesary columns
+    segments = segments.drop(columns=["fileLength"])
 
     return segments
 
@@ -304,8 +327,8 @@ def create_segments_folder(segments, n_jobs, segment_size):
     logger.info(f'Writing {segments.shape[0]} audio segments to disk...')
     for index, row in segments.iterrows():
         result = trim_audio(
-            row["eventStart"],
-            row["eventEnd"],
+            row["segmentStart"],
+            row["segmentEnd"],
             row["filePath"],
             row["segmentsFilePath"],
         )

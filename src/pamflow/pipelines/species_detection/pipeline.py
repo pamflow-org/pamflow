@@ -39,8 +39,9 @@ def create_pipeline(**kwargs):
                 func=create_segments,
                 inputs=[
                     "observations@pamDP",
-                    "media_work",
+                    "media@pamDP",
                     "params:species_detection_parameters.segment_size",
+                    "params:species_detection_parameters.segment_length",
                 ],
                 outputs="segments@pandas",
                 name="create_segments_node",
