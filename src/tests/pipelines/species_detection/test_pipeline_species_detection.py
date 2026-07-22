@@ -60,7 +60,7 @@ class TestSpeciesDetectionPipeline:
         node = [n for n in pipeline.nodes if n.name == "species_detection_node"][0]
         
         expected_inputs = [
-            "media_work",
+            "media_work@pamDP",
             "deployments@pamDP",
             "params:species_detection_parameters.n_jobs",
         ]
@@ -102,8 +102,9 @@ class TestSpeciesDetectionPipeline:
         
         expected_inputs = [
             "observations@pamDP",
-            "media_work",
+            "media_work@pamDP",
             "params:species_detection_parameters.segment_size",
+            "params:species_detection_parameters.segment_length",
         ]
         
         assert list(node.inputs) == expected_inputs
@@ -159,7 +160,7 @@ class TestSpeciesDetectionPipeline:
         pipeline = create_pipeline()
         node = [n for n in pipeline.nodes if n.name == "plot_observations_summary_node"][0]
         
-        expected_inputs = ["observations@pamDP", "media_work"]
+        expected_inputs = ["observations@pamDP", "media_work@pamDP"]
         
         assert list(node.inputs) == expected_inputs
 
