@@ -278,8 +278,9 @@ def create_segments(observations, media, segment_size, segment_length):
         return group.sample(n)
 
     segments = (
-        observations.groupby(["scientificName"])
-        .apply(_sample_capped)
+        observations.groupby(["scientificName"], group_keys=True)
+        .apply(_sample_capped, include_groups=False)
+        .reset_index(level=0)
         .reset_index(drop=True)
     )
 
