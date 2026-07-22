@@ -174,5 +174,8 @@ venv.bak/
 # Kedro Viz
 .viz/stats.json
 
+#VS Code
+.vscode
+
 # Ignore Claude code context
 CLAUDE.md
