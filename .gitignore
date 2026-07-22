@@ -173,3 +173,6 @@ venv.bak/
 
 # Kedro Viz
 .viz/stats.json
+
+# Ignore Claude code context
+CLAUDE.md

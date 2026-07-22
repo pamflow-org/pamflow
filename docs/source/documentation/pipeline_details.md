@@ -86,7 +86,7 @@ pamflow run --pipeline species_detection
 |--------|------|--------------|----------------|
 | `species_detection_parameters` | `n_jobs` | Number of cores used in parallelization. `-1` forces the use of all available cores. | `-1` |
 | `species_detection_parameters` | `minimum_observations` | Minimum number of detections required for a species to be included in the observations format. | `20` |
-| `species_detection_parameters` | `segment_size` | Number of sample segments generated per species. | `20` |
+| `species_detection_parameters` | `segment_size` | Maximum number of sample segments generated per species (fewer are used if a species has fewer available observations). | `20` |
 | `species_detection_parameters` | `manual_annotations_file_name` | Prefix for manual annotation files, formatted as `{manual_annotations_file_name}_{species}`. | `'species_manual_annotations'` |
 
 </details>

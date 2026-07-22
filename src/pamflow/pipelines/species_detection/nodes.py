@@ -177,7 +177,10 @@ def filter_observations(
         `params:species_detection_parameters.minimum_observations`.
 
     segment_size : int
-        The number of segments per species. Passed as `params:species_detection_parameters.segment_size`.
+        The upper bound on segments per species used downstream by `create_segments`.
+        Passed as `params:species_detection_parameters.segment_size`. If greater than
+        `minimum_observations`, a warning is logged (not an error), since some species
+        may end up with fewer than `segment_size` segments.
 
     Returns
     -------
@@ -186,8 +189,9 @@ def filter_observations(
         as `observations@pamDP`. The DataFrame follows the pamDP.observations format.
     """
     if segment_size > minimum_observations:
-        raise ValueError(f"""Number of segments per species ({segment_size}) is greater than minimum number of observations per species ({minimum_observations}).\n 
-                             Change the values of these parameters in conf/base/paramteres.yml  to fix this issue. 
+        logger.warning(f"""Number of segments per species ({segment_size}) is greater than minimum number of observations per species ({minimum_observations}).\n
+                             Species with an observation count between {minimum_observations} and {segment_size} will end up with fewer than {segment_size} segments. \n
+                             Change the values of these parameters in conf/base/paramteres.yml if this is not intended.
         """)
 
     target_species = target_species.drop_duplicates()
@@ -238,8 +242,10 @@ def create_segments(observations, media, segment_size, segment_length):
         `media@pamDP`. The DataFrame follows the pamDP.media format.
 
     segment_size : int
-        The number of segments to sample per species. Passed as
-        `params:species_detection_parameters.segment_size`.
+        The maximum number of segments to sample per species. Passed as
+        `params:species_detection_parameters.segment_size`. If a species has fewer
+        observations than `segment_size`, all of its observations are used instead
+        (no error is raised), and an info-level log entry records the capping.
 
     segment_length : float
         The length in seconds of each extracted segment, centered on the original
@@ -254,14 +260,26 @@ def create_segments(observations, media, segment_size, segment_length):
         Stored in the catalog as `segments@pandas`.
     """
 
-    # Sample segment_size rows per each species in observations
+    # Sample up to segment_size rows per each species in observations, using all
+    # available observations for species that have fewer than segment_size
     observations = observations.merge(
         media[["mediaID", "filePath", "fileLength"]], on="mediaID", how="left"
     )
 
+    segment_size = int(segment_size)
+
+    def _sample_capped(group):
+        n = min(segment_size, len(group))
+        if n < segment_size:
+            logger.info(
+                f"Species '{group.name}' has only {len(group)} observation(s), fewer than the "
+                f"requested segment_size ({segment_size}). Using all {n} available instead."
+            )
+        return group.sample(n)
+
     segments = (
         observations.groupby(["scientificName"])
-        .apply(lambda x: x.sample(int(segment_size)))
+        .apply(_sample_capped)
         .reset_index(drop=True)
     )
 
