@@ -1,8 +1,21 @@
 import logging
+import warnings
 
+import numpy as np
 import pandas as pd
+import statsmodels.api as sm
+from statsmodels.tools.sm_exceptions import PerfectSeparationWarning
 
 logger = logging.getLogger(__name__)
+
+# Clip scores away from 0/1 before taking logit(score), to avoid -inf/+inf.
+_LOGIT_EPS = 1e-6
+
+# Fallback guard for near-perfect separation that the exact min/max check below
+# does not catch (e.g. a tie at the boundary): a slope standard error this large
+# on a [0, 1]-ish predictor scale only happens when the optimizer is chasing an
+# unidentified parameter.
+_SEPARATION_SE_THRESHOLD = 1e3
 
 
 def _normalize_value(value):
@@ -223,3 +236,404 @@ def compile_manual_annotations(
     )
 
     return annotations, summary
+
+
+def _transform_score(score, score_transform):
+    """Maps raw classificationProbability scores onto the regression's predictor
+    scale."""
+    score = score.astype(float)
+    if score_transform == "identity":
+        return score
+    if score_transform == "logit":
+        clipped = score.clip(_LOGIT_EPS, 1 - _LOGIT_EPS)
+        return np.log(clipped / (1 - clipped))
+    raise ValueError(
+        f"Unknown score_transform: {score_transform!r}. Expected 'identity' or 'logit'."
+    )
+
+
+def _inverse_transform_score(value, score_transform):
+    """Maps a predictor-scale value back onto the original [0, 1] score scale."""
+    if score_transform == "identity":
+        return value
+    if score_transform == "logit":
+        return 1.0 / (1.0 + np.exp(-value))
+    raise ValueError(
+        f"Unknown score_transform: {score_transform!r}. Expected 'identity' or 'logit'."
+    )
+
+
+_EMPTY_FIT_FIELDS = {
+    "b0": np.nan,
+    "b1": np.nan,
+    "b1_se": np.nan,
+    "b1_ci_low": np.nan,
+    "b1_ci_high": np.nan,
+    "loglik_null": np.nan,
+    "loglik_full": np.nan,
+    "lr_stat": np.nan,
+    "p_value": np.nan,
+    "pseudo_r2": np.nan,
+    "aic": np.nan,
+}
+
+
+def _fit_one_species(species, group, params, alpha):
+    """Fits (or short-circuits) the logistic model for a single species.
+
+    Returns a `(fit_record, curve_frame)` tuple; `curve_frame` is `None` unless the
+    fit succeeded. Factored out of `fit_precision_models` purely to keep that
+    function's statement/argument counts within the lint limit — see its
+    docstring for the actual modelling logic and status semantics.
+    """
+    min_annotations = params["min_annotations"]
+    min_per_class = params["min_per_class"]
+    score_transform = params["score_transform"]
+
+    fit_group = group[group["positive"].isin(["positive", "negative"])]
+    n_positive = int((fit_group["positive"] == "positive").sum())
+    n_negative = int((fit_group["positive"] == "negative").sum())
+    n_uncertain = int((group["positive"] == "uncertain").sum())
+    n_annotated = n_positive + n_negative
+
+    base_record = {
+        "scientificName": species,
+        "n_annotated": n_annotated,
+        "n_positive": n_positive,
+        "n_negative": n_negative,
+        "n_uncertain": n_uncertain,
+        "min_score": float(group["classificationProbability"].min()),
+        "max_score": float(group["classificationProbability"].max()),
+    }
+
+    sample_ok = (
+        n_annotated >= min_annotations
+        and n_positive >= min_per_class
+        and n_negative >= min_per_class
+    )
+    if not sample_ok:
+        logger.info(
+            f"{species}: insufficient_sample (n_annotated={n_annotated}, "
+            f"n_positive={n_positive}, n_negative={n_negative}; requires "
+            f"min_annotations={min_annotations}, min_per_class={min_per_class})."
+        )
+        record = {**base_record, "status": "insufficient_sample", **_EMPTY_FIT_FIELDS}
+        return record, None
+
+    score = fit_group["classificationProbability"].astype(float)
+    y = (fit_group["positive"] == "positive").astype(int)
+
+    perfectly_separated = (
+        score[y == 1].min() > score[y == 0].max()
+        or score[y == 0].min() > score[y == 1].max()
+    )
+    if perfectly_separated:
+        logger.info(
+            f"{species}: separation (every positive/negative score falls on its "
+            "own side of a single split point; threshold is not estimable)."
+        )
+        record = {**base_record, "status": "separation", **_EMPTY_FIT_FIELDS}
+        return record, None
+
+    x = _transform_score(score, score_transform)
+    X = sm.add_constant(x)
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", PerfectSeparationWarning)
+        res = sm.Logit(y, X).fit(disp=0)
+        separation_warned = any(
+            issubclass(w.category, PerfectSeparationWarning) for w in caught
+        )
+
+    converged = bool(res.mle_retvals.get("converged", True))
+    b1_se = float(res.bse.iloc[1])
+    near_separation = (
+        separation_warned
+        or not converged
+        or not np.isfinite(b1_se)
+        or b1_se > _SEPARATION_SE_THRESHOLD
+    )
+    if near_separation:
+        logger.info(
+            f"{species}: separation (logistic fit did not converge cleanly; "
+            f"converged={converged}, b1_se={b1_se})."
+        )
+        record = {**base_record, "status": "separation", **_EMPTY_FIT_FIELDS}
+        return record, None
+
+    ci = res.conf_int(alpha=alpha)
+    record = {
+        **base_record,
+        "status": "fitted",
+        "b0": float(res.params.iloc[0]),
+        "b1": float(res.params.iloc[1]),
+        "b1_se": b1_se,
+        "b1_ci_low": float(ci.iloc[1, 0]),
+        "b1_ci_high": float(ci.iloc[1, 1]),
+        "loglik_null": float(res.llnull),
+        "loglik_full": float(res.llf),
+        "lr_stat": float(res.llr),
+        "p_value": float(res.llr_pvalue),
+        "pseudo_r2": float(res.prsquared),
+        "aic": float(res.aic),
+    }
+
+    grid = np.linspace(base_record["min_score"], base_record["max_score"], 100)
+    grid_X = sm.add_constant(
+        _transform_score(pd.Series(grid), score_transform), has_constant="add"
+    )
+    prediction = res.get_prediction(grid_X).summary_frame(alpha=alpha)
+    curve_frame = pd.DataFrame(
+        {
+            "scientificName": species,
+            "score": grid,
+            "predicted_probability": prediction["predicted"].to_numpy(),
+            "ci_low": prediction["ci_lower"].to_numpy(),
+            "ci_high": prediction["ci_upper"].to_numpy(),
+        }
+    )
+    return record, curve_frame
+
+
+def _unannotated_species_record(row):
+    """Builds an insufficient_sample record for a species with zero annotated rows.
+
+    Such species never form a group in `validated_annotations` (every one of their
+    rows was pending, and `compile_manual_annotations` drops pending rows), so they
+    would otherwise be silently missing from `precision_model_fits` instead of
+    showing up as `insufficient_sample`. There is no score data to report for them,
+    hence `min_score`/`max_score` are `NaN`.
+    """
+    return {
+        "scientificName": row["scientificName"],
+        "n_annotated": int(row["n_annotated"]),
+        "n_positive": int(row["n_positive"]),
+        "n_negative": int(row["n_negative"]),
+        "n_uncertain": int(row["n_uncertain"]),
+        "min_score": np.nan,
+        "max_score": np.nan,
+        "status": "insufficient_sample",
+        **_EMPTY_FIT_FIELDS,
+    }
+
+
+def fit_precision_models(validated_annotations, params, manual_annotation_summary):
+    """Fits a per-species logistic curve of `positive ~ score`.
+
+    For each species in `validated_annotations`, fits
+    `sm.Logit(y, sm.add_constant(f(score)))` where `y` is 1 for `positive` rows and
+    0 for `negative` rows (`uncertain` rows are always left out of the fit itself,
+    regardless of `uncertain_handling`, since they are not a resolved 0/1 outcome).
+    The inputs correspond to the catalog entries `validated_annotations@pandas` and
+    `manual_annotation_summary@pandas`. The outputs are stored in the catalog as
+    `precision_model_fits@pandas` and `precision_curves@pandas`.
+
+    Before fitting, two checks can short-circuit a species straight to a diagnostic
+    `status`, with every fit-related column left as `NaN`:
+
+    - `n_annotated < min_annotations`, or fewer than `min_per_class`
+      positives/negatives → `status = "insufficient_sample"`. This also covers
+      species with *zero* annotated rows: they never form a group in
+      `validated_annotations` (every row was pending and got dropped in Step 1),
+      so `manual_annotation_summary` — which lists every species regardless of
+      how much of it is annotated — is what lets this node report them as
+      `insufficient_sample` instead of silently omitting them.
+    - Perfect separation (every positive score above every negative score, or vice
+      versa) → `status = "separation"`. Checked directly on the sorted scores
+      first; a fit that nonetheless fails to converge or returns a huge slope
+      standard error is caught as the same status, as a safety net for
+      near-separation.
+
+    Species that pass both checks get `status = "fitted"`; the final
+    species-level verdict (`ok` / `score_not_informative` / `negative_slope` /
+    `target_unreachable` / `target_always_met`) is decided downstream by
+    `recommend_thresholds`, since it also needs `target_precision`.
+
+    Parameters
+    ----------
+    validated_annotations : pandas.DataFrame
+        Compiled manual annotations. Loaded from the catalog entry
+        `validated_annotations@pandas`. Must carry `scientificName`,
+        `classificationProbability`, and `positive`
+        (`positive` / `negative` / `uncertain`).
+
+    params : dict
+        The full `detection_validation_parameters` dict. Passed as
+        `params:detection_validation_parameters`. Uses `min_annotations`,
+        `min_per_class`, `confidence_level`, and `score_transform`.
+
+    manual_annotation_summary : pandas.DataFrame
+        Per-species annotation counts from Step 1, including species with zero
+        annotated rows. Loaded from the catalog entry
+        `manual_annotation_summary@pandas`. Must carry `scientificName`,
+        `n_annotated`, `n_positive`, `n_negative`, `n_uncertain`.
+
+    Returns
+    -------
+    pandas.DataFrame
+        One row per species listed in `manual_annotation_summary` (not just those
+        with at least one annotation): `scientificName`, `n_annotated`,
+        `n_positive`, `n_negative`, `n_uncertain`, `min_score`, `max_score`,
+        `status`, `b0`, `b1`, `b1_se`, `b1_ci_low`, `b1_ci_high`, `loglik_null`,
+        `loglik_full`, `lr_stat`, `p_value` (the likelihood-ratio test p-value),
+        `pseudo_r2` (McFadden), `aic`. Stored in the catalog as
+        `precision_model_fits@pandas`.
+
+    pandas.DataFrame
+        Long-format table for plotting: `scientificName`, `score`,
+        `predicted_probability`, `ci_low`, `ci_high`, over a 100-point grid
+        spanning each fitted species' observed score range. Only includes
+        species with `status = "fitted"`. Stored in the catalog as
+        `precision_curves@pandas`.
+    """
+    alpha = 1 - params["confidence_level"]
+
+    fit_records = []
+    curve_frames = []
+    species_with_annotations = set()
+
+    for species, group in validated_annotations.groupby("scientificName"):
+        species_with_annotations.add(species)
+        record, curve_frame = _fit_one_species(species, group, params, alpha)
+        fit_records.append(record)
+        if curve_frame is not None:
+            curve_frames.append(curve_frame)
+
+    unannotated = manual_annotation_summary[
+        ~manual_annotation_summary["scientificName"].isin(species_with_annotations)
+    ]
+    for _, row in unannotated.iterrows():
+        logger.info(
+            f"{row['scientificName']}: insufficient_sample (n_annotated=0, "
+            f"{int(row['n_pending'])} segment(s) still pending)."
+        )
+        fit_records.append(_unannotated_species_record(row))
+
+    fits = (
+        pd.DataFrame(fit_records).sort_values("scientificName").reset_index(drop=True)
+    )
+    curve_columns = [
+        "scientificName",
+        "score",
+        "predicted_probability",
+        "ci_low",
+        "ci_high",
+    ]
+    if curve_frames:
+        curves = pd.concat(curve_frames, ignore_index=True)
+    else:
+        curves = pd.DataFrame(columns=curve_columns)
+
+    n_fitted = (fits["status"] == "fitted").sum()
+    logger.info(f"Fitted a logistic model for {n_fitted}/{len(fits)} species.")
+
+    return fits, curves
+
+
+def recommend_thresholds(
+    precision_model_fits, target_precision, significance_level, score_transform
+):
+    """Inverts each species' fitted curve to recommend a working score threshold.
+
+    Solves `f(t*) = (logit(target_precision) - b0) / b1` in closed form (`f` being
+    `identity` or `logit` per `score_transform`) and classifies each species into one
+    final `status`. The input corresponds to the catalog entry
+    `precision_model_fits@pandas`. The output is stored in the catalog as
+    `detection_validation_summary@pandas`.
+
+    Note on parameters: the plan's node signature lists only `(precision_model_fits,
+    target_precision)`, but resolving `score_not_informative` vs. `ok` needs
+    `significance_level`, and inverting the curve back to the original score scale
+    needs `score_transform` — both are passed explicitly here rather than assumed.
+
+    Parameters
+    ----------
+    precision_model_fits : pandas.DataFrame
+        Per-species model fits. Loaded from the catalog entry
+        `precision_model_fits@pandas`.
+
+    target_precision : float
+        Minimum desired probability of a correct detection at the threshold. Passed as
+        `params:detection_validation_parameters.target_precision`.
+
+    significance_level : float
+        LR test threshold below which the score is considered informative for a
+        species. Passed as `params:detection_validation_parameters.significance_level`.
+
+    score_transform : str
+        `identity` or `logit` — must match the value used in `fit_precision_models`, to
+        invert the fitted curve back onto the original score scale. Passed as
+        `params:detection_validation_parameters.score_transform`.
+
+    Returns
+    -------
+    pandas.DataFrame
+        One row per species: `scientificName`, `status`
+        (`ok` / `insufficient_sample` / `separation` / `score_not_informative` /
+        `negative_slope` / `target_unreachable` / `target_always_met`),
+        `n_annotated`, `n_positive`, `n_negative`, `n_uncertain`, `b0`, `b1`,
+        `b1_ci_low`, `b1_ci_high`, `p_value`, `min_score`, `max_score`, `t_star`
+        (the recommended threshold; `NaN` unless `status` is `ok`,
+        `target_unreachable`, or `target_always_met`), and
+        `fitted_probability_at_t_star` (should equal `target_precision` whenever
+        `t_star` is defined — a built-in check on the closed-form inversion).
+        Stored in the catalog as `detection_validation_summary@pandas`.
+    """
+    logit_target = float(np.log(target_precision / (1 - target_precision)))
+
+    no_threshold = {"t_star": np.nan, "fitted_probability_at_t_star": np.nan}
+
+    def _resolve(row):
+        if row["status"] in ("insufficient_sample", "separation"):
+            return pd.Series({"status": row["status"], **no_threshold})
+
+        if row["p_value"] >= significance_level:
+            return pd.Series({"status": "score_not_informative", **no_threshold})
+
+        if row["b1"] < 0:
+            return pd.Series({"status": "negative_slope", **no_threshold})
+
+        f_t_star = (logit_target - row["b0"]) / row["b1"]
+        t_star = float(_inverse_transform_score(f_t_star, score_transform))
+
+        if t_star > row["max_score"]:
+            status = "target_unreachable"
+        elif t_star < row["min_score"]:
+            status = "target_always_met"
+        else:
+            status = "ok"
+
+        return pd.Series(
+            {
+                "status": status,
+                "t_star": t_star,
+                "fitted_probability_at_t_star": target_precision,
+            }
+        )
+
+    resolved = precision_model_fits.apply(_resolve, axis=1)
+
+    summary = precision_model_fits[
+        [
+            "scientificName",
+            "n_annotated",
+            "n_positive",
+            "n_negative",
+            "n_uncertain",
+            "b0",
+            "b1",
+            "b1_ci_low",
+            "b1_ci_high",
+            "p_value",
+            "min_score",
+            "max_score",
+        ]
+    ].copy()
+    summary["status"] = resolved["status"]
+    summary["t_star"] = resolved["t_star"]
+    summary["fitted_probability_at_t_star"] = resolved["fitted_probability_at_t_star"]
+
+    status_counts = summary["status"].value_counts()
+    logger.info(f"Threshold recommendation status counts:\n{status_counts.to_string()}")
+
+    return summary
