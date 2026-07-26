@@ -1,9 +1,11 @@
 import logging
 import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+from matplotlib.patches import FancyBboxPatch
 from statsmodels.tools.sm_exceptions import PerfectSeparationWarning
 
 logger = logging.getLogger(__name__)
@@ -637,3 +639,350 @@ def recommend_thresholds(
     logger.info(f"Threshold recommendation status counts:\n{status_counts.to_string()}")
 
     return summary
+
+
+def _format_stat(value, fmt="{:.3g}"):
+    """Formats a possibly-NaN diagnostic number for display on a figure."""
+    if value is None or (isinstance(value, float) and np.isnan(value)):
+        return "n/a"
+    return fmt.format(value)
+
+
+def _plot_one_species(species, annotations, curve, summary_row, pseudo_r2):
+    """Builds the single-panel diagnostic figure for one species.
+
+    Factored out of `plot_precision_models` to keep that function short — see its
+    docstring for what each plot element means and why.
+    """
+    fig, ax = plt.subplots(figsize=(7, 5))
+
+    # Passed as .to_numpy() throughout this function: with this environment's
+    # numpy/matplotlib/pandas combination, matplotlib's fill_between crashes on
+    # raw pandas Series (masked_invalid can't call np.isfinite on them) even
+    # though the dtype is plain float64.
+    resolved = annotations[annotations["positive"].isin(["positive", "negative"])]
+    y = (resolved["positive"] == "positive").astype(float)
+    jitter = np.random.default_rng(abs(hash(species)) % (2**32)).uniform(
+        -0.04, 0.04, size=len(y)
+    )
+    ax.scatter(
+        resolved["classificationProbability"].to_numpy(),
+        (y + jitter).to_numpy(),
+        s=35,
+        alpha=0.7,
+        color="black",
+        zorder=3,
+        label="annotated segment",
+    )
+
+    uncertain = annotations[annotations["positive"] == "uncertain"]
+    if not uncertain.empty:
+        jitter_u = np.random.default_rng(abs(hash(species)) % (2**32) + 1).uniform(
+            -0.04, 0.04, size=len(uncertain)
+        )
+        ax.scatter(
+            uncertain["classificationProbability"].to_numpy(),
+            0.5 + jitter_u,
+            s=35,
+            alpha=0.7,
+            color="gray",
+            marker="^",
+            zorder=3,
+            label="uncertain",
+        )
+
+    if not curve.empty:
+        ax.plot(
+            curve["score"].to_numpy(),
+            curve["predicted_probability"].to_numpy(),
+            color="tab:blue",
+            linewidth=2,
+            label="fitted P(positive)",
+        )
+        ax.fill_between(
+            curve["score"].to_numpy(),
+            curve["ci_low"].to_numpy(),
+            curve["ci_high"].to_numpy(),
+            color="tab:blue",
+            alpha=0.2,
+            label="confidence band",
+        )
+
+    status = summary_row["status"]
+    if status == "ok":
+        target_precision = summary_row["fitted_probability_at_t_star"]
+        t_star = summary_row["t_star"]
+        ax.axhline(
+            target_precision,
+            color="tab:red",
+            linestyle="--",
+            linewidth=1,
+            label=f"target_precision={target_precision:.2f}",
+        )
+        ax.axvline(
+            t_star,
+            color="tab:green",
+            linestyle="--",
+            linewidth=1,
+            label=f"t*={t_star:.3f}",
+        )
+
+    n_positive = int(summary_row["n_positive"])
+    n_negative = int(summary_row["n_negative"])
+    annotation_text = "\n".join(
+        [
+            f"n = {int(summary_row['n_annotated'])}",
+            f"positive/negative = {n_positive}/{n_negative}",
+            f"p-value = {_format_stat(summary_row['p_value'])}",
+            f"pseudo-R² = {_format_stat(pseudo_r2)}",
+        ]
+    )
+    ax.text(
+        0.02,
+        0.98,
+        annotation_text,
+        transform=ax.transAxes,
+        va="top",
+        ha="left",
+        fontsize=9,
+        bbox={
+            "boxstyle": "round",
+            "facecolor": "white",
+            "alpha": 0.85,
+            "edgecolor": "lightgray",
+        },
+    )
+
+    title = species if status == "ok" else f"{species} — {status}"
+    ax.set_title(title)
+    ax.set_xlabel("classificationProbability (score)")
+    ax.set_ylabel("P(positive)")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(-0.15, 1.15)
+    ax.legend(loc="lower right", fontsize=8)
+    fig.tight_layout()
+
+    return fig
+
+
+def plot_precision_models(
+    validated_annotations,
+    precision_curves,
+    detection_validation_summary,
+    precision_model_fits,
+):
+    """Plots one diagnostic figure per species: annotations, fitted curve, threshold.
+
+    One panel per species: individual annotations as jittered points at
+    `y ∈ {0, 1}` (`uncertain` rows, if any survived `uncertain_handling`, are shown
+    separately at `y = 0.5`), the fitted logistic curve with its confidence band (for
+    species with `status = "ok"` in `precision_model_fits`, i.e. a curve exists),
+    and — **only when `status == "ok"`** — a horizontal line at `target_precision`
+    and a vertical line at `t*`. Species with any other `status` are still plotted
+    (points, and the curve/band if one exists) but without those threshold lines,
+    and with the status appended to the title. A text box in the corner always shows
+    `n`, `n_positive`/`n_negative`, `p_value`, and `pseudo_r2` — so the underlying
+    sample size stays visible even when the curve itself looks convincing.
+    The inputs correspond to the catalog entries `validated_annotations@pandas`,
+    `precision_curves@pandas`, `detection_validation_summary@pandas`, and
+    `precision_model_fits@pandas`. The output is stored in the catalog as
+    `detection_validation_plots@PartitionedDataset`.
+
+    Note on parameters: the plan's node signature lists only `(validated_annotations,
+    precision_curves, detection_validation_summary)`, but the `pseudo_r2` the figure
+    is required to show only lives in `precision_model_fits` — added here as a
+    fourth input for the same reason `manual_annotation_summary` was added to
+    `fit_precision_models`.
+
+    Parameters
+    ----------
+    validated_annotations : pandas.DataFrame
+        Compiled manual annotations. Loaded from the catalog entry
+        `validated_annotations@pandas`.
+
+    precision_curves : pandas.DataFrame
+        Per-species fitted curve grid. Loaded from the catalog entry
+        `precision_curves@pandas`. Empty (no rows) for a species means no curve
+        could be fit for it.
+
+    detection_validation_summary : pandas.DataFrame
+        Per-species recommended thresholds and final status. Loaded from the
+        catalog entry `detection_validation_summary@pandas`. Iterated to decide
+        which species get a figure (every species in this table gets one).
+
+    precision_model_fits : pandas.DataFrame
+        Per-species model fits. Loaded from the catalog entry
+        `precision_model_fits@pandas`. Only `pseudo_r2` is used here.
+
+    Yields
+    ------
+    dict
+        `{scientificName (spaces replaced with underscores): matplotlib.figure.Figure}`,
+        one at a time. Stored in the catalog as
+        `detection_validation_plots@PartitionedDataset`.
+    """
+    pseudo_r2_by_species = precision_model_fits.set_index("scientificName")["pseudo_r2"]
+
+    for _, summary_row in detection_validation_summary.iterrows():
+        species = summary_row["scientificName"]
+        annotations = validated_annotations[
+            validated_annotations["scientificName"] == species
+        ]
+        curve = precision_curves[precision_curves["scientificName"] == species]
+        pseudo_r2 = pseudo_r2_by_species.get(species, np.nan)
+
+        fig = _plot_one_species(species, annotations, curve, summary_row, pseudo_r2)
+        yield {"_".join(species.split()): fig}
+        plt.close(fig)
+
+
+def _draw_overview_cards(ax, cards):
+    """Draws the top row of value/label cards, matching the style of
+    `species_detection.plot_observations_summary`."""
+    ax.axis("off")
+    n = len(cards)
+    card_w, card_h = 0.28, 0.7
+    x_margin = 0.04
+    x_spacing = (1 - 2 * x_margin - n * card_w) / max(n - 1, 1)
+    y = 0.1
+    for i, (value, label) in enumerate(cards):
+        x = x_margin + i * (card_w + x_spacing)
+        box = FancyBboxPatch(
+            (x, y),
+            card_w,
+            card_h,
+            boxstyle="round,pad=0.02,rounding_size=0.05",
+            linewidth=1,
+            edgecolor="lightgray",
+            facecolor="white",
+            transform=ax.transAxes,
+        )
+        ax.add_patch(box)
+        ax.text(
+            x + card_w / 2,
+            y + card_h * 0.62,
+            str(value),
+            ha="center",
+            va="center",
+            fontsize=20,
+            weight="bold",
+            transform=ax.transAxes,
+        )
+        ax.text(
+            x + card_w / 2,
+            y + card_h * 0.28,
+            label,
+            ha="center",
+            va="center",
+            fontsize=11,
+            color="gray",
+            transform=ax.transAxes,
+        )
+
+
+_STATUS_ORDER = [
+    "ok",
+    "target_unreachable",
+    "target_always_met",
+    "negative_slope",
+    "score_not_informative",
+    "separation",
+    "insufficient_sample",
+]
+
+
+def plot_validation_overview(detection_validation_summary):
+    """Plots an aggregate infographic across all species, in the style of
+    `species_detection.plot_observations_summary`.
+
+    Top row: card counts for species with a recommended threshold, total annotated
+    segments, and total uncertain annotations. Bottom row: a bar chart of species
+    counts by `status` (so it's clear at a glance how many species still lack a
+    usable threshold and why), and a bar chart of the recommended `t*` for every
+    species with `status = "ok"`. The input corresponds to the catalog entry
+    `detection_validation_summary@pandas`. The output is stored in the catalog as
+    `detection_validation_overview@matplotlib`.
+
+    Parameters
+    ----------
+    detection_validation_summary : pandas.DataFrame
+        Per-species recommended thresholds and final status. Loaded from the
+        catalog entry `detection_validation_summary@pandas`.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The aggregate infographic. Stored in the catalog as
+        `detection_validation_overview@matplotlib`.
+    """
+    n_species_total = len(detection_validation_summary)
+    n_species_ok = int((detection_validation_summary["status"] == "ok").sum())
+    n_total_annotated = int(detection_validation_summary["n_annotated"].sum())
+    n_uncertain = int(detection_validation_summary["n_uncertain"].sum())
+
+    status_counts = (
+        detection_validation_summary["status"]
+        .value_counts()
+        .reindex(_STATUS_ORDER)
+        .dropna()
+        .astype(int)
+    )
+
+    ok_thresholds = detection_validation_summary.loc[
+        detection_validation_summary["status"] == "ok", ["scientificName", "t_star"]
+    ].sort_values("t_star")
+
+    fig = plt.figure(figsize=(11, 8))
+    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1.6], hspace=0.45, wspace=0.3)
+
+    cards_ax = fig.add_subplot(gs[0, :])
+    cards = [
+        (f"{n_species_ok}/{n_species_total}", "Species with\nrecommended threshold"),
+        (f"{n_total_annotated:,}", "Total annotated\nsegments"),
+        (f"{n_uncertain:,}", "Uncertain\nannotations"),
+    ]
+    _draw_overview_cards(cards_ax, cards)
+    cards_ax.text(
+        0,
+        1.05,
+        "Detection validation overview",
+        fontsize=16,
+        weight="bold",
+        transform=cards_ax.transAxes,
+    )
+
+    status_ax = fig.add_subplot(gs[1, 0])
+    labels = status_counts.index[::-1].tolist()
+    values = status_counts.to_numpy()[::-1]
+    status_ax.barh(labels, values, color="tab:blue")
+    for y_pos, val in enumerate(values):
+        status_ax.text(val, y_pos, f" {val}", va="center", fontsize=9)
+    status_ax.set_xlabel("Number of species")
+    status_ax.set_title("Species by status")
+
+    threshold_ax = fig.add_subplot(gs[1, 1])
+    if ok_thresholds.empty:
+        threshold_ax.axis("off")
+        threshold_ax.text(
+            0.5,
+            0.5,
+            "No species reached status = ok",
+            ha="center",
+            va="center",
+            color="gray",
+        )
+    else:
+        threshold_ax.barh(
+            ok_thresholds["scientificName"].to_numpy(),
+            ok_thresholds["t_star"].to_numpy(),
+            color="tab:green",
+        )
+        for y_pos, val in enumerate(ok_thresholds["t_star"]):
+            threshold_ax.text(val, y_pos, f" {val:.2f}", va="center", fontsize=9)
+        threshold_ax.set_xlim(0, 1)
+        threshold_ax.set_xlabel("Recommended threshold (t*)")
+    threshold_ax.set_title("Recommended thresholds")
+
+    fig.subplots_adjust(left=0.18, right=0.96, top=0.9, bottom=0.08)
+
+    return fig

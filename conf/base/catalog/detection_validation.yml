@@ -17,3 +17,18 @@ precision_curves@pandas:
 detection_validation_summary@pandas:
   type: pandas.CSVDataset
   filepath: ${globals:output_dir}/detection_validation/detection_validation_summary.csv
+
+detection_validation_plots@PartitionedDataset:
+  type: partitions.PartitionedDataset
+  path: ${globals:output_dir}/detection_validation/plots
+  dataset:
+    type: matplotlib.MatplotlibWriter
+    save_args:
+      format: pdf
+  filename_suffix: ".pdf"
+
+detection_validation_overview@matplotlib:
+  type: matplotlib.MatplotlibWriter
+  filepath: ${globals:output_dir}/detection_validation/detection_validation_overview.pdf
+  save_args:
+    format: pdf
