@@ -401,9 +401,12 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
         ]
     ].copy()
 
+    # Add new columns to format
     excel_generic_format["positive"] = ""
-
     excel_generic_format["detectedSpecies"] = ""
+    excel_generic_format["classifiedBy"] = ""
+    excel_generic_format["classificationTimestamp"] = ""
+
 
     manual_annotations_partitioned_dataset = {
         excel_formats_file_names["_".join(species.split())]: excel_generic_format[
