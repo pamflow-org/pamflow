@@ -1,0 +1,13 @@
+# Parameters used in detection_validation pipeline
+# See notes/validation_pipeline_plan.md for the full design.
+detection_validation_parameters:
+  target_precision: 0.9          # minimum desired probability of a correct detection at the threshold
+  significance_level: 0.05       # LR test threshold (null model vs. logistic model)
+  confidence_level: 0.95         # CI for the coefficient and the plotted band
+  min_annotations: 15            # minimum number of annotations required to attempt the fit
+  min_per_class: 3               # minimum number of positives and of negatives
+  score_transform: identity      # identity | logit
+  uncertain_handling: exclude    # exclude | positive | negative
+  positive_values: ["1", "x", "y", "yes", "si", "sí", "true", "verdadero", "p"]
+  negative_values: ["0", "n", "no", "false", "falso"]
+  uncertain_values: ["?", "d", "dudoso", "uncertain"]
