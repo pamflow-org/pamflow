@@ -662,15 +662,13 @@ def _plot_one_species(species, annotations, curve, summary_row, pseudo_r2):
     # though the dtype is plain float64.
     resolved = annotations[annotations["positive"].isin(["positive", "negative"])]
     y = (resolved["positive"] == "positive").astype(float)
-    jitter = np.random.default_rng(abs(hash(species)) % (2**32)).uniform(
-        -0.04, 0.04, size=len(y)
-    )
+    
     ax.scatter(
         resolved["classificationProbability"].to_numpy(),
-        (y + jitter).to_numpy(),
+        y.to_numpy(),
         s=35,
         alpha=0.7,
-        color="black",
+        color="gray",
         zorder=3,
         label="annotated segment",
     )
