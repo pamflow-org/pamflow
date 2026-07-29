@@ -172,3 +172,56 @@ Computes a representation of the most prominent spectro-temporal dynamics over a
 
 </details>
 <br>
+
+## 6. Detection validation
+
+```bash
+pamflow run --pipeline detection_validation
+```
+
+**Description**<br>
+Estimates, per species, the probability that a detection is correct as a function of the model's confidence score, using manually annotated audio segments. It fits a logistic regression (`positive ~ classificationProbability`) per species and derives a recommended working threshold — the score above which detections meet a target precision — along with a diagnostic of whether enough annotations exist to trust that threshold.
+
+```{note}
+Unlike the other pipelines, `detection_validation` is **not** part of the default `kedro run` flow. It depends on a manual step: the `manual_annotations` `.xlsx` files produced by `species_detection` must first be reviewed and have their `positive` column filled in by an expert. Once that's done, run this pipeline explicitly with the command above.
+```
+
+**Nodes**
+| Node name | Description | Inputs | Outputs |
+|------------|--------------|---------|----------|
+| `compile_manual_annotations_node` | Concatenates all per-species manual annotation files, normalizes the free-text `positive` column into positive/negative/uncertain categories, and applies the configured handling for uncertain annotations. | `manual_annotations@PartitionedDataset`<br>`params:detection_validation_parameters.positive_values`<br>`params:detection_validation_parameters.negative_values`<br>`params:detection_validation_parameters.uncertain_values`<br>`params:detection_validation_parameters.uncertain_handling` | `validated_annotations@pandas`<br>`manual_annotation_summary@pandas` |
+| `fit_precision_models_node` | Fits a per-species logistic regression of detection correctness against classification score, flagging species with insufficient sample size or perfect separation instead of fitting. | `validated_annotations@pandas`<br>`params:detection_validation_parameters`<br>`manual_annotation_summary@pandas` | `precision_model_fits@pandas`<br>`precision_curves@pandas` |
+| `recommend_thresholds_node` | Inverts each fitted curve to compute the score threshold that meets the target precision, and assigns a validity status per species. | `precision_model_fits@pandas`<br>`params:detection_validation_parameters.target_precision`<br>`params:detection_validation_parameters.significance_level`<br>`params:detection_validation_parameters.score_transform` | `detection_validation_summary@pandas` |
+| `plot_precision_models_node` | Generates one diagnostic plot per species showing the annotated segments, fitted curve, confidence band, and recommended threshold. | `validated_annotations@pandas`<br>`precision_curves@pandas`<br>`detection_validation_summary@pandas`<br>`precision_model_fits@pandas` | `detection_validation_plots@PartitionedDataset` |
+| `plot_validation_overview_node` | Produces a summary infographic across all species: annotation counts, validity status breakdown, and recommended thresholds. | `detection_validation_summary@pandas` | `detection_validation_overview@matplotlib` |
+
+The key output, `detection_validation_summary.csv`, reports a `status` per species that determines whether the recommended threshold (`t_star`) can be trusted:
+
+| Status | Meaning |
+|---|---|
+| `ok` | A valid threshold was found; `t_star` is usable. |
+| `insufficient_sample` | Too few annotations (or too few per class) to fit a model. |
+| `separation` | Scores perfectly separate positives from negatives; the fit is degenerate. |
+| `score_not_informative` | The fitted relationship is not statistically significant (likelihood-ratio test). |
+| `negative_slope` | Higher scores are associated with *lower* correctness probability. |
+| `target_unreachable` | No observed score reaches the target precision. |
+| `target_always_met` | Even the lowest observed score already meets the target precision. |
+
+<details>
+<summary>Parameters</summary>
+
+| Group | Name | Description | Default Value |
+|--------|------|--------------|----------------|
+| `detection_validation_parameters` | `target_precision` | Minimum desired probability that a detection at the recommended threshold is correct. | `0.9` |
+| `detection_validation_parameters` | `significance_level` | Significance threshold for the likelihood-ratio test (fitted model vs. intercept-only null model). | `0.05` |
+| `detection_validation_parameters` | `confidence_level` | Confidence level used for the coefficient and plotted confidence band. | `0.95` |
+| `detection_validation_parameters` | `min_annotations` | Minimum number of annotations required to attempt a fit for a species. | `15` |
+| `detection_validation_parameters` | `min_per_class` | Minimum number of positive and of negative annotations required to attempt a fit. | `3` |
+| `detection_validation_parameters` | `score_transform` | Transform applied to the score before fitting: `identity` or `logit`. | `'identity'` |
+| `detection_validation_parameters` | `uncertain_handling` | How `uncertain` annotations are treated: `exclude`, `positive`, or `negative`. | `'exclude'` |
+| `detection_validation_parameters` | `positive_values` | Recognized free-text values (case-insensitive) treated as a positive annotation. | `["1", "x", "y", "yes", "si", "sí", "true", "verdadero", "p"]` |
+| `detection_validation_parameters` | `negative_values` | Recognized free-text values (case-insensitive) treated as a negative annotation. | `["0", "n", "no", "false", "falso"]` |
+| `detection_validation_parameters` | `uncertain_values` | Recognized free-text values (case-insensitive) treated as an uncertain annotation. | `["?", "d", "dudoso", "uncertain"]` |
+
+</details>
+<br>

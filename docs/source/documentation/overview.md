@@ -2,7 +2,9 @@
 
 This workflow provides a modular Kedro-based pipeline for ecological acoustic analysis. 
 It standardizes field data, performs sensor quality checks, detects species, computes acoustic indices, 
-and generates graphical soundscape representations.
+and generates graphical soundscape representations. An additional `detection_validation` pipeline, run separately
+once expert annotations are available, estimates detection reliability per species and recommends a working
+confidence threshold.
 
 **Input data:**
 - Audio recordings organized by deployment, see section [Input data standards](../data_standardization/data_exchange_format.md#input-data-standards).

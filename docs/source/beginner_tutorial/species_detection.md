@@ -52,7 +52,7 @@ This makes it easy to identify the source recording, the time of the vocalizatio
 
 ### Data annotation
 
-To make expert review straightforward, one Excel file per target species is generated in `data/input/manual_annotations/`. Each file lists the selected audio segments for that species. Once the audio clips have been reviewed, the expert only needs to fill in two columns:
+To make expert review straightforward, one Excel file per target species is generated in `data/output/species_detection/manual_annotations/`. Each file lists the selected audio segments for that species. Once the audio clips have been reviewed, the expert only needs to fill in two columns:
 
 - `positive` — type `true` if the detection is correct, `false` if not
 - `detectedSpecies` — if the detection is incorrect, type the actual species name (if known)
@@ -68,9 +68,4 @@ For example, the annotation file for *Amazona farinosa* looks like this:
 | 0.659_MC-009_20240301_073000_33.0_36.0.WAV            | .../MC-009/MC-009_20240301_073000.WAV       | 0.659                     | 33         | 36       | Amazona farinosa  |          |                |
 | 0.653_MC-009_20240301_073000_30.0_33.0.WAV            | .../MC-009/MC-009_20240301_073000.WAV       | 0.653                     | 30         | 33       | Amazona farinosa  |          |                |
 
-
-## Wrap-up
-
-Congratulations on completing the tutorial! You have gone through the main **pamflow** workflow: from organizing and loading field data, to running quality checks on your recorders, detecting target species, and preparing audio segments for expert validation. These steps cover the core of what **pamflow** is designed to do — turning raw acoustic recordings into structured, reusable, and interpretable data.
-
-You are now ready to run **pamflow** with your own data. Note that all pipelines can also be run node by node for greater control over each step — see the [Pipeline details](../documentation/pipeline_details.md#pipeline-details) section for a full reference, including additional pipelines such as `graphical_soundscapes` and `acoustic_indices`. If you run into any issues or have suggestions, feel free to open an issue on the [GitHub repository](https://github.com/pamflow-org/pamflow). For a deeper understanding of the data formats and outputs, refer to the [Data Exchange Formats](../data_standardization/data_exchange_format.md) section.
+Now that the annotation files are ready, let's move on to the [next step](./detection_validation.md) to validate the detections and get a recommended threshold per species.

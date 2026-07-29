@@ -126,6 +126,12 @@ kedro run --pipeline=acoustic_indices
 kedro run --pipeline=graphical_soundscape
 ```
 
+#### 2.6. Validate detections
+This step requires that the `manual_annotations` Excel files generated in step 2.3 have already been reviewed, with their `positive` column filled in by an expert. It is not part of the default `kedro run` and must be run explicitly:
+```bash
+kedro run --pipeline=detection_validation
+```
+
 ### Access output data
 
 The outputs resulting from  running  the entire workflow or individual pipelines will be inside the corresponding subfolders within `./data/output/`.
@@ -135,6 +141,7 @@ data/
 └── output/ # Generated output data from pipeline runs
     ├── acoustic_indices/ 
     ├── data_preparation/ 
+    ├── detection_validation/
     ├── graphical_soundscape/ 
     ├── quality_control/
     └── species_detection/          
