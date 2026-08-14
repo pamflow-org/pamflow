@@ -5,3 +5,5 @@ species_detection_parameters:
   segment_size: 20  # Maximum number of sample segments per species (species with fewer observations use all available)
   manual_annotations_file_name: 'species_manual_annotations'  # Prefix in file name for manual annotations:  {manual_annotations_file_name}_{species}
   segment_length: 3.0  # Length in seconds of each extracted segment
+  classifier_model_path: 'data/input/custom_model/anura_v2.tflite'
+  classifier_labels_path: 'data/input/custom_model/anura_v2_Labels.txt'
