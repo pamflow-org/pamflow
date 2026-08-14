@@ -1,2 +1,2 @@
 timezone: "America/Bogota"
-audio_root_directory: "/complete/path/to/audio/files"
+audio_root_directory: "pamflow_tutorial_data/sample_audios"

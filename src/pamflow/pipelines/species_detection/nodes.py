@@ -38,10 +38,8 @@ def species_detection_parallel(
         A DataFrame containing deployment metadata, including sensor locations
         (latitude and longitude). Loaded from the catalog entry `deployments@pamDP`.
 
-    n_jobs : int
-        The number of parallel jobs to use for species detection. Passed as
-        `params:species_detection_parameters.n_jobs`. If set to -1, the number of jobs will
-        be equal to the number of CPU cores.
+    species_detection_parameters : Dict
+        Dict with custom values for species detection pipeline personalization
 
     Returns
     -------

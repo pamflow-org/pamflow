@@ -1,6 +1,6 @@
 field_deployments_sheet@pandas:
   type: pamflow.datasets.pamDP.field_deployments_sheet.FieldDeployments
-  filepath: data/input/field_deployments/field_deployments_sheet.xlsx # << Edit for custom filename
+  filepath: pamflow_tutorial_data/field_deployments_sheet.xlsx # << Edit for custom filename
   save_args:
     header: 0
   load_args:
@@ -8,4 +8,4 @@ field_deployments_sheet@pandas:
 
 target_species@pandas:  
   type: pamflow.datasets.pamDP.target_species.TargetSpecies  
-  filepath: data/input/target_species/target_species.csv              # << Edit for custom filename
+  filepath: pamflow_tutorial_data/target_species.csv             # << Edit for custom filename
