@@ -16,7 +16,11 @@ from rich.console import Console
 # Set up logging
 logger = logging.getLogger(__name__)
 
-def species_detection_parallel(media, deployments, n_jobs):
+def species_detection_parallel(
+    media,
+    deployments,
+    species_detection_parameters
+):
     """Detects species in media files using parallel processing.
 
     This node processes media files and deployment metadata to perform species
@@ -61,12 +65,33 @@ def species_detection_parallel(media, deployments, n_jobs):
 
     df = media.merge(deployments, on="deploymentID", how="left")
 
+    n_jobs=species_detection_parameters.get('n_jobs')
+    classifier_model_path=species_detection_parameters.get('classifier_model_path')
+    classifier_labels_path=species_detection_parameters.get('classifier_labels_path')
     if n_jobs == -1:
         n_jobs = os.cpu_count()
 
     logger.info(
         f"Computing species detection for {df.shape[0]} files using {n_jobs} threads"
     )
+    def validate_custom_labels(labels_path):
+        with open(labels_path) as f:
+            for line_number, line in enumerate(f, start=1):
+                label = line.strip()
+
+                if label.count("_") != 1:
+                    raise ValueError(
+                        f"Invalid label on line {line_number}: '{label}'. "
+                        "Custom BirdNET labels must have the format "
+                        "'Genus species_common name', with exactly one '_' "
+                        "separating the scientific and common names."
+                    )
+    if classifier_labels_path is not None:
+        validate_custom_labels(classifier_labels_path)
+        logger.info(
+        f"Using custom model and labels at {classifier_model_path} and {classifier_labels_path} "
+        )
+
 
     # Use concurrent.futures for parallel execution and show progress with rich
     results = []
@@ -75,13 +100,15 @@ def species_detection_parallel(media, deployments, n_jobs):
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
         futures = [
             executor.submit(
-                species_detection_single_file,
-                row["filePath"],
-                row["latitude"],
-                row["longitude"],
-                row["mediaID"],
-                row["deploymentID"],
-            )
+                            species_detection_single_file,
+                            row["filePath"],
+                            row["latitude"],
+                            row["longitude"],
+                            row["mediaID"],
+                            row["deploymentID"],
+                            classifier_model_path,
+                            classifier_labels_path,
+                        )
             for idx, row in df.iterrows()
         ]
 
