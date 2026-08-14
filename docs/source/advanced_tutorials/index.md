@@ -6,6 +6,7 @@ The documentation on the [beginner's guide](../beginner_tutorial/index.md) cover
 ```{toctree}
 :maxdepth: 1
 :caption: Advanced tutorial
+custom_acoustic_indices.md
 custom_pipeline.md
 multiseason_config.md
 
