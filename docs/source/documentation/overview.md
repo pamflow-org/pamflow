@@ -16,16 +16,21 @@ confidence threshold.
 - Graphical soundscape csv files per deployment.
 
 **Configuration**
-All pipeline parameters are stored in the Kedro configuration folder:
-- `conf/base/parameters.yml` — default parameters
-- `conf/local/parameters.yml` — local overrides (ignored by Git)
 
-You can modify these files to change processing behavior without editing code.
+Pipeline parameters are managed through Kedro's configuration system.
+
+- `conf/base/parameters.yml` contains the complete set of default parameters distributed with pamflow.
+- `conf/local/parameters.yml` contains project-specific overrides and is intended to be edited by the user.
+
+Values defined in `conf/local/parameters.yml` take precedence over those defined in `conf/base/parameters.yml`. For this reason, the local configuration file typically contains only a small subset of parameters that commonly vary between projects, such as the audio directory location or time zone.
 
 **Data catalog**
 
-All datasets used by the pipelines are defined in `conf/base/catalog.yml`.
+The complete dataset catalog distributed with pamflow is defined in `conf/base/catalog.yml`.
 
+Users should normally avoid modifying this file directly. Instead, project-specific paths and settings can be provided through `conf/local/catalog.yml`, whose entries override the corresponding definitions in `conf/base/catalog.yml`.
+
+The `conf/local/catalog.yml` file is intentionally minimal and is intended to be edited by the user to point pamflow to the appropriate input files for a particular project.
 **Example:**
 ```yaml
 media@pamDP:
