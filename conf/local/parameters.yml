@@ -1,2 +1,21 @@
-timezone: "America/Bogota"
-audio_root_directory: "/complete/path/to/audio/files"
+# -----------------------------------------------------------------------------
+# Local parameter overrides
+#
+# This file is intended to be edited by the user.
+#
+# Parameters defined here override the corresponding values in
+# conf/base/parameters.yml.
+#
+# Only project-specific settings that commonly change between installations
+# are included here.
+#
+# The complete parameter configuration is defined in:
+#     conf/base/parameters.yml
+# -----------------------------------------------------------------------------
+
+# Time zone used when processing deployment metadata
+timezone: "America/Bogota" # EDIT THIS  IF NEEDED
+
+# Root directory containing deployment folders and audio files
+# Replace this path with the location of your own recordings.
+audio_root_directory: "pamflow_tutorial_data/sample_audios" # EDIT THIS PATH IF NEEDED

@@ -13,6 +13,7 @@ Make sure **pamflow** is installed before you start — follow the [installation
 3. Verify that all recorders performed as expected during the deployment.
 4. Automatically detect target bird species in the recordings using BirdNET.
 5. Extract and organize audio segments for expert validation.
+6. Use expert annotations to validate detections and get a recommended confidence threshold per species.
 
 ![The Guaviare Project illustrative image](../../meta/images/pamflow_intro.jpg)
 
@@ -23,6 +24,7 @@ input_data.md
 data_preparation.md
 quality_control.md
 species_detection.md
+detection_validation.md
 
 
 

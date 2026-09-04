@@ -6,7 +6,15 @@ from contextlib import redirect_stdout
 import concurrent.futures
 
 
-def species_detection_single_file(wav_file_path, lat, lon, mediaID, deploymentID):
+def species_detection_single_file(
+    wav_file_path,
+    lat,
+    lon,
+    mediaID,
+    deploymentID,
+    classifier_model_path=None,
+    classifier_labels_path=None,
+):
     """Performs species detection on a single media file.
 
     This utility function processes a single media file to detect species based on
@@ -41,7 +49,10 @@ def species_detection_single_file(wav_file_path, lat, lon, mediaID, deploymentID
     """
     with open(os.devnull, 'w') as fnull, redirect_stdout(fnull):  # Suppress print messages
         # Load and initialize the BirdNET-Analyzer models.
-        analyzer = Analyzer()
+        analyzer = Analyzer(
+                        classifier_model_path=classifier_model_path,
+                        classifier_labels_path=classifier_labels_path,
+                    )
         recording = Recording(
             analyzer,
             wav_file_path,

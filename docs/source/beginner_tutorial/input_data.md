@@ -31,8 +31,17 @@ Inside the main folder `pam_data_guaviare/` you will find one subfolder per depl
 This main folder is referred to as the `audio_root_directory` — you will use this name when configuring **pamflow** in the next step.
 
 ```{important}
-   Audio file names must follow this format: `DEPLOYMENTID_DATE_TIME.WAV`
-   **pamflow** will ignore any files that do not match this structure.
+Audio file names must follow the format:
+
+`DEPLOYMENTID_DATE_TIME.WAV`
+
+where underscores (`_`) are reserved as field separators. Consequently, deployment identifiers must not contain underscores.
+
+**pamflow** will ignore files that do not match this structure.
+
+Projects that use alternative naming conventions can be adapted before processing using the [renaming utilities](https://anonymous.4open.science/r/pamflow-DC88/README.md) provided by the pamflow project.
+
+
 ```
 
 ### 3. Field deployments sheet

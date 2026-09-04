@@ -1,11 +1,28 @@
+# -----------------------------------------------------------------------------
+# Local catalog overrides
+#
+# This file is intended to be edited by the user.
+#
+# Entries defined here override the corresponding definitions in
+# conf/base/catalog.yml.
+#
+# Typical use cases:
+#   - Change the path of the deployment sheet
+#   - Change the path of the target species list
+#   - Use project-specific filenames
+#
+# Do not expect this file to contain the full pamflow catalog.
+# The complete catalog is defined in conf/base/catalog.yml.
+# -----------------------------------------------------------------------------
+
 field_deployments_sheet@pandas:
   type: pamflow.datasets.pamDP.field_deployments_sheet.FieldDeployments
-  filepath: data/input/field_deployments/field_deployments_sheet.xlsx # << Edit for custom filename
+  filepath: data/input/field_deployments/field_deployments_sheet.xlsx  # EDIT THIS PATH IF NEEDED
   save_args:
     header: 0
   load_args:
     header: 0
 
-target_species@pandas:  
-  type: pamflow.datasets.pamDP.target_species.TargetSpecies  
-  filepath: data/input/target_species/target_species.csv              # << Edit for custom filename
+target_species@pandas:
+  type: pamflow.datasets.pamDP.target_species.TargetSpecies
+  filepath: data/input/target_species/target_species.csv  # EDIT THIS PATH IF NEEDED
