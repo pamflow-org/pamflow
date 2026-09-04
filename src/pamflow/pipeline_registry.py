@@ -8,6 +8,7 @@ from pamflow.pipelines.graphical_soundscape import pipeline as graphical_soundsc
 from pamflow.pipelines.acoustic_indices import pipeline as acoustic_indices
 from pamflow.pipelines.species_detection import pipeline as species_detection
 from pamflow.pipelines.data_science import pipeline as data_science
+from pamflow.pipelines.detection_validation import pipeline as detection_validation
 from pamflow.pipelines.export import pipeline as export
 from pamflow.pipelines.filter_media.pipeline import with_filter_media
 
@@ -23,6 +24,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     acoustic_indices_pipeline = acoustic_indices.create_pipeline()
     species_detection_pipeline = species_detection.create_pipeline()
     data_science_pipeline = data_science.create_pipeline()
+    detection_validation_pipeline = detection_validation.create_pipeline()
     export_pipeline = export.create_pipeline()
 
     pamflow_pipeline = (
@@ -43,5 +45,6 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "acoustic_indices": with_filter_media(acoustic_indices_pipeline),
         "species_detection": with_filter_media(species_detection_pipeline),
         "data_science": data_science_pipeline,
+        "detection_validation": detection_validation_pipeline,
         "export": export_pipeline,
     }

@@ -19,7 +19,7 @@ def create_pipeline(**kwargs):
                 inputs=[
                     "media_work@pamDP",
                     "deployments@pamDP",
-                    "params:species_detection_parameters.n_jobs",
+                    "params:species_detection_parameters",
                 ],
                 outputs="unfiltered_observations@pamDP",
                 name="species_detection_node",
