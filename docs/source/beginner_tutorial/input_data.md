@@ -39,7 +39,7 @@ where underscores (`_`) are reserved as field separators. Consequently, deployme
 
 **pamflow** will ignore files that do not match this structure.
 
-Projects that use alternative naming conventions can be adapted before processing using the [renaming utilities](https://anonymous.4open.science/r/pamflow-DC88/README.md) provided by the pamflow project.
+Projects that use alternative naming conventions can be adapted before processing using the [renaming utilities](https://github.com/pamflow-org/rename_audio_files) provided by the pamflow project.
 
 
 ```
