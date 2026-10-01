@@ -33,7 +33,7 @@ Now that Miniconda and the repository are ready, you can create a virtual enviro
 
 In the same terminal window (Anaconda Prompt on Windows), run:
 ```sh
-conda create -n pamflow_env python=3.10.14
+conda create -n pamflow_env python=3.11
 ```
 
 This may take a moment and will ask you to confirm by typing `Y`. This step is only required once.
