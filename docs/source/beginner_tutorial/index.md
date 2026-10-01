@@ -5,7 +5,7 @@ This guide will walk you through the steps for running **pamflow** using a real-
 Make sure **pamflow** is installed before you start — follow the [installation instructions](setup.md). A technical reference for experienced users is available in the [documentation](../documentation/index.md).
 
 ***Context: The Guaviare Project***
-*The XXXX Institute in Colombia collaborated with communities in Guaviare, Colombia to conduct a community monitoring project on local bird fauna using passive acoustic monitoring (PAM). You are part of the project and your task is to process the audio recordings, extract insights, and produce relevant metrics and visualizations for a project report.*
+*The Humboldt Institute in Colombia collaborated with communities in Guaviare, Colombia to conduct a community monitoring project on local bird fauna using passive acoustic monitoring (PAM). You are part of the project and your task is to process the audio recordings, extract insights, and produce relevant metrics and visualizations for a project report.*
 
 ***Your tasks***:
 1. Download and explore the data collected in the field.
