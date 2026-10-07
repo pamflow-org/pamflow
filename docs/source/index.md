@@ -43,5 +43,5 @@ getting_involved/contributing_guidelines.md
 
 ## About
 
-* Checkout our updated [contributor list](https://anonymous.4open.science/r/pamflow-DC88/) (available after anonymization).
-* [Anonymized GitHub Repository](https://anonymous.4open.science/r/pamflow-DC88/)
+* Checkout our updated [contributor list](getting_involved/contributors.md).
+* [GitHub Repository](https://github.com/pamflow-org/pamflow)

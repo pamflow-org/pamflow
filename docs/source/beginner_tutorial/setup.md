@@ -21,11 +21,9 @@ Open a terminal on your computer:
 
 Then run:
 ```sh
-git clone <github link to the repo>
+git clone https://github.com/pamflow-org/pamflow.git
 cd pamflow
 ```
-
-> **Note:** The [anonymized version of the repo](https://anonymous.4open.science/r/pamflow-DC88/) cannot be cloned directly. Instead, download it manually using the download button in the upper-right corner of that page, then unzip it and navigate into the folder using `cd pamflow`.
 
 ## 4. Install required packages
 
