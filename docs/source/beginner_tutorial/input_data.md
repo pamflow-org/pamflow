@@ -3,7 +3,7 @@
 Before running any analysis, you need to gather the three files that **pamflow** requires. In this section you will download the tutorial data and get familiar with its structure.
 
 ### 1. Download tutorial data
-The audio recordings you'll need for this tutorial can be found [here](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7). 
+The audio recordings you'll need for this tutorial can be found [here](https://doi.org/10.5281/zenodo.16922848). 
 
 ```{note}
 This sample data is provided to show you how to use pamflow, if you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
