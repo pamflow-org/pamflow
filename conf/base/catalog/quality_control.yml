@@ -20,6 +20,18 @@ survey_effort@matplotlib:
   save_args:
     format: pdf
 
+audio_outliers_figure@matplotlib:
+  type: matplotlib.MatplotlibWriter
+  filepath: ${globals:output_dir}/quality_control/audio_outliers.pdf
+  save_args:
+    format: pdf
+
+audio_outliers_data@pandas:
+  type: pandas.CSVDataset
+  filepath: ${globals:output_dir}/quality_control/audio_outliers.csv
+  save_args:
+    index: false
+
 timelapse_spectrograms@PartitionedImage:
   type: partitions.PartitionedDataset
   path: ${globals:output_dir}/quality_control/timelapse/

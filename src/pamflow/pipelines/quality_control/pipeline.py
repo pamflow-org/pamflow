@@ -3,7 +3,8 @@ from .nodes import (
     plot_sensor_performance,
     plot_sensor_location,
     plot_survey_effort,
-    get_timelapse
+    get_timelapse,
+    detect_audio_outliers
 )
 
 
@@ -32,7 +33,16 @@ def create_pipeline(**kwargs):
                 outputs="survey_effort@matplotlib",
                 name="plot_survey_effort_node",
             ),
-            
+            node(
+                func=detect_audio_outliers,
+                inputs=["media@pamDP", "params:audio_outliers"],
+                outputs=[
+                    "audio_outliers_figure@matplotlib",
+                    "audio_outliers_data@pandas",
+                ],
+                name="detect_audio_outliers_node",
+            ),
+
             node(
                 func=get_timelapse,
                 inputs=[
