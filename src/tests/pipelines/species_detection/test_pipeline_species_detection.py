@@ -62,9 +62,9 @@ class TestSpeciesDetectionPipeline:
         expected_inputs = [
             "media_work@pamDP",
             "deployments@pamDP",
-            "params:species_detection_parameters.n_jobs",
+            "params:species_detection_parameters",
         ]
-        
+
         assert list(node.inputs) == expected_inputs
 
     def test_species_detection_node_output(self):
