@@ -26,7 +26,7 @@ pamflow run --pipeline quality_control
 ```
 
 **Description**<br>
-Allows a quick data exploration to flag underperforming sensors and ensure data integrity for reliable ecological analysis. It summarizes survey effort, plotting sensor locations, and checking recording timelines.
+Allows a quick data exploration to flag underperforming sensors and ensure data integrity for reliable ecological analysis. It summarizes survey effort, plotting sensor locations, checking recording timelines, and detecting recordings with unusual duration or sample rate.
 
 **Nodes**
 | Node name | Description | Inputs | Outputs |
@@ -34,6 +34,7 @@ Allows a quick data exploration to flag underperforming sensors and ensure data 
 | `plot_sensor_performance_node` | Generates visualizations and summary data of sensor performance metrics based on media data. | `media@pamDP` | `sensor_performance_figure@matplotlib`<br>`sensor_performance_data@pandas` |
 | `plot_sensor_location_node` | Creates a map or plot showing sensor deployment locations using summarized media and deployment data. | `media_summary@pandas`<br>`deployments@pamDP`<br>`params:sensor_location_plot` | `sensor_location@matplotlib` |
 | `plot_survey_effort_node` | Produces a plot summarizing survey effort (e.g., recording hours or deployment durations). | `media_summary@pandas`<br>`deployments@pamDP`<br>`media@pamDP` | `survey_effort@matplotlib` |
+| `detect_audio_outliers_node` | Flags recordings whose duration (`fileLength`) or sample rate (`sampleRate`) deviates from the rest of their deployment, using a robust z-score based on the median absolute deviation (MAD). If a deployment is homogeneous (MAD = 0), any value different from the median is flagged. Outputs a figure of the % deviation from each deployment's median and a table listing the outlier files. | `media@pamDP`<br>`params:audio_outliers` | `audio_outliers_figure@matplotlib`<br>`audio_outliers_data@pandas` |
 | `get_timelapse_node` | Generates timelapse audio samples and corresponding spectrogram images for visual and acoustic analysis. | `sensor_performance_data@pandas`<br>`media@pamDP`<br>`params:timelapse.sample_length`<br>`params:timelapse.sample_period`<br>`params:timelapse.sample_date`<br>`params:timelapse_plot` | `timelapse@PartitionedAudio`<br>`timelapse_spectrograms@PartitionedImage` |
 
 <details>
@@ -47,6 +48,10 @@ Allows a quick data exploration to flag underperforming sensors and ensure data 
 | `sensor_location_plot` | `marker_color` | Color of the location markers | `'slateblue'` |
 | `sensor_location_plot` | `text_size` | Size of the text annotations (if 0 or negative, no text is shown) | `9` |
 | `sensor_location_plot` | `alpha` | Transparency level of the markers | `0.7` |
+| `audio_outliers` | `z_threshold` | Robust z-score (MAD) above which a value is flagged as an outlier | `3.5` |
+| `audio_outliers` | `max_labeled_deployments` | Deployment names are drawn on the x axis only up to this number of deployments | `50` |
+| `audio_outliers` | `fig_height` | Figure height (in inches) | `7.5` |
+| `audio_outliers` | `fig_width` | Figure width (in inches) | `12` |
 | `timelapse_plot` | `fig_height` | Figure height (in inches) | `4` |
 | `timelapse_plot` | `fig_width` | Figure width (in inches) | `15` |
 | `timelapse_plot` | `nperseg` | Number of data points per segment | `1024` |
