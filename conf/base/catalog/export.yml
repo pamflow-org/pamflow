@@ -1,9 +1,9 @@
 DwC_eventos@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/export/DwC_eventos.csv
+  filepath: ${globals:output_dir}/export/DwC_eventos.csv
 CSA_eventos@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/export/CSA_eventos.csv
+  filepath: ${globals:output_dir}/export/CSA_eventos.csv
   load_args:
     encoding: utf-8
   save_args:
@@ -11,10 +11,10 @@ CSA_eventos@pandas:
     index: False
 media_gbif@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/export/media_gbif.csv
+  filepath: ${globals:output_dir}/export/media_gbif.csv
 observations_gbif@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/export/observations_gbif.csv
+  filepath: ${globals:output_dir}/export/observations_gbif.csv
 deployments_gbif@pandas:
   type: pandas.CSVDataset
-  filepath: data/output/export/deployments_gbif.csv
+  filepath: ${globals:output_dir}/export/deployments_gbif.csv

@@ -23,7 +23,7 @@ def create_pipeline(**kwargs):
             ),
             node(  
                 func=from_observations_to_observations_gbif,
-                inputs=["observations@pamDP"],
+                inputs=["observations@pamDP", "media@pamDP"],
                 outputs="observations_gbif@pandas",
                 name="from_observations_to_observations_gbif_node",
             ),
