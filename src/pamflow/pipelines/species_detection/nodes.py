@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 def species_detection_parallel(
     media,
     deployments,
-    species_detection_parameters
+    species_detection_parameters,
+    timezone,
 ):
     """Detects species in media files using parallel processing.
 
@@ -40,6 +41,10 @@ def species_detection_parallel(
 
     species_detection_parameters : Dict
         Dict with custom values for species detection pipeline personalization
+
+    timezone : str
+        Timezone name (e.g. 'America/Bogota') used to localize
+        classificationTimestamp, in the same way as the media timestamp.
 
     Returns
     -------
@@ -159,7 +164,7 @@ def species_detection_parallel(
     observations["frequencyLow"] = None
     observations["frequencyHigh"] = None
     observations["classificationMethod"] = "machine"
-    observations["classificationTimestamp"] = pd.to_datetime("today").strftime('%Y-%m-%dT%H:%M:%S')
+    observations["classificationTimestamp"] = pd.Timestamp.now(tz=timezone).strftime('%Y-%m-%dT%H:%M:%S%z')
     observations["observationTags"] = None    
     observations["observationComments"] = None
     observations["classificationProbability"] = observations["classificationProbability"].astype(float).round(3)

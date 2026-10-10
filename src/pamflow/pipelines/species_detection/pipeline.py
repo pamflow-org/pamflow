@@ -20,6 +20,7 @@ def create_pipeline(**kwargs):
                     "media_work@pamDP",
                     "deployments@pamDP",
                     "params:species_detection_parameters",
+                    "params:timezone",
                 ],
                 outputs="unfiltered_observations@pamDP",
                 name="species_detection_node",
