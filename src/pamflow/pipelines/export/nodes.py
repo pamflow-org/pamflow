@@ -10,31 +10,167 @@ import pandas as pd
 import datetime
 import json
 
+def row_to_json(row):
+    # reemplaza NaN por None para que sea JSON válido (NaN no es JSON estándar)
+    clean = {k: (None if pd.isna(v) else v) for k, v in row.items()}
+    return json.dumps(clean)
 
 def from_media_to_media_gbif(media):
+    """
+    Convert a pamDP media table to the camtrapDP/GBIF media format.
+
+    Conversion steps:
+    1. Drop audio-specific columns that have no equivalent in the GBIF
+       media format: sampleRate, bitDepth, fileLength, numChannels.
+    2. Pack the dropped columns into a new exifData column, as a
+       JSON object per row (e.g. {"sampleRate": 44100, "bitDepth": 16, ...}),
+       so the information is preserved instead of being lost.
+
+    Parameters
+    ----------
+    media : pandas.DataFrame
+        pamDP media table. Must contain the columns sampleRate, bitDepth,
+        fileLength and numChannels.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Copy of media with the audio-specific columns replaced by a single
+        exifData column holding those values as JSON.
+    """
     columns_to_drop=['sampleRate' , 'bitDepth' , 'fileLength' , 'numChannels']
-    media['mediaComments']= json.loads(media[columns_to_drop].T.to_json()).values()
-    media_gbif = media.drop(columns=columns_to_drop)
+    media_gbif = media.copy()
+    media_gbif['exifData'] = media_gbif[columns_to_drop].apply(row_to_json, axis=1)
+    media_gbif = media_gbif.drop(columns=columns_to_drop)
     return media_gbif
     
 def from_deployments_to_deployments_gbif(deployments):
+    """
+    Convert a pamDP deployments table to the camtrapDP/GBIF deployments format.
+
+    Conversion steps:
+    1. Rename columns to match GBIF format:
+       - recorderID       -> cameraID
+       - recorderModel    -> cameraModel
+       - recorderHeight   -> cameraHeight
+       - recorderDepth    -> cameraDepth
+       - recorderTilt     -> cameraTilt
+       - recorderHeading  -> cameraHeading
+    2. Merge recorderConfiguration into deploymentTags: append its value to
+       any existing deploymentTags content, separated by " | ", so multiple
+       tag entries are preserved (e.g. "tag1 | tag2"). The
+       recorderConfiguration column is dropped afterwards.
+
+    Parameters
+    ----------
+    deployments : pandas.DataFrame
+        pamDP deployments table. Must contain the recorderID, recorderModel,
+        recorderHeight, recorderDepth, recorderTilt, recorderHeading and
+        recorderConfiguration columns. May optionally contain a
+        deploymentTags column.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Copy of deployments with recorder* columns renamed to camera*, and
+        recorderConfiguration merged into deploymentTags and removed.
+    """
     deployments_gbif = deployments.rename(
         columns={
             "recorderID": "cameraID",
             "recorderModel": "cameraModel",
             "recorderHeight": "cameraHeight",
+            "recorderDepth": "cameraDepth",
+            "recorderTilt": "cameraTilt",
+            "recorderHeading": "cameraHeading",
         }
         )
-    deployments_gbif['deploymentComments']=deployments_gbif['recorderConfiguration'].apply(
-        lambda row: {'recorderConfiguration':row}
+    
+    def _merge_tags(row):
+        existing = row.get("deploymentTags")
+        new_tags = row.get("recorderConfiguration")
+
+        parts = []
+        if isinstance(existing, str) and existing.strip():
+            parts.append(existing.strip())
+        if isinstance(new_tags, str) and new_tags.strip():
+            parts.append(new_tags.strip())
+
+        return " | ".join(parts) if parts else existing
+
+    deployments_gbif["deploymentTags"] = deployments_gbif.apply(_merge_tags, axis=1)
+
+    # drop recorderConfiguration column
+    deployments_gbif = deployments_gbif.drop(
+        columns="recorderConfiguration", errors="ignore"
     )
-    deployments_gbif = deployments_gbif.drop(columns=['recorderConfiguration'])
+
     return deployments_gbif
 
-def from_observations_to_observations_gbif(observations):
-    dwc_observations = observations.assign(observationLevel='event')
-    return dwc_observations
+def from_observations_to_observations_gbif(observations, media):
+    """
+    Convert a pamDP observations table to the camtrapDP/GBIF observations format.
 
+    Conversion steps:
+    1. eventStart and eventEnd
+       In camtrapDP these are absolute datetime values in ISO 8601 format. In
+       pamDP they are given as seconds relative to the timestamp of the audio
+       recording (media). To convert:
+         - merge observations with media on mediaID to bring in the
+           recording's timestamp column
+         - add eventStart/eventEnd (seconds) to that timestamp as a timedelta
+           to get the absolute datetime
+         - format the result back to ISO 8601 to match camtrapDP
+    2. Assign observationLevel as 'media' for every row, since pamDP
+       observations are always media-level (as opposed to event-level).
+
+    Parameters
+    ----------
+    observations : pandas.DataFrame
+        pamDP observations table. Must contain mediaID, eventStart and
+        eventEnd (the latter two as seconds relative to the media timestamp).
+    media : pandas.DataFrame
+        pamDP media table. Must contain mediaID and timestamp, used to
+        resolve eventStart/eventEnd into absolute datetimes.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Copy of observations with eventStart/eventEnd converted to absolute
+        ISO 8601 datetimes and a new observationLevel column set to 'media'.
+    """
+    dwc_observations = observations.merge(
+        media[["mediaID", "timestamp"]],
+        on="mediaID",
+        how="left",
+    )
+
+    if dwc_observations["timestamp"].isna().any():
+        raise ValueError(
+            "Some observations have a mediaID that is not present in media; "
+            "cannot resolve absolute eventStart/eventEnd."
+        )
+
+    dwc_observations["timestamp"] = pd.to_datetime(dwc_observations["timestamp"])
+
+    dwc_observations["eventStart"] = (
+        dwc_observations["timestamp"]
+        + pd.to_timedelta(dwc_observations["eventStart"], unit="s")
+    ).dt.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+    dwc_observations["eventEnd"] = (
+        dwc_observations["timestamp"]
+        + pd.to_timedelta(dwc_observations["eventEnd"], unit="s")
+    ).dt.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+    # Drop unnecesary/unsupported columns by camtrapDP
+    dwc_observations = dwc_observations.drop(
+        columns=["timestamp", "frequencyLow", "frequencyHigh"], errors="ignore"
+    )
+
+    dwc_observations = dwc_observations.assign(observationLevel="media")
+
+    return dwc_observations
 
 def from_deployments_to_CSA_eventos(deployments, media, fdm):
     # ---------------
