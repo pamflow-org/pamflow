@@ -74,8 +74,8 @@ def _obs_media():
 def test_observations_gbif_absolute_iso_times():
     obs, media = _obs_media()
     out = from_observations_to_observations_gbif(obs, media)
-    assert out.loc[0, "eventStart"] == "2024-01-01T06:00:01+0000"
-    assert out.loc[0, "eventEnd"] == "2024-01-01T06:00:03+0000"
+    assert out.loc[0, "eventStart"] == "2024-01-01T06:00:01+00:00"
+    assert out.loc[0, "eventEnd"] == "2024-01-01T06:00:03+00:00"
     assert out.loc[0, "observationLevel"] == "media"
     assert not {"timestamp", "frequencyLow", "frequencyHigh"} & set(out.columns)
 

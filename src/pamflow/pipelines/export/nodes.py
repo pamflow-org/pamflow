@@ -153,15 +153,21 @@ def from_observations_to_observations_gbif(observations, media):
 
     dwc_observations["timestamp"] = pd.to_datetime(dwc_observations["timestamp"])
 
-    dwc_observations["eventStart"] = (
+    def _format_iso8601(series):
+        # camtrapDP requires the UTC offset as ±hh:mm, but %z gives ±hhmm
+        return series.dt.strftime("%Y-%m-%dT%H:%M:%S%z").str.replace(
+            r"([+-]\d{2})(\d{2})$", r"\1:\2", regex=True
+        )
+
+    dwc_observations["eventStart"] = _format_iso8601(
         dwc_observations["timestamp"]
         + pd.to_timedelta(dwc_observations["eventStart"], unit="s")
-    ).dt.strftime("%Y-%m-%dT%H:%M:%S%z")
+    )
 
-    dwc_observations["eventEnd"] = (
+    dwc_observations["eventEnd"] = _format_iso8601(
         dwc_observations["timestamp"]
         + pd.to_timedelta(dwc_observations["eventEnd"], unit="s")
-    ).dt.strftime("%Y-%m-%dT%H:%M:%S%z")
+    )
 
     # Drop unnecesary/unsupported columns by camtrapDP
     dwc_observations = dwc_observations.drop(
