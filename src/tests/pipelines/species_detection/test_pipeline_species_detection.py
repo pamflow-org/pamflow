@@ -63,6 +63,7 @@ class TestSpeciesDetectionPipeline:
             "media_work@pamDP",
             "deployments@pamDP",
             "params:species_detection_parameters",
+            "params:timezone",
         ]
 
         assert list(node.inputs) == expected_inputs
