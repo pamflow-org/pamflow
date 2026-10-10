@@ -27,18 +27,19 @@ def register_pipelines() -> Dict[str, Pipeline]:
     detection_validation_pipeline = detection_validation.create_pipeline()
     export_pipeline = export.create_pipeline()
 
-    pamflow_pipeline = (
+    # filter_media runs once and produces media_work@pamDP, which the
+    # downstream pipelines read. data_science is not included.
+    pamflow_pipeline = with_filter_media(
         data_preparation_pipeline
         + graphical_soundscape_pipeline
         + acoustic_indices_pipeline
         + species_detection_pipeline
         + quality_control_pipeline
-    )  # no incluir data_science
+    )
 
     return {
         "__default__": pamflow_pipeline,
-        "pamflow": pamflow_pipeline
-        + data_science_pipeline,  # +species_detection_pipeline_pipeline+acousti...,
+        "pamflow": pamflow_pipeline + data_science_pipeline,
         "data_preparation": data_preparation_pipeline,
         "quality_control":quality_control_pipeline,
         "graphical_soundscape": with_filter_media(graphical_soundscape_pipeline),
