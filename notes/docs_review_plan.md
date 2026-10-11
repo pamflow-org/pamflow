@@ -21,7 +21,7 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
 - [x] 1.6 (hecho: typo y ruta en species_detection/nodes.py, docstring de compute_ADI; el comentario del registro ya estaba en inglés) Retoques de código: typo `paramteres.yml` en `species_detection/nodes.py:224`; docstring de `compute_ADI` (dice ACI) en `acoustic_indices/utils.py:82`; comentario en español en `pipeline_registry.py:36`.
 
 ## Fase 2 — Correcciones solo de documentación (mayores)
-- [ ] 2.1 **Rutas de configuración**: sustituir `conf/base/parameters.yml` y `catalog.yml` por `conf/base/parameters/*.yml` y `conf/base/catalog/*.yml`.
+- [x] 2.1 (hecho en dfb64f1) **Rutas de configuración**: sustituir `conf/base/parameters.yml` y `catalog.yml` por `conf/base/parameters/*.yml` y `conf/base/catalog/*.yml`.
   Archivos: `documentation/overview.md:22,25,29,31`, `advanced_tutorials/multiseason_config.md:10-11`, `advanced_tutorials/custom_pipeline.md:20`, y los comentarios de cabecera de `conf/local/catalog.yml` y `conf/local/parameters.yml`.
 - [ ] 2.2 **Hoja de despliegues** (`data_standardization/data_exchange_format.md:29-51`, README 3.x):
   - Reescribir según `datasets/pamDP/field_deployments_sheet.py:56-130`: las 19 columnas deben existir; son obligatorios los valores de `deploymentID`, fechas y horas de inicio/fin, `latitude` y `longitude`.

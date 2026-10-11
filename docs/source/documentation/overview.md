@@ -39,4 +39,4 @@ media@pamDP:
   timezone: Etc/GMT+5
 ```
 
-Check the [Kedro documentation](https://docs.kedro.org/en/1.0.0/getting-started/kedro_concepts/) for more details.
+Check the [Kedro documentation](https://docs.kedro.org/en/0.19.8/get_started/kedro_concepts.html) for more details.

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/pamflow/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="600"/>
+  <img src="https://github.com/pamflow-org/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="600"/>
 </div>
 
 # Simplified analysis for passive acoustic monitoring
@@ -38,7 +38,7 @@ data_standardization/data_exchange_format.md
 :maxdepth: 1
 :caption: Getting Involved
 
-getting_involved/contributing_guidelines.md
+getting_involved/index.md
 ```
 
 ## About

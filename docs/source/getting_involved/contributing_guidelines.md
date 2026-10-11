@@ -34,7 +34,7 @@ The [anonymized version of the repo](https://anonymous.4open.science/r/pamflow-D
 
 ## Code Standards
 - Follow [PEP 8](https://peps.python.org/pep-0008/) for Python coding style.
-- Use `ruff` for linting: [link](https://docs.kedro.org/en/stable/development/linting.html)
+- Use `ruff` for linting: [link](https://docs.kedro.org/en/0.19.8/development/linting.html)
 - Use type hints where possible:
   ```python
   def process_data(data: list) -> dict:

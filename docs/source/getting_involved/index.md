@@ -2,7 +2,8 @@
 
 ```{toctree}
 :maxdepth: 1
-:caption: Advanced tutorial
+:caption: Getting involved
+
 contributing_guidelines.md
 contributors.md
 ```
