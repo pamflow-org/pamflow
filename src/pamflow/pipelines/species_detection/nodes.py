@@ -221,7 +221,7 @@ def filter_observations(
     if segment_size > minimum_observations:
         logger.warning(f"""Number of segments per species ({segment_size}) is greater than minimum number of observations per species ({minimum_observations}).\n
                              Species with an observation count between {minimum_observations} and {segment_size} will end up with fewer than {segment_size} segments. \n
-                             Change the values of these parameters in conf/base/paramteres.yml if this is not intended.
+                             Change the values of these parameters in conf/base/parameters/species_detection.yml if this is not intended.
         """)
 
     target_species = target_species.drop_duplicates()

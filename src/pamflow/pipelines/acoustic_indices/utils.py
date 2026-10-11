@@ -79,7 +79,7 @@ class AcousticIndices:
         return features.acoustic_complexity_index(self.Sxx)[2]
 
     def compute_ADI(self, params):
-        """Compute Acoustic Complexity Index (ACI)."""
+        """Compute Acoustic Diversity Index (ADI)."""
         return features.acoustic_diversity_index(self.Sxx, self.fn, **params)
 
     def compute_BI(self, params):
