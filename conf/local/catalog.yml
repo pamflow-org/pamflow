@@ -4,7 +4,7 @@
 # This file is intended to be edited by the user.
 #
 # Entries defined here override the corresponding definitions in
-# conf/base/catalog.yml.
+# conf/base/catalog/*.yml.
 #
 # Typical use cases:
 #   - Change the path of the deployment sheet
@@ -12,7 +12,7 @@
 #   - Use project-specific filenames
 #
 # Do not expect this file to contain the full pamflow catalog.
-# The complete catalog is defined in conf/base/catalog.yml.
+# The complete catalog is defined in conf/base/catalog/*.yml.
 # -----------------------------------------------------------------------------
 
 field_deployments_sheet@pandas:

@@ -19,16 +19,16 @@ confidence threshold.
 
 Pipeline parameters are managed through Kedro's configuration system.
 
-- `conf/base/parameters.yml` contains the complete set of default parameters distributed with pamflow.
+- `conf/base/parameters/*.yml` (one file per pipeline) contains the complete set of default parameters distributed with pamflow.
 - `conf/local/parameters.yml` contains project-specific overrides and is intended to be edited by the user.
 
-Values defined in `conf/local/parameters.yml` take precedence over those defined in `conf/base/parameters.yml`. For this reason, the local configuration file typically contains only a small subset of parameters that commonly vary between projects, such as the audio directory location or time zone.
+Values defined in `conf/local/parameters.yml` take precedence over those defined in `conf/base/parameters/`. For this reason, the local configuration file typically contains only a small subset of parameters that commonly vary between projects, such as the audio directory location or time zone.
 
 **Data catalog**
 
-The complete dataset catalog distributed with pamflow is defined in `conf/base/catalog.yml`.
+The complete dataset catalog distributed with pamflow is defined in `conf/base/catalog/*.yml` (one file per pipeline).
 
-Users should normally avoid modifying this file directly. Instead, project-specific paths and settings can be provided through `conf/local/catalog.yml`, whose entries override the corresponding definitions in `conf/base/catalog.yml`.
+Users should normally avoid modifying this file directly. Instead, project-specific paths and settings can be provided through `conf/local/catalog.yml`, whose entries override the corresponding definitions in `conf/base/catalog/`.
 
 The `conf/local/catalog.yml` file is intentionally minimal and is intended to be edited by the user to point pamflow to the appropriate input files for a particular project.
 **Example:**

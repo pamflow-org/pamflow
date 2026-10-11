@@ -7,8 +7,8 @@ Passive acoustic monitoring projects are typically repeated over multiple season
 ```
 conf/
 ├── base/
-│   ├── catalog.yml       ← shared catalog with ${globals:output_dir} references
-│   ├── parameters.yml    ← shared default parameters
+│   ├── catalog/          ← shared catalog (one .yml per pipeline) with ${globals:output_dir} references
+│   ├── parameters/       ← shared default parameters (one .yml per pipeline)
 │   └── globals.yml       ← default output path (single-season projects stop here)
 ├── dry_2023/
 │   ├── parameters.yml
