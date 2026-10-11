@@ -268,9 +268,9 @@ def field_deployments_sheet_to_deployments(field_deployments, media_summary, tim
     )
 
     # Adjust date with ISO 8601 format
-    field_deployments["deploymentStart"] = pd.to_datetime(field_deployments["deploymentStart"]).dt.tz_localize('America/Bogota')
+    field_deployments["deploymentStart"] = pd.to_datetime(field_deployments["deploymentStart"]).dt.tz_localize(timezone)
     field_deployments["deploymentStart"] = field_deployments["deploymentStart"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
-    field_deployments["deploymentEnd"] = pd.to_datetime(field_deployments["deploymentEnd"]).dt.tz_localize('America/Bogota')
+    field_deployments["deploymentEnd"] = pd.to_datetime(field_deployments["deploymentEnd"]).dt.tz_localize(timezone)
     field_deployments["deploymentEnd"] = field_deployments["deploymentEnd"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
 
     # 3 -- Map existing fields from field_deployments to deployments -- #
