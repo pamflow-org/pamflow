@@ -2,7 +2,7 @@
   <img src="https://github.com/pamflow/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="400"/>
 </div>
 
-![Python version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue.svg)
+![Python version](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue.svg)
 
 **pamflow** is a workflow for analyzing passive acoustic monitoring data using Python. It is designed to offer an easy-to-use and reproducible framework for researchers, conservation biologists, citizen scientists, and anyone interested in ecoacoustics and soundscape ecology.
 
@@ -15,7 +15,7 @@ cd pamflow
 ```
 
 ### 2. Set Up a Working Environment
-Ensure you have Python 3.11 installed. Then, create and activate a virtual environment using conda:
+Ensure you have Python 3.11 installed (Python 3.10 and 3.11 are supported). Then, create and activate a virtual environment using conda:
 
 ```bash
 conda create -n pamenv python=3.11
