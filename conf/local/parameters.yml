@@ -4,13 +4,13 @@
 # This file is intended to be edited by the user.
 #
 # Parameters defined here override the corresponding values in
-# conf/base/parameters.yml.
+# conf/base/parameters/*.yml.
 #
 # Only project-specific settings that commonly change between installations
 # are included here.
 #
 # The complete parameter configuration is defined in:
-#     conf/base/parameters.yml
+#     conf/base/parameters/*.yml
 # -----------------------------------------------------------------------------
 
 # Time zone used when processing deployment metadata
