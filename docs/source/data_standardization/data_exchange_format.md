@@ -24,26 +24,28 @@ Example:
 
 
 ## Field deployment sheet
-This file provides metadata collected during the field deployment. It should be an Excel file named `field_deployments_sheet.xlsx`, with the below column names in the first row. See the [tutorial data](https://doi.org/10.5281/zenodo.16922848) for an example.
+This file provides metadata collected during the field deployment. It should be an Excel file (`.xlsx`) with the column names below in the first row. By default **pamflow** looks for it at `data/input/field_deployments/field_deployments_sheet.xlsx`; the location and file name can be changed in `conf/local/catalog.yml` (entry `field_deployments_sheet@pandas`). See the [tutorial data](https://doi.org/10.5281/zenodo.16922848) for an example.
 
-The fields listed below cover a representative set useful for most research purposes. Only 7 fields are strictly required, but providing more information is strongly advised — richer metadata greatly increases the long-term value and reusability of your data. Additional fields beyond those listed here can also be included in the sheet; following the [pamDP format](#deployments) for any extra fields is recommended for interoperability. Custom fields that do not follow pamDP naming will be preserved in your sheet but will not be carried over to the standardized pamDP output.
+The fields listed below cover a representative set useful for most research purposes. **All 19 columns must be present in the sheet** (**pamflow** stops with an error listing the missing ones), but only 7 of them must also contain a value in every row: `deploymentID`, `deploymentStartDate`, `deploymentStartTime`, `deploymentEndDate`, `deploymentEndTime`, `latitude` and `longitude`. The remaining columns can be left empty, although providing more information is strongly advised — richer metadata greatly increases the long-term value and reusability of your data. Only `deploymentID` is checked for uniqueness. Additional fields beyond those listed here can also be included in the sheet; following the [pamDP format](#deployments) for any extra fields is recommended for interoperability. Custom fields that do not follow pamDP naming will be preserved in your sheet but will not be carried over to the standardized pamDP output.
+
+The `deploymentID` values must match exactly the names of the subfolders in the audio root directory (see [File organization](#file-organization)). Deployments found only in the sheet or only in the audio folder are reported with a warning and are not fully processed.
 
 | Field Name              | Description | Required | Unique | Type | Example |
 |-------------------------|-------------|----------|--------|------|---------|
 |<u>**deploymentID**</u>| Unique identifier for the deployment. Required for tracking and referencing specific deployments. | ✅ | ✅ | `string` | DEP001 |
 |<u>**deploymentStartDate**</u>| Date when the recorder was deployed in the field. Format: `YYYY-MM-DD`. | ✅ |   | `string` | 2025-05-29 |
-|**deploymentStartTime**| Time when the recorder was deployed in the field. Format: `HH:MM:SS` (24h, local time). |   |   | `string` | 13:30:00 |
+|<u>**deploymentStartTime**</u>| Time when the recorder was deployed in the field. Format: `HH:MM:SS` (24h, local time). | ✅ |   | `string` | 13:30:00 |
 |<u>**deploymentEndDate**</u>| Date when the recorder was retrieved or the deployment ended. Format: `YYYY-MM-DD`. | ✅ |   | `string` | 2025-06-29 |
-|**deploymentEndTime**| Time when the recorder was retrieved or the deployment ended. Format: `HH:MM:SS` (24h, local time). |   |   | `string` | 10:00:00 |
+|<u>**deploymentEndTime**</u>| Time when the recorder was retrieved or the deployment ended. Format: `HH:MM:SS` (24h, local time). | ✅ |   | `string` | 10:00:00 |
 |<u>**latitude**</u>| Latitude of the deployment location in decimal degrees (WGS84). Range: -90 to 90. | ✅ |   | `float` | 5.2704 |
 |<u>**longitude**</u>| Longitude of the deployment location in decimal degrees (WGS84). Range: -180 to 180. | ✅ |   | `float` | 2.3849 |
 |**coordinateUncertainty**| Uncertainty of the geographic coordinates in meters. Range: >0. |   |   | `float` | 10.0 |
-|**locationID**| Unique code that refers unambiguously to a location record. One locationID per latitude-longitude pair. |   | ✅ | `string` | LOC001 |
+|**locationID**| Unique code that refers unambiguously to a location record. One locationID per latitude-longitude pair. |   |   | `string` | LOC001 |
 |**locationName**| Name assigned to the deployment location for easy reference. |   |   | `string` | Finca La Esperanza |
 |**habitat**| Brief description of the habitat at the deployment location. |   |   | `string` | Humid tropical rainforest |
 |**recorderID**| Unique identifier of the audio recorder used. |   |   | `string` | REC01 |
-|<u>**recorderModel**</u>| Manufacturer and model of the recorder, formatted as manufacturer-model. | ✅ |   | `string` | Audiomoth v1.2.0 |
-|<u>**recorderConfiguration**</u>| Detailed settings used for data collection (e.g., microphone type, recording schedule). | ✅ |   | `string` | record 1 minute every 29 minutes, internal microphone |
+|**recorderModel**| Manufacturer and model of the recorder, formatted as manufacturer-model. |   |   | `string` | Audiomoth v1.2.0 |
+|**recorderConfiguration**| Detailed settings used for data collection (e.g., microphone type, recording schedule). |   |   | `string` | record 1 minute every 29 minutes, internal microphone |
 |**recorderHeight**| Height (in meters) at which the recorder was deployed. Not to be combined with `recorderDepth`. Range: >0. |   |   | `float` | 1.2 |
 |**setupByName**| First name of the person responsible for deploying the recorder. |   |   | `string` | Juan |
 |**setupByLastName**| Last name of the person responsible for deploying the recorder. |   |   | `string` | Gómez |
