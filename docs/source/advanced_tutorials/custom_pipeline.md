@@ -11,7 +11,7 @@ kedro pipeline create [pipeline_name]
 
 ```
 
-*(Replace `[pipeline_name]` with your desired name, e.g., `data_science` or `preprocessing`.)*
+*(Replace `[pipeline_name]` with your desired name, e.g., `preprocessing`.)*
 
 **What this does:**
 

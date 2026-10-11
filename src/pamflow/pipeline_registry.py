@@ -7,7 +7,6 @@ from pamflow.pipelines.quality_control import pipeline as quality_control
 from pamflow.pipelines.graphical_soundscape import pipeline as graphical_soundscape
 from pamflow.pipelines.acoustic_indices import pipeline as acoustic_indices
 from pamflow.pipelines.species_detection import pipeline as species_detection
-from pamflow.pipelines.data_science import pipeline as data_science
 from pamflow.pipelines.detection_validation import pipeline as detection_validation
 from pamflow.pipelines.export import pipeline as export
 from pamflow.pipelines.filter_media.pipeline import with_filter_media
@@ -23,12 +22,11 @@ def register_pipelines() -> Dict[str, Pipeline]:
     graphical_soundscape_pipeline = graphical_soundscape.create_pipeline()
     acoustic_indices_pipeline = acoustic_indices.create_pipeline()
     species_detection_pipeline = species_detection.create_pipeline()
-    data_science_pipeline = data_science.create_pipeline()
     detection_validation_pipeline = detection_validation.create_pipeline()
     export_pipeline = export.create_pipeline()
 
     # filter_media runs once and produces media_work@pamDP, which the
-    # downstream pipelines read. data_science is not included.
+    # downstream pipelines read.
     pamflow_pipeline = with_filter_media(
         data_preparation_pipeline
         + graphical_soundscape_pipeline
@@ -39,13 +37,12 @@ def register_pipelines() -> Dict[str, Pipeline]:
 
     return {
         "__default__": pamflow_pipeline,
-        "pamflow": pamflow_pipeline + data_science_pipeline,
+        "pamflow": pamflow_pipeline,
         "data_preparation": data_preparation_pipeline,
         "quality_control":quality_control_pipeline,
         "graphical_soundscape": with_filter_media(graphical_soundscape_pipeline),
         "acoustic_indices": with_filter_media(acoustic_indices_pipeline),
         "species_detection": with_filter_media(species_detection_pipeline),
-        "data_science": data_science_pipeline,
         "detection_validation": detection_validation_pipeline,
         "export": export_pipeline,
     }
