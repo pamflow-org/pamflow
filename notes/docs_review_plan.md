@@ -8,15 +8,15 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
 
 ## Fase 0 — Verificación previa
 - [x] 0.1 (confirmado: falla con `media_work.csv` no encontrado; `__default__`/`pamflow` no incluyen `filter_media`) Ejecutar `kedro run` (y `pamflow run`) sobre los datos del tutorial en un entorno limpio. Confirmar si falla porque `media_work@pamDP` no existe (`pipeline_registry.py:30-46`, `pipelines/filter_media/pipeline.py:14`).
-- [ ] 0.2 (bloqueado: sphinx no está instalado en `pamflow_env`; `pip install -r docs_requirements.txt`) `sphinx-build -W -b html docs/source /tmp/docs_out` para tener la línea base de warnings (documentos huérfanos, anclas rotas).
+- [x] 0.2 (línea base: 18 warnings; 9 de encabezados H1, 1 documento huérfano, 8 enlaces/anclas rotas; build en scratchpad, fuera del repo) `sphinx-build -W -b html docs/source /tmp/docs_out` para tener la línea base de warnings (documentos huérfanos, anclas rotas).
 - [x] 0.3 (186 passed) `pytest src/tests` para confirmar la línea base.
 - [ ] 0.4 **No commitear** `conf/local/parameters.yml` (tiene una ruta personal sin commitear).
 
 ## Fase 1 — Decisiones de código (confirmar con el equipo antes de tocar)
 - [x] 1.1 (hecho: `with_filter_media` envuelve `__default__` y `pamflow` en `pipeline_registry.py`) `filter_media` en `__default__` y `pamflow`: añadirlo, o hacer que los pipelines lean `media@pamDP` cuando no hay filtro. Depende del resultado de 0.1.
-- [ ] 1.2 `data_science` (`find_thresholds_node`, `build_train_test_dataset_node`): está registrado pero faltan `data_science_parameters`, `data_science_plot`, `species_thresholds@pandas`, `train_spectrograms@ImageFolderDataset` y `test_spectrograms@ImageFolderDataset` en `conf/`. Elegir entre desregistrar, completar la config o marcarlo como experimental.
-- [ ] 1.3 Archivos mal ubicados en `conf/base/parameters/`: `export.yml`, `figures.yml` y `timelapse.yml` contienen entradas de catálogo que duplican o contradicen `conf/base/catalog/`. `data_preparation.yml` está vacío. `DwC_eventos@pandas` no tiene nodo.
-- [ ] 1.4 `timezone: Etc/GMT+5` fijo en `conf/base/catalog/data_preparation.yml:4,9,26` y `species_detection.yml:4,9`. Hacer que siga el parámetro `timezone` o documentarlo.
+- [x] 1.2 Decisión: `data_science` se va a borrar y **no se documenta**. (Pendiente aparte, fuera de este plan de docs: eliminar `src/pamflow/pipelines/data_science/`, su import y las entradas `data_science` y `pamflow + data_science_pipeline` en `pipeline_registry.py`.)
+- [x] 1.3 (hecho: borrados `export.yml`, `figures.yml`, `timelapse.yml` y `data_preparation.yml` de parameters; catálogo sin cambios. Pendiente aparte: nodo `CSA_eventos` comentado y `DwC_eventos` sin nodo) Archivos mal ubicados en `conf/base/parameters/`: `export.yml`, `figures.yml` y `timelapse.yml` contienen entradas de catálogo que duplican o contradicen `conf/base/catalog/`. `data_preparation.yml` está vacío. `DwC_eventos@pandas` no tiene nodo.
+- [ ] 1.4 (a hecho: bug `America/Bogota` fijo en `field_deployments_sheet_to_deployments`; pendiente (b) fuente única de timezone vía globals y (c) documentar zona única por proyecto; el resto en `notes/timezone_cleanup_plan.md`) `timezone: Etc/GMT+5` fijo en `conf/base/catalog/data_preparation.yml:4,9,26` y `species_detection.yml:4,9`. Hacer que siga el parámetro `timezone` o documentarlo.
 - [ ] 1.5 Versiones: usar `pyproject.toml` (1.1.0) como fuente única. Actualizar o borrar `src/__init__.py` (0.1), `src/setup.py` y `src/requirements.txt` (kedro 0.18). Alinear el badge de Python del README (3.9-3.11) con el texto (3.11).
 - [ ] 1.6 Retoques de código: typo `paramteres.yml` en `species_detection/nodes.py:224`; docstring de `compute_ADI` (dice ACI) en `acoustic_indices/utils.py:82`; comentario en español en `pipeline_registry.py:36`.
 
@@ -43,7 +43,7 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
 - [ ] 2.6 **Pipelines sin documentar**:
   - Documentar `export` (`media_gbif.csv`, `deployments_gbif.csv`, `observations_gbif.csv`).
   - Documentar `filter_media` y `deployments_filter`.
-  - Añadir la lista completa de nombres válidos de `--pipeline`: `data_preparation`, `quality_control`, `graphical_soundscape`, `acoustic_indices`, `species_detection`, `detection_validation`, `export` y, según 1.2, `data_science`.
+  - Añadir la lista completa de nombres válidos de `--pipeline`: `data_preparation`, `quality_control`, `graphical_soundscape`, `acoustic_indices`, `species_detection`, `detection_validation`, `export`.
   - Documentar `pamflow_gui.py`.
   - Añadir `export/` al árbol de salidas del README.
   - Usar `pamflow run` y `kedro run` de forma coherente, y dar el comando de `kedro viz`.
@@ -56,7 +56,7 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
   - Enlaces a Kedro `1.0.0` (`overview.md:42`, `running_the_workflow.md:27`) cuando el proyecto usa 0.19.8; también `conf/README.md:25`.
 
 ## Fase 3 — Higiene del build de docs
-- [ ] 3.1 `git rm -r --cached docs/source/_build` y los `.DS_Store`. Añadirlos a `.gitignore` y quitar líneas duplicadas (`pamflow_tutorial_data`).
+- [x] 3.1 (hecho: `docs/source/_build/` en `.gitignore` y desindexado; los `.DS_Store` no estaban trackeados) `git rm -r --cached docs/source/_build` y los `.DS_Store`. Añadirlos a `.gitignore` y quitar líneas duplicadas (`pamflow_tutorial_data`).
 - [ ] 3.2 `docs/source/conf.py`:
   - Cambiar `author = "Kedro"` (líneas 31, 177, 192, 207).
   - Arreglar `sys.path.insert` (apunta a `docs/src`).
