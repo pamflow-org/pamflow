@@ -110,6 +110,7 @@ kedro run --pipeline=data_preparation
 ```bash
 kedro run --pipeline=quality_control
 ```
+This generates, in `data/output/quality_control/`: the deployment timeline (`deployment_timeline.pdf`), a map of deployment locations (`deployment_location.pdf`), a survey effort summary (`survey_effort.pdf`), an audio outliers report (`audio_outliers.pdf` and `audio_outliers.csv`, listing files whose duration or sample rate deviates from the rest of their deployment) and timelapse audio and spectrograms.
 
 #### 2.3. Detect species with AI
 ```bash
