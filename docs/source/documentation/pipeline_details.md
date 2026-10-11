@@ -59,10 +59,25 @@ Allows a quick data exploration to flag underperforming sensors and ensure data 
 | `timelapse_plot` | `flims` | Frequency limits (Hz) | `[0, 24000]` |
 | `timelapse_plot` | `db_range` | Dynamic range in decibels | `90` |
 | `timelapse_plot` | `colormap` | Colormap options: 'grey', 'viridis', 'plasma', 'inferno', 'cividis' | `'viridis'` |
-| `timelapse` | `sample_length` | Length of each sample for timelapse (in seconds) | `5` |
+| `timelapse` | `sample_length` | Length of each sample for timelapse (in seconds) | `1` |
 | `timelapse` | `sample_period` | Time interval between samples (e.g., '30min') | `'30min'` |
 | `timelapse` | `sample_date` | Specific date for timelapse (YYYY-MM-DD). If null, the date with the most data will be used. | `null` |
 </details>
+
+**Outputs**
+
+All files are written to `data/output/quality_control/`:
+
+| Output | File | Description |
+|--------|------|-------------|
+| `sensor_performance_figure@matplotlib` | `deployment_timeline.pdf` | Minutes recorded by each recorder per day. |
+| `sensor_performance_data@pandas` | `sensor_performance_data.csv` | Data behind the timeline figure. |
+| `sensor_location@matplotlib` | `deployment_location.pdf` | Map of the deployment locations. |
+| `survey_effort@matplotlib` | `survey_effort.pdf` | Summary card of the survey effort. |
+| `audio_outliers_figure@matplotlib` | `audio_outliers.pdf` | % deviation of file length and sample rate from each deployment's median. |
+| `audio_outliers_data@pandas` | `audio_outliers.csv` | List of outlier files with the variable flagged and the deployment medians. |
+| `timelapse@PartitionedAudio`<br>`timelapse_spectrograms@PartitionedImage` | `timelapse/` | One audio file (`.WAV`) and one spectrogram (`.png`) per deployment, named `<deploymentID>_timelapse_<date>`. |
+
 <br>
 
 ## 3. Species detection

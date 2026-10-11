@@ -34,7 +34,7 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
   - Corregir la semántica de `manual_annotations_file_name`: el código sustituye la palabra `species` por `Genus_species`.
   - Corregir los inputs de los nodos: `params:species_detection_parameters` completo más `params:timezone`, y `segment_length` en `create_segments_node`.
   - Listar todas las salidas: `segments.csv`, `segments/`, `manual_annotations/`, `observations_summary`, `observations_per_species`.
-- [ ] 2.4 **Valores y salidas de QC**:
+- [x] 2.4 (hecho) **Valores y salidas de QC**:
   - `timelapse.sample_length` es 1, no 5 (`pipeline_details.md:62`, `beginner_tutorial/quality_control.md:39`).
   - `deployment_location.png` pasa a `.pdf`.
   - Nombrar `survey_effort.pdf`, `audio_outliers.pdf/csv` y `sensor_performance_data.csv`.
