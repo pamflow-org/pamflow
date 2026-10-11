@@ -10,7 +10,7 @@ pamflow run --pipeline species_detection
 
 ### Detection outputs
 
-The pipeline produces two summary figures and two output files.
+The pipeline produces two summary figures, two observation files, the audio segments and the annotation files for expert review (described in the following sections).
 
 The figures are stored in `data/output/species_detection/`:
 
@@ -42,7 +42,7 @@ Detection confidence scores are low by default — **pamflow** reports all detec
 
 ### Audio segments
 
-To validate the detections, audio segments for each target species are saved in `data/output/species_detection/segments/`, with one subfolder per species. These clips can be shared with bird experts for manual review and confirmation. The number of segments selected per species can be configured in `conf/local/parameters.yml`.
+To validate the detections, audio segments for each target species are saved in `data/output/species_detection/segments/`, with one subfolder per species. These clips can be shared with bird experts for manual review and confirmation. The selected segments are also listed in `segments.csv`. The number of segments per species (`segment_size`) and the length of each clip (`segment_length`, 3 seconds by default) are set in `species_detection_parameters`; defaults are in `conf/base/parameters/species_detection.yml` and can be overridden in `conf/local/parameters.yml`.
 
 Each clip is named following this structure:
 
@@ -52,7 +52,7 @@ This makes it easy to identify the source recording, the time of the vocalizatio
 
 ### Data annotation
 
-To make expert review straightforward, one Excel file per target species is generated in `data/output/species_detection/manual_annotations/`. Each file lists the selected audio segments for that species. Once the audio clips have been reviewed, the expert only needs to fill in two columns:
+To make expert review straightforward, one Excel file per target species is generated in `data/output/species_detection/manual_annotations/`. Files are named after the species, e.g. `Amazona_farinosa_manual_annotations.xlsx` (see `manual_annotations_file_name` in [Pipeline details](../documentation/pipeline_details.md#3-species-detection)). Each file lists the selected audio segments for that species. Once the audio clips have been reviewed, the expert only needs to fill in two columns:
 
 - `positive` — type `true` if the detection is correct, `false` if not
 - `detectedSpecies` — if the detection is incorrect, type the actual species name (if known)

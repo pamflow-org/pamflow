@@ -29,7 +29,7 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
   - Corregir `recorderID` a `deploymentID` (el código usa `data_preparation/nodes.py:121`).
   - El nombre del archivo es configurable.
   - Valorar añadir una plantilla xlsx.
-- [ ] 2.3 **Species detection** (`documentation/pipeline_details.md:79-95`, `beginner_tutorial/species_detection.md`, `conf/base/parameters/species_detection.yml:6`):
+- [x] 2.3 (hecho) **Species detection** (`documentation/pipeline_details.md:79-95`, `beginner_tutorial/species_detection.md`, `conf/base/parameters/species_detection.yml:6`):
   - Documentar `segment_length` (3.0), `classifier_model_path` y `classifier_labels_path`.
   - Corregir la semántica de `manual_annotations_file_name`: el código sustituye la palabra `species` por `Genus_species`.
   - Corregir los inputs de los nodos: `params:species_detection_parameters` completo más `params:timezone`, y `segment_length` en `create_segments_node`.

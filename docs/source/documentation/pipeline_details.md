@@ -76,12 +76,12 @@ pamflow run --pipeline species_detection
 **Nodes**
 | Node name | Description | Inputs | Outputs |
 |------------|--------------|---------|----------|
-| `species_detection_node` | Runs the species detection algorithm in parallel using media and deployment data to generate unfiltered species observations. | `media@pamDP`<br>`deployments@pamDP`<br>`params:species_detection_parameters.n_jobs` | `unfiltered_observations@pamDP` |
+| `species_detection_node` | Runs the species detection algorithm in parallel using media and deployment data to generate unfiltered species observations. | `media_work@pamDP`<br>`deployments@pamDP`<br>`params:species_detection_parameters` (uses `n_jobs`, `classifier_model_path` and `classifier_labels_path`)<br>`params:timezone` | `unfiltered_observations@pamDP` |
 | `filter_observations_node` | Filters unfiltered observations based on target species, minimum number of observations, and segment size parameters. | `unfiltered_observations@pamDP`<br>`target_species@pandas`<br>`params:species_detection_parameters.minimum_observations`<br>`params:species_detection_parameters.segment_size` | `observations@pamDP` |
-| `create_segments_node` | Creates time or frequency segments from observations and associated media based on segment size. | `observations@pamDP`<br>`media@pamDP`<br>`params:species_detection_parameters.segment_size` | `segments@pandas` |
+| `create_segments_node` | Selects up to `segment_size` observations per species and defines the audio segment of each one. | `observations@pamDP`<br>`media_work@pamDP`<br>`params:species_detection_parameters.segment_size`<br>`params:species_detection_parameters.segment_length` | `segments@pandas` |
 | `create_segments_folder_node` | Generates an audio folder dataset from created segments for downstream processing or manual validation. | `segments@pandas`<br>`params:species_detection_parameters.n_jobs`<br>`params:species_detection_parameters.segment_size` | `segments_audio_folder@AudioFolderDataset` |
 | `create_manual_annotation_formats_node` | Produces manual annotation files from segment data for human validation or annotation tools. | `segments@pandas`<br>`params:species_detection_parameters.manual_annotations_file_name` | `manual_annotations@PartitionedDataset` |
-| `plot_observations_summary_node` | Creates summary plots visualizing total and temporal patterns of species observations relative to media data. | `observations@pamDP`<br>`media@pamDP` | `observations_summary@matplotlib` |
+| `plot_observations_summary_node` | Creates summary plots visualizing total and temporal patterns of species observations relative to media data. | `observations@pamDP`<br>`media_work@pamDP` | `observations_summary@matplotlib` |
 | `plot_observations_per_species_node` | Plots the number or distribution of observations per species to visualize detection results. | `observations@pamDP` | `observations_per_species@matplotlib` |
 
 <details>
@@ -92,9 +92,27 @@ pamflow run --pipeline species_detection
 | `species_detection_parameters` | `n_jobs` | Number of cores used in parallelization. `-1` forces the use of all available cores. | `-1` |
 | `species_detection_parameters` | `minimum_observations` | Minimum number of detections required for a species to be included in the observations format. | `20` |
 | `species_detection_parameters` | `segment_size` | Maximum number of sample segments generated per species (fewer are used if a species has fewer available observations). | `20` |
-| `species_detection_parameters` | `manual_annotations_file_name` | Prefix for manual annotation files, formatted as `{manual_annotations_file_name}_{species}`. | `'species_manual_annotations'` |
+| `species_detection_parameters` | `manual_annotations_file_name` | File name template for the manual annotation files, one per species. The word `species` in the template is replaced by the species name (`Genus_species`). With the default, the file for *Amazona farinosa* is `Amazona_farinosa_manual_annotations.xlsx`. | `'species_manual_annotations'` |
+| `species_detection_parameters` | `segment_length` | Length in seconds of each audio segment extracted for manual validation. | `3.0` |
+| `species_detection_parameters` | `classifier_model_path` | Path to a custom BirdNET classifier model file. `null` uses the default BirdNET model. See [Custom classifier](../advanced_tutorials/custom_classifier.md). | `null` |
+| `species_detection_parameters` | `classifier_labels_path` | Path to the labels file of the custom classifier. Each line must follow the format `Genus species_common name`, with exactly one `_`. `null` uses the default BirdNET labels. | `null` |
 
 </details>
+
+**Outputs**
+
+All files are written to `data/output/species_detection/`:
+
+| Output | File | Description |
+|--------|------|-------------|
+| `unfiltered_observations@pamDP` | `unfiltered_observations.csv` | All detections of the model, regardless of species. |
+| `observations@pamDP` | `observations.csv` | Detections filtered by `target_species` and `minimum_observations`. |
+| `segments@pandas` | `segments.csv` | Selected segments (up to `segment_size` per species) with the path of each audio clip. |
+| `segments_audio_folder@AudioFolderDataset` | `segments/` | Audio clips (`.WAV`), one subfolder per species. |
+| `manual_annotations@PartitionedDataset` | `manual_annotations/` | One Excel file per species to be filled by an expert. |
+| `observations_summary@matplotlib` | `observations_summary.pdf` | Summary figure of the observations. |
+| `observations_per_species@matplotlib` | `observations_per_species.pdf` | Number of detections per species. |
+
 <br>
 
 
