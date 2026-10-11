@@ -4,9 +4,9 @@
 individual indices, change their parameters, or add an entirely new index. Two files
 are involved:
 
-* **Configuration** — [`conf/base/parameters/acoustic_indices.yml`](https://github.com/) selects
+* **Configuration** — [`conf/base/parameters/acoustic_indices.yml`](https://github.com/pamflow-org/pamflow/blob/main/conf/base/parameters/acoustic_indices.yml) selects
   which indices run and with which parameters.
-* **Implementation** — [`src/pamflow/pipelines/acoustic_indices/utils.py`](https://github.com/) contains
+* **Implementation** — [`src/pamflow/pipelines/acoustic_indices/utils.py`](https://github.com/pamflow-org/pamflow/blob/main/src/pamflow/pipelines/acoustic_indices/utils.py) contains
   the `AcousticIndices` class, where each index is implemented as one method.
 
 See [Pipeline details — Acoustic indices](../documentation/pipeline_details.md) for the full

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/pamflow/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="400"/>
+  <img src="https://github.com/pamflow-org/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="400"/>
 </div>
 
 ![Python version](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue.svg)

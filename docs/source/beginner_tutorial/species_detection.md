@@ -23,9 +23,9 @@ The output files are also stored in `data/output/species_detection/`:
 
 
 - `unfiltered_observations.csv` — all detections regardless of species
-- `observations.csv` — detections filtered to your `target_species` list only (see [Input data](./input_data.md#target-species))
+- `observations.csv` — detections filtered to your `target_species` list only (see [Input data](./input_data.md#4-target-species-list))
 
-Each row represents one detection, with the audio file name, timestamp, species scientific name, and the model's confidence score. You can learn more about the file format in the [Data Exchange Formats](../data_standardization/data_exchange_format.md#Observations) section.
+Each row represents one detection, with the audio file name, timestamp, species scientific name, and the model's confidence score. You can learn more about the file format in the [Data Exchange Formats](../data_standardization/data_exchange_format.md#observations) section.
 
 | observationID | deploymentID | mediaID                        | scientificName       | eventStart | eventEnd | classifiedBy  | classificationProbability | ... |
 |---------------|--------------|--------------------------------|----------------------|------------|----------|---------------|---------------------------|-----|

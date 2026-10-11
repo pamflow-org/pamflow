@@ -24,5 +24,5 @@ pamflow run --nodes <node_name>
 
 To see the available nodes and pipelines, consult the workflow visualization and pipeline documentation.
 
-For a complete list of execution options, see the [Kedro command reference](https://docs.kedro.org/en/1.0.0/getting-started/commands_reference/#kedro-run)
+For a complete list of execution options, see the [Kedro command reference](https://docs.kedro.org/en/0.19.8/development/commands_reference.html#run-the-project)
 
