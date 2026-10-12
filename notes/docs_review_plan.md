@@ -56,12 +56,12 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
 
 ## Fase 3 — Higiene del build de docs
 - [x] 3.1 (hecho: `docs/source/_build/` en `.gitignore` y desindexado; los `.DS_Store` no estaban trackeados) `git rm -r --cached docs/source/_build` y los `.DS_Store`. Añadirlos a `.gitignore` y quitar líneas duplicadas (`pamflow_tutorial_data`).
-- [ ] 3.2 `docs/source/conf.py`:
+- [x] 3.2 (hecho; sys.path eliminado porque no se usa autodoc, versión leída de pyproject.toml) `docs/source/conf.py`:
   - Cambiar `author = "Kedro"` (líneas 31, 177, 192, 207).
   - Arreglar `sys.path.insert` (apunta a `docs/src`).
   - Quitar `html_static_path` y `mathjax` duplicados (líneas 115/128 y 52/54).
   - Leer la versión desde `pyproject.toml`.
-- [ ] 3.3 `docs_requirements.txt`: añadir `ipykernel` (lo necesita `nbsphinx`).
+- [x] 3.3 (hecho) `docs_requirements.txt`: añadir `ipykernel` (lo necesita `nbsphinx`).
 - [ ] 3.4 `conf/README.md`: rellenar la sección vacía "Instructions" o sustituir el README genérico de Kedro.
 - [ ] 3.5 CI: `sphinx-build -W` y `linkcheck`.
 
