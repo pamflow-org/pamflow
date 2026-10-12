@@ -5,7 +5,7 @@ To use **pamflow**, follow these steps — if you are already familiar with Pyth
 ## 1. Install miniconda
 To run **pamflow**, your computer needs Python and other required tools installed. We'll use Miniconda to install Python and related packages — it's a lightweight tool that keeps each project's environment separate and avoids conflicts.
 
-Follow the official Miniconda installation guide for your operating system: [Installing Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install/overview).
+Follow the official Miniconda installation guide for your operating system: [Installing Miniconda](https://www.anaconda.com/docs/getting-started/concepts/anaconda-or-miniconda).
 
 ## 2. Install Git
 
@@ -48,7 +48,7 @@ Finally, install the required dependencies:
 pip install .
 ```
 
-**pamflow** relies on [BirdNET](https://github.com/kahst/BirdNET-Analyzer) for audio processing and species detection, which require **FFmpeg** to handle audio files. FFmpeg is not a Python package and must be installed separately:
+**pamflow** relies on [BirdNET](https://github.com/birdnet-team/BirdNET-Analyzer) for audio processing and species detection, which require **FFmpeg** to handle audio files. FFmpeg is not a Python package and must be installed separately:
 
 Install it via conda (recommended, works on all platforms):
 ```sh
