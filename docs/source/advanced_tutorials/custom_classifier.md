@@ -8,7 +8,6 @@ Before using a custom classifier, ensure you have:
 
 * A BirdNET-trained `.tflite` classifier model.
 * A corresponding labels file (`.txt`).
-* A pamflow installation that includes support for custom BirdNET classifiers.
 
 ---
 
@@ -20,8 +19,7 @@ Example:
 
 ```text
 data/
-└── 
-    input/
+└── input/
     └── custom_classifier/
         ├── frogs.tflite
         └── frogs_labels.txt
@@ -31,7 +29,7 @@ data/
 
 ## 2. Configure the Classifier Parameters
 
-Open your species detection parameters file and specify the paths to the model and labels.
+Open `conf/local/parameters.yml` (or `conf/base/parameters/species_detection.yml`) and specify the paths to the model and labels.
 
 ```yaml
 species_detection_parameters:
@@ -100,13 +98,11 @@ When using the default BirdNET classifier, pamflow uses deployment latitude and 
 When a custom classifier is supplied:
 
 ```yaml
-classifier_model_path: data/custom_classifier/frogs.tflite
-classifier_labels_path: data/custom_classifier/frogs_labels.txt
+classifier_model_path: data/input/custom_classifier/frogs.tflite
+classifier_labels_path: data/input/custom_classifier/frogs_labels.txt
 ```
 
-location-based filtering is automatically disabled.
-
-This is the expected behavior because custom classifiers are assumed to have been trained for a specific set of classes determined by the user.
+the location-based species list is not applied (the underlying `birdnetlib` package only builds it for the default BirdNET model, so latitude and longitude are ignored). Custom classifiers are assumed to have been trained for a specific set of classes determined by the user.
 
 ---
 
@@ -154,7 +150,7 @@ If predictions appear incorrect or classes are missing, verify that:
 Check that:
 
 * The classifier was trained for the target taxa.
-* The confidence threshold is not set too high.
+* The model produces scores above 0.1, the fixed minimum confidence used by **pamflow**.
 * The audio format is supported and can be processed by BirdNET.
 
 
