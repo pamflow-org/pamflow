@@ -63,7 +63,7 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
   - Leer la versión desde `pyproject.toml`.
 - [x] 3.3 (hecho) `docs_requirements.txt`: añadir `ipykernel` (lo necesita `nbsphinx`).
 - [x] 3.4 (hecho) `conf/README.md`: rellenar la sección vacía "Instructions" o sustituir el README genérico de Kedro.
-- [ ] 3.5 CI: `sphinx-build -W` y `linkcheck`.
+- [x] 3.5 (hecho: .github/workflows/docs.yml) CI: `sphinx-build -W` y `linkcheck`.
 
 ## Fase 4 — Correcciones menores
 - [ ] 4.1 Erratas: ownload, clonned, paramters, "Trouble Shooting", estandardization, Additonal, "taxa ." y "standardize" por "standardizes" (`index.md:12`). Unificar `graphical_soundscape` (`detection_validation.md:40` dice `graphical_soundscapes`).
