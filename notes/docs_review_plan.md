@@ -39,7 +39,7 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
   - `deployment_location.png` pasa a `.pdf`.
   - Nombrar `survey_effort.pdf`, `audio_outliers.pdf/csv` y `sensor_performance_data.csv`.
   - Añadir una subsección sobre audio outliers al tutorial de QC y al README.
-- [ ] 2.5 **Inputs de nodos** (`pipeline_details.md:79,81,84,113,163`): `media@pamDP` pasa a `media_work@pamDP`. En data_preparation añadir `params:timezone` (líneas 18 y 20) y corregir "requires no parameters" (línea 13).
+- [x] 2.5 (hecho; species_detection ya estaba en 2.3, QC sigue leyendo media@pamDP) **Inputs de nodos** (`pipeline_details.md:79,81,84,113,163`): `media@pamDP` pasa a `media_work@pamDP`. En data_preparation añadir `params:timezone` (líneas 18 y 20) y corregir "requires no parameters" (línea 13).
 - [ ] 2.6 **Pipelines sin documentar**:
   - Documentar `export` (`media_gbif.csv`, `deployments_gbif.csv`, `observations_gbif.csv`).
   - Documentar `filter_media` y `deployments_filter`.

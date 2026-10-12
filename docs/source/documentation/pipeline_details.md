@@ -1,5 +1,9 @@
 # Pipeline details
 
+```{note}
+Data preparation writes `media@pamDP`, the metadata of all the recordings. The `filter_media` pipeline then produces `media_work@pamDP`, the subset of recordings that will be analyzed. Graphical soundscape, acoustic indices and species detection read `media_work@pamDP`, while quality control reads `media@pamDP`. When you run `pamflow run` or any of these three pipelines by name, `filter_media` runs first automatically.
+```
+
 ## 1. Data preparation
 
 ```bash
@@ -10,14 +14,14 @@ pamflow run --pipeline data_preparation
 Reads field and audio data to standardize metadata using the pamDP standard. It outputs media and deployment formats, ensuring coherence between field sheets and collected audio files for later analysis and exchange.
 
 **Parameters**<br>
-This pipeline requires no parameters. Adjustments to the field deployment sheet structure can be set using the **Catalog** entry `field_deployments_sheet@pandas`.
+This pipeline uses two project-level parameters, normally set in `conf/local/parameters.yml`: `audio_root_directory` (folder with one subfolder of recordings per deployment) and `timezone` (IANA name, e.g. `America/Bogota`, used to localize the timestamps of the recordings and of the deployments). The location of the field deployment sheet is set in the **Catalog** entry `field_deployments_sheet@pandas`.
 
 **Nodes**
 | Node name | Description | Inputs | Outputs |
 |------------|--------------|---------|----------|
-| `get_media_file_node` | Retrieves media files from the specified audio root directory and links them with field deployment sheet data. | `params:audio_root_directory`<br>`field_deployments_sheet@pandas` | `media@pamDP` |
+| `get_media_file_node` | Retrieves media files from the specified audio root directory and links them with field deployment sheet data. | `params:audio_root_directory`<br>`field_deployments_sheet@pandas`<br>`params:timezone` | `media@pamDP` |
 | `get_media_summary_node` | Generates a summary of the media files (e.g., counts, durations, metadata). | `media@pamDP` | `media_summary@pandas` |
-| `field_deployments_sheet_to_deployments_node` | Converts the field deployments sheet and media summary into structured deployment data. | `field_deployments_sheet@pandas`<br>`media_summary@pandas` | `deployments@pamDP` |
+| `field_deployments_sheet_to_deployments_node` | Converts the field deployments sheet and media summary into structured deployment data. | `field_deployments_sheet@pandas`<br>`media_summary@pandas`<br>`params:timezone` | `deployments@pamDP` |
 
 ## 2. Quality control
 
@@ -143,7 +147,7 @@ Processes audio files to calculate various acoustic indices. These indices provi
 **Nodes**
 | Node name | Description | Inputs | Outputs |
 |------------|--------------|---------|----------|
-| `compute_indices_node` | Computes acoustic indices from media data based on provided parameters, generating partitioned datasets for further ecological or acoustic analysis. | `media@pamDP`<br>`params:acoustic_indices` | `acoustic_indices@PartitionedDataset` |
+| `compute_indices_node` | Computes acoustic indices from media data based on provided parameters, generating partitioned datasets for further ecological or acoustic analysis. | `media_work@pamDP`<br>`params:acoustic_indices` | `acoustic_indices@PartitionedDataset` |
 
 <details>
 <summary>Parameters</summary>
@@ -193,7 +197,7 @@ Computes a representation of the most prominent spectro-temporal dynamics over a
 **Nodes**
 | Node name | Description | Inputs | Outputs |
 |------------|--------------|---------|----------|
-| `graphical_soundscape_node` | Generates graphical representations of the soundscape using media data and visualization parameters, producing both data outputs and image plots for analysis. | `media@pamDP`<br>`params:graphical_soundscape_parameters` | `graphical_soundscape@PartitionedDataset`<br>`graph_plot@PartitionedImage` |
+| `graphical_soundscape_node` | Generates graphical representations of the soundscape using media data and visualization parameters, producing both data outputs and image plots for analysis. | `media_work@pamDP`<br>`params:graphical_soundscape_parameters` | `graphical_soundscape@PartitionedDataset`<br>`graph_plot@PartitionedImage` |
 
 <details>
 <summary>Parameters</summary>
