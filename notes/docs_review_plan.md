@@ -73,8 +73,8 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
 - [x] 4.5 `data_exchange_format.md`: nota de que `deploymentTags` y similares son del estándar pamDP y no los genera el pipeline; ejemplo de modelo `BirdNET v2.3` frente a `Birdnet 2.4`.
 - [x] 4.6 `beginner_tutorial/species_detection.md`: columnas `classifiedBy` y `classificationTimestamp`, valores aceptados en la validación, y el umbral "0.1" (el código no fija umbral).
 - [x] 4.7 `custom_classifier.md`: rutas inconsistentes (`data/custom_classifier/` frente a `data/input/custom_classifier/`), el "support for custom classifiers" inexistente, y la afirmación sin verificar sobre el filtro de localización.
-- [ ] 4.8 `custom_pipeline.md`: `[your_project]` pasa a `pamflow`; `"__default__": my_pipeline` reemplaza el default (usar suma de pipelines); frase "command we discussed earlier".
-- [ ] 4.9 `multiseason_config.md`: texto residual (línea 47), "### 3." duplicado (46 y 51), mezcla `wet_2023`/`wet_2024` (17, 59, 83, 119) y árbol de `conf/base` incompleto.
+- [x] 4.8 `custom_pipeline.md`: `[your_project]` pasa a `pamflow`; `"__default__": my_pipeline` reemplaza el default (usar suma de pipelines); frase "command we discussed earlier".
+- [x] 4.9 `multiseason_config.md`: texto residual (línea 47), "### 3." duplicado (46 y 51), mezcla `wet_2023`/`wet_2024` (17, 59, 83, 119) y árbol de `conf/base` incompleto.
 - [ ] 4.10 `contributing_guidelines.md`: prefijos de commit (BUILD/DOC/FEAT/FIX/TEST) frente al historial real (FEATURE/DOCS), y flake8 frente a ruff.
 - [ ] 4.11 Terminología: sensor/recorder/ARU/deployment, BirdNET/Birdnet, timelapse/time-lapse. Elegir un término y aplicarlo.
 - [ ] 4.12 Texto alternativo en imágenes (`quality_control.md:17,27,34,43-44`), líneas en blanco dentro de los toctree (`beginner_tutorial/index.md:29-31`, `advanced_tutorials/index.md:13-17`), y salidas de graphical soundscape (`.csv` y `.png` en la misma carpeta).
