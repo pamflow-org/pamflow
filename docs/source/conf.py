@@ -18,17 +18,22 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import re
-import os
-import sys
+from pathlib import Path
 
 from kedro.framework.cli.utils import find_stylesheets
-sys.path.insert(0, os.path.abspath("../src"))
-from pamflow import __version__ as release
 
 # -- Project information -----------------------------------------------------
 
 project = "pamflow"
-author = "Kedro"
+author = "pamflow developers"
+copyright = "2025, pamflow developers"
+
+# The version is read from pyproject.toml, the single source of truth, so the
+# documentation can be built without installing the package.
+_pyproject = Path(__file__).resolve().parents[2] / "pyproject.toml"
+release = re.search(
+    r'^version\s*=\s*"([^"]+)"', _pyproject.read_text(encoding="utf-8"), re.M
+).group(1)
 
 # The short X.Y version.
 version = re.match(r"^([0-9]+\.[0-9]+).*", release).group(1)
@@ -49,7 +54,6 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
-    "sphinx.ext.mathjax",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
@@ -114,7 +118,6 @@ pygments_style = "sphinx"
 #
 
 html_theme = "sphinx_rtd_theme"
-html_static_path = ['_static']
 html_css_files = ['custom.css']
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -176,7 +179,7 @@ latex_documents = [
         master_doc,
         "pamflow.tex",
         "pamflow Documentation",
-        "Kedro",
+        author,
         "manual",
     )
 ]
