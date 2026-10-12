@@ -62,7 +62,7 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
   - Quitar `html_static_path` y `mathjax` duplicados (líneas 115/128 y 52/54).
   - Leer la versión desde `pyproject.toml`.
 - [x] 3.3 (hecho) `docs_requirements.txt`: añadir `ipykernel` (lo necesita `nbsphinx`).
-- [ ] 3.4 `conf/README.md`: rellenar la sección vacía "Instructions" o sustituir el README genérico de Kedro.
+- [x] 3.4 (hecho) `conf/README.md`: rellenar la sección vacía "Instructions" o sustituir el README genérico de Kedro.
 - [ ] 3.5 CI: `sphinx-build -W` y `linkcheck`.
 
 ## Fase 4 — Correcciones menores
