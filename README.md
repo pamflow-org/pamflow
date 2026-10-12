@@ -95,42 +95,48 @@ target_species@pandas:
 
 ### 2. Run Workflows
 
-The workflow can be executed entirely with the command:
+The workflow can be executed entirely with the command (`pamflow run` and `kedro run` are equivalent):
 ```bash
-kedro run
+pamflow run
 ```
 However, for the first execution, it is recommended to run one pipeline at a time for better control.
 
 #### 2.1. Prepare data
 ```bash
-kedro run --pipeline=data_preparation
+pamflow run --pipeline=data_preparation
 ```
 
 #### 2.2. Revise quality of deployments and recordings
 ```bash
-kedro run --pipeline=quality_control
+pamflow run --pipeline=quality_control
 ```
 This generates, in `data/output/quality_control/`: the deployment timeline (`deployment_timeline.pdf`), a map of deployment locations (`deployment_location.pdf`), a survey effort summary (`survey_effort.pdf`), an audio outliers report (`audio_outliers.pdf` and `audio_outliers.csv`, listing files whose duration or sample rate deviates from the rest of their deployment) and timelapse audio and spectrograms.
 
 #### 2.3. Detect species with AI
 ```bash
-kedro run --pipeline=species_detection
+pamflow run --pipeline=species_detection
 ```
 
 #### 2.4. Compute Acoustic Indices
 ```bash
-kedro run --pipeline=acoustic_indices
+pamflow run --pipeline=acoustic_indices
 ```
 
 #### 2.5. Generate Graphical Soundscapes
 ```bash
-kedro run --pipeline=graphical_soundscape
+pamflow run --pipeline=graphical_soundscape
 ```
 
 #### 2.6. Validate detections
-This step requires that the `manual_annotations` Excel files generated in step 2.3 have already been reviewed, with their `positive` column filled in by an expert. It is not part of the default `kedro run` and must be run explicitly:
+This step requires that the `manual_annotations` Excel files generated in step 2.3 have already been reviewed, with their `positive` column filled in by an expert. It is not part of the default `pamflow run` and must be run explicitly:
 ```bash
-kedro run --pipeline=detection_validation
+pamflow run --pipeline=detection_validation
+```
+
+#### 2.7. Export to GBIF format
+Converts the media, deployments and observations to the camtrapDP/GBIF format. It requires `data_preparation` and `species_detection` to have been run, and is not part of the default `pamflow run`:
+```bash
+pamflow run --pipeline=export
 ```
 
 ### Access output data
@@ -143,6 +149,7 @@ data/
     ├── acoustic_indices/ 
     ├── data_preparation/ 
     ├── detection_validation/
+    ├── export/
     ├── graphical_soundscape/ 
     ├── quality_control/
     └── species_detection/          
