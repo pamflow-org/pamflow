@@ -4,7 +4,7 @@ Adding a new pipeline in pamflow is simple by using the Kedro CLI tools. Here is
 
 ## 1. Generate the Pipeline
 
-Open your terminal in the root of your Kedro project and run the following command:
+Open your terminal in the root of the **pamflow** repository and run the following command:
 
 ```bash
 kedro pipeline create [pipeline_name]
@@ -17,7 +17,8 @@ kedro pipeline create [pipeline_name]
 
 * Creates a folder in `src/pamflow/pipelines/[pipeline_name]`.
 * Generates template files: `nodes.py` (for your logic) and `pipeline.py` (for the structure).
-* Creates a configuration file in `conf/base/[pipeline_name].yml`.
+* Creates a parameters file in `conf/base/parameters_[pipeline_name].yml`.
+* Creates a test template in `src/tests/pipelines/[pipeline_name]/`.
 
 ---
 
@@ -61,7 +62,7 @@ Open `src/pamflow/pipeline_registry.py` and update it in three places:
 
 **1. Add the import at the top of the file:**
 ```python
-from [your_project].pipelines.[pipeline_name] import pipeline as my_pipeline
+from pamflow.pipelines.[pipeline_name] import pipeline as my_pipeline
 ```
 
 **2. Instantiate the pipeline inside `register_pipelines()`:**
@@ -74,9 +75,14 @@ def register_pipelines() -> Dict[str, Pipeline]:
 **3. Add the pipeline to the return dictionary:**
 ```python
     return {
-        "__default__": my_pipeline_instance,
+        "__default__": pamflow_pipeline,
+        ...
         "[pipeline_name]": my_pipeline_instance,
     }
+```
+
+```{note}
+Keep `"__default__"` pointing to `pamflow_pipeline`. If you replace it with your pipeline, `pamflow run` will no longer run the standard workflow. To run your pipeline together with the standard one, add it to the default instead: `"__default__": pamflow_pipeline + my_pipeline_instance`.
 ```
 
 
@@ -101,7 +107,7 @@ pamflow run --pipeline [pipeline_name]
 
 ## Troubleshooting Tip: Check your Nodes
 
-If the run fails, you can use the command we discussed earlier to see exactly how Kedro is interpreting your new pipeline's structure:
+If the run fails, you can use the following command to see exactly how Kedro is interpreting your new pipeline's structure:
 
 ```bash
 kedro pipeline describe [pipeline_name]
