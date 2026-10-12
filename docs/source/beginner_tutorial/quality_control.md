@@ -12,11 +12,11 @@ pamflow run --pipeline quality_control
 
 ## Check deployment timeline
 
-Recall that the {{number_of_sensors}} recorders were programmed to record one minute every 30 minutes for {{number_of_days}} days, so each recorder was expected to collect 48 files per day. You can visually check this in `data/output/quality_control/deployment_timeline.pdf`:
+Recall that the {{number_of_sensors}} recorders were programmed to record 30 seconds every 30 minutes for {{number_of_days}} days, so each recorder was expected to collect 48 files per day. You can visually check this in `data/output/quality_control/deployment_timeline.pdf`:
 
 ![](../../meta/images/sensor_performance.png)
 
-Each dot shows the total minutes recorded by one recorder on one day. Ideally, all dots should be the same size, representing 48 minutes. Larger values may indicate accidental activation before installation or incorrect programming; smaller values may indicate battery failure or malfunction. Unusual values require further examination. The data behind the figure is saved in `data/output/quality_control/sensor_performance_data.csv`.
+Each dot shows the number of recordings collected by one recorder on one day. Ideally, all dots should be the same size, representing 48 recordings. Larger values may indicate accidental activation before installation or incorrect programming; smaller values may indicate battery failure or malfunction. Unusual values require further examination. The data behind the figure is saved in `data/output/quality_control/sensor_performance_data.csv`.
 
 In this figure, we can identify that deployment {{broken_sensor_1}} shows inconsistencies. In further steps you may want to discard its recordings to ensure consistency across recorders.
 
