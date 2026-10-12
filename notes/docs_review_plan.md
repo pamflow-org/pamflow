@@ -68,9 +68,9 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
 ## Fase 4 — Correcciones menores
 - [ ] 4.1 Erratas: ownload, clonned, paramters, "Trouble Shooting", estandardization, Additonal, "taxa ." y "standardize" por "standardizes" (`index.md:12`). Unificar `graphical_soundscape` (`detection_validation.md:40` dice `graphical_soundscapes`).
 - [ ] 4.2 README: sección "3.3" duplicada (líneas 56 y 59), mención a la versión anonimizada (línea 12), y aclarar que `conf/local/*.yml` ya existen.
-- [ ] 4.3 `.WAV` frente a `.wav` (el código acepta ambos), `audio/wav` frente al `audio/WAV` fijo, y `captureMethod` fijo en `activityDetection`.
-- [ ] 4.4 Duración de grabación: `input_data.md:14` (30 s cada 30 min) frente a `quality_control.md:15,19` (1 min).
-- [ ] 4.5 `data_exchange_format.md`: nota de que `deploymentTags` y similares son del estándar pamDP y no los genera el pipeline; ejemplo de modelo `BirdNET v2.3` frente a `Birdnet 2.4`.
+- [x] 4.3 `.WAV` frente a `.wav` (el código acepta ambos), `audio/wav` frente al `audio/WAV` fijo, y `captureMethod` fijo en `activityDetection`. Documentado con una nota. **Pendiente (decidido no alinear aún):** el enum de `captureMethod` en `data_exchange_format.md` (`recordingSchedule, continuous, activityDetection`) difiere del validado en `media.py:88` (`activityDetection, timeLapse`), y `fileMediatype` fijo `audio/WAV` (`data_preparation/nodes.py:151`) frente al valor IANA `audio/wav`.
+- [x] 4.4 Duración de grabación: `input_data.md:14` (30 s cada 30 min) frente a `quality_control.md:15,19` (1 min).
+- [x] 4.5 `data_exchange_format.md`: nota de que `deploymentTags` y similares son del estándar pamDP y no los genera el pipeline; ejemplo de modelo `BirdNET v2.3` frente a `Birdnet 2.4`.
 - [ ] 4.6 `beginner_tutorial/species_detection.md`: columnas `classifiedBy` y `classificationTimestamp`, valores aceptados en la validación, y el umbral "0.1" (el código no fija umbral).
 - [ ] 4.7 `custom_classifier.md`: rutas inconsistentes (`data/custom_classifier/` frente a `data/input/custom_classifier/`), el "support for custom classifiers" inexistente, y la afirmación sin verificar sobre el filtro de localización.
 - [ ] 4.8 `custom_pipeline.md`: `[your_project]` pasa a `pamflow`; `"__default__": my_pipeline` reemplaza el default (usar suma de pipelines); frase "command we discussed earlier".
