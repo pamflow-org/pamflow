@@ -38,7 +38,8 @@ data_standardization/data_exchange_format.md
 :maxdepth: 1
 :caption: Getting Involved
 
-getting_involved/index.md
+getting_involved/contributing_guidelines.md
+getting_involved/contributors.md
 ```
 
 ## About
