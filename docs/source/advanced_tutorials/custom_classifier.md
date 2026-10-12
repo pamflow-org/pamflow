@@ -1,6 +1,6 @@
 # Using a Custom BirdNET-Trained Classifier
 
-**pamflow**  supports the use of custom classifiers trained with BirdNET-Analyzer. This allows users to run species detection using their own `.tflite` model and associated labels file instead of the default BirdNET global classifier, expanding species detection's scope to different  taxa .
+**pamflow**  supports the use of custom classifiers trained with BirdNET-Analyzer. This allows users to run species detection using their own `.tflite` model and associated labels file instead of the default BirdNET global classifier, expanding species detection's scope to different taxa.
 
 ## Prerequisites
 

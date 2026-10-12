@@ -29,16 +29,15 @@ Next, install the required dependencies
 pip install .
 ```
 
-> **Trouble Shooting**
-> Some users might need to install
-> ffmpeg. For full instructions
->  visit [ffmpeg page](https://www.ffmpeg.org/about.html).
+> **Troubleshooting**
+> Some users might need to install ffmpeg. For full instructions, visit the [ffmpeg page](https://www.ffmpeg.org/about.html).
+
 ### 3. Organize PAM Data
 #### 3.1 Audio Data
 All audio files must be stored in a dedicated directory. Each subdirectory within this directory should have a unique identifier corresponding to the ID or name of each sensor. This structure ensures that recordings are properly associated with their respective sensors.
 
 For this data to be compatible with **pamflow** the file names of the audio files should meet the format 
-`{recorderID}_{date}_{time}.WAV`. Additionally, the initial part on files' name should correspond to the name of the parent folder. Your Audio data should look like this
+`{deploymentID}_{date}_{time}.WAV` (`.wav` is also accepted). Additionally, the initial part on files' name should correspond to the name of the parent folder. Your Audio data should look like this
 ```
 /audio_data
 ├── ARU001/
@@ -55,24 +54,24 @@ For this data to be compatible with **pamflow** the file names of the audio file
 Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `deploymentID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files. The sheet must include all the columns listed in the documentation, and `deploymentID`, start and end dates and times, `latitude` and `longitude` must have a value in every row. The file location is set in `conf/local/catalog.yml`. The full list of columns and additional requirements for data standardization are explained on the page of [Input data standards](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#field-deployment-sheet) of the documentation.
 
 #### 3.3 Target species
-For filtering out animal detections, a  custom list of species of interest can be provided to **pamflow**. It has to be a `.csv` file with a single column (`scientificName`) containing scientific names for the target species. This file is not mandatory for **pamflow** to run. If this file is not provided, **pamflow** will leave [`observations`](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#observations) file unchanged.
+For filtering out animal detections, a custom list of species of interest can be provided to **pamflow**. It has to be a `.csv` file with a single column (`scientificName`) containing scientific names for the target species. This file is not mandatory for **pamflow** to run. If this file is not provided, **pamflow** will leave [`observations`](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#observations) file unchanged.
 
-#### 3.3 Sample toy data
+#### 3.4 Sample toy data
 
-For an example of properly formated data or to have a sample dataset to try **pamflow**, download [pamflow's beginner tutorial dataset](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7).
+For an example of properly formatted data or to have a sample dataset to try **pamflow**, download [pamflow's beginner tutorial dataset](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7).
 
 ## Getting Started
 
 ### 1. Configure Local Settings
 
-Inside the folder `./conf/local/` create the files `./conf/local/parameters.yml` and `./conf/local/catalog.yml` as follows.
+The files `./conf/local/parameters.yml` and `./conf/local/catalog.yml` already exist in the repository. Edit them as follows.
 
 Edit the `./conf/local/parameters.yml` file to specify the path to your audio files:
 ```yaml
 audio_root_directory: <path to your directory with audio files>
 ```
 
-Edit the `./conf/local/parameters.yml` file to specify the timezone of your audios recordings using a valid IANA time zone in Area/City format (e.g., Europe/Berlin, America/Bogota)
+Edit the `./conf/local/parameters.yml` file to specify the timezone of your audio recordings using a valid IANA time zone in Area/City format (e.g., Europe/Berlin, America/Bogota)
 ```yaml
 timezone: <prefered timezone>
 ```

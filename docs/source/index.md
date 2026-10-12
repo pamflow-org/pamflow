@@ -9,7 +9,7 @@
 
 ## Why *pamflow*?
 
-Despite the widespread use of Passive Acoustic Monitoring (PAM), a lack of integrated software and standardized data practices has hindered the effective analysis and management of valuable acoustic data. **pamflow** unifies fragmented software tools and standardize data formats, unlocking the full potential of PAM for research and conservation.
+Despite the widespread use of Passive Acoustic Monitoring (PAM), a lack of integrated software and standardized data practices has hindered the effective analysis and management of valuable acoustic data. **pamflow** unifies fragmented software tools and standardizes data formats, unlocking the full potential of PAM for research and conservation.
 
 ```{toctree}
 :maxdepth: 1

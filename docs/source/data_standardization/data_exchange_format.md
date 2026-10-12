@@ -7,7 +7,7 @@ Standards may seem like an added layer of complexity, but they are what make dat
 Recording files must be organized as follows:
 
 - All audio should be stored in **a single main folder**.  
-- The **required** file name format is: `DEPLOYMENTID_DATE_HOUR.wav`.
+- The **required** file name format is: `DEPLOYMENTID_DATE_HOUR.wav` (the extension can be `.wav` or `.WAV`).
 
 Optional recommendation: Within the main folder, create a subfolder for each deployment, named after the corresponding deployment.
 
@@ -121,6 +121,10 @@ The `media.csv` table contains references to audio or visual recordings used for
 | **numChannels**  | Number of audio channels. | ✅ |  | `integer` | 1 |
 | **favorite**     | TRUE if the media file is considered of interest (e.g., an exemplar sound). |  |  | `boolean` | TRUE |
 | **mediaComments** | Notes or remarks about the media file (e.g., "corrupted file"). |  |  | `string` | corrupted file |
+
+```{note}
+The `data_preparation` pipeline sets `captureMethod` to `activityDetection` and `fileMediatype` to `audio/WAV` for every file, regardless of the real recording mode or file extension. Edit `media.csv` afterwards if you need other values.
+```
 
 ## Observations
 The `observations.csv` table stores classified occurrences of species or events, including metadata like behavior, vocalization details, and classification confidence. 
