@@ -1,8 +1,8 @@
-## Create a custom pipeline
+# Create a custom pipeline
 
 Adding a new pipeline in pamflow is simple by using the Kedro CLI tools. Here is the straightforward, step-by-step process:
 
-### 1. Generate the Pipeline
+## 1. Generate the Pipeline
 
 Open your terminal in the root of your Kedro project and run the following command:
 
@@ -21,7 +21,7 @@ kedro pipeline create [pipeline_name]
 
 ---
 
-### 2. Define your Logic in `nodes.py`
+## 2. Define your Logic in `nodes.py`
 
 Open `src/pamflow/pipelines/[pipeline_name]/nodes.py` and write your Python functions.
 
@@ -34,7 +34,7 @@ def my_first_node(data):
 
 ---
 
-### 3. Connect the Nodes in `pipeline.py`
+## 3. Connect the Nodes in `pipeline.py`
 
 Open `src/pamflow/pipelines/[pipeline_name]/pipeline.py`. Use the `node()` function to map your Python functions to inputs and outputs defined in your **Data Catalog**.
 
@@ -56,7 +56,7 @@ def create_pipeline(**kwargs):
 
 ---
 
-### 4. Register the Pipeline
+## 4. Register the Pipeline
 Open `src/pamflow/pipeline_registry.py` and update it in three places:
 
 **1. Add the import at the top of the file:**
@@ -82,7 +82,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
 
 ---
 
-### 5. Verify and Run
+## 5. Verify and Run
 
 To make sure Kedro sees your new pipeline, list them first:
 
@@ -99,7 +99,7 @@ pamflow run --pipeline [pipeline_name]
 
 ---
 
-### Troubleshooting Tip: Check your Nodes
+## Troubleshooting Tip: Check your Nodes
 
 If the run fails, you can use the command we discussed earlier to see exactly how Kedro is interpreting your new pipeline's structure:
 

@@ -1,15 +1,15 @@
-## The tutorial data
+# The tutorial data
 
 Before running any analysis, you need to gather the three files that **pamflow** requires. In this section you will download the tutorial data and get familiar with its structure.
 
-### 1. Download tutorial data
+## 1. Download tutorial data
 The audio recordings you'll need for this tutorial can be found [here](https://doi.org/10.5281/zenodo.16922848). 
 
 ```{note}
 This sample data is provided to show you how to use pamflow, if you plan to use these recordings for other purposes, please get in touch and make sure to give proper attribution.
 ```
 
-### 2. Audio recordings
+## 2. Audio recordings
 
 During The Guaviare Project, {{number_of_sensors}} recorders were deployed for {{number_of_days}} days, programmed to record 30 seconds every 30 minutes. If everything went as expected, each deployment collected 48 files per day, for a total of {{number_of_wav_files}} one-minute recordings.
 
@@ -44,13 +44,13 @@ Projects that use alternative naming conventions can be adapted before processin
 
 ```
 
-### 3. Field deployments sheet
+## 3. Field deployments sheet
 
 Field researchers installed the recorders and noted key information about each deployment: site coordinates, installation date and time, recorder settings, and habitat characteristics.
 
 These notes were handed to you alongside the recordings as the `field_deployments_sheet` — a `.xlsx` file with one row per recorder containing the above information.
 
-### 4. Target species list
+## 4. Target species list
 
 Even though the monitoring site hosts many bird species, the community is only interested in a few considered relevant for conservation. Along with the `audio_root_directory` and the `field_deployments_sheet`, you were given a list of these species: the `target_species` file, a `.csv` with a single column (`scientificName`) and one row per species.
 

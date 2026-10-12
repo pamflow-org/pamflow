@@ -1,4 +1,4 @@
-## Customize the acoustic indices to compute
+# Customize the acoustic indices to compute
 
 **pamflow** computes a default set of acoustic indices, but you can enable or disable
 individual indices, change their parameters, or add an entirely new index. Two files
@@ -12,7 +12,7 @@ are involved:
 See [Pipeline details — Acoustic indices](../documentation/pipeline_details.md) for the full
 parameter reference table.
 
-### 1. Enable or disable an index
+## 1. Enable or disable an index
 
 Open `conf/base/parameters/acoustic_indices.yml`. Under `indices_settings`, each key is one
 index:
@@ -59,7 +59,7 @@ Number of Peaks index from being computed — no other change is needed:
 
 To bring an index back, add its key again with the correct indentation.
 
-### 2. Change an index's parameters
+## 2. Change an index's parameters
 
 Edit the values under the index's key. For example, to compute the Acoustic Diversity Index
 (ADI) up to 20 kHz instead of the default 24 kHz, change `fmax`:
@@ -81,7 +81,7 @@ Edit the values under the index's key. For example, to compute the Acoustic Dive
 - Lines starting with `#` are comments and are ignored.
 ```
 
-### 3. Add a brand-new index (advanced)
+## 3. Add a brand-new index (advanced)
 
 The two steps above only toggle indices that pamflow already implements. Adding an index
 that doesn't exist yet requires a small code change.
