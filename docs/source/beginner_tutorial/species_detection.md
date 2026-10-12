@@ -1,6 +1,6 @@
 # Species detection
 
-In this section you will run the `species_detection` pipeline, which automatically detects and identifies species in the recordings using the [BirdNET](https://github.com/kahst/BirdNET-Analyzer) model, filters results for your target species list, and extracts audio segments containing relevant vocalizations. Additional models will be integrated in future versions of **pamflow**.
+In this section you will run the `species_detection` pipeline, which automatically detects and identifies species in the recordings using the [BirdNET](https://github.com/birdnet-team/BirdNET-Analyzer) model, filters results for your target species list, and extracts audio segments containing relevant vocalizations. Additional models will be integrated in future versions of **pamflow**.
 
 To run the pipeline:
 

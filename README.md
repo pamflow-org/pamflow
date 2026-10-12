@@ -9,8 +9,9 @@
 ## Before You Begin
 
 ### 1. Download This Repository
-On the public instance of this repository, regular github cloning is available. However, the anonymized version only allows direct ownload of the repository. Hit the `Download repository` button on the upper right corner of the page. Afterwards, change to the downloaded directory
+Clone the repository and change to its directory:
 ```bash
+git clone https://github.com/pamflow-org/pamflow.git
 cd pamflow
 ```
 
