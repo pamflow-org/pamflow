@@ -40,11 +40,10 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
   - Nombrar `survey_effort.pdf`, `audio_outliers.pdf/csv` y `sensor_performance_data.csv`.
   - Añadir una subsección sobre audio outliers al tutorial de QC y al README.
 - [x] 2.5 (hecho; species_detection ya estaba en 2.3, QC sigue leyendo media@pamDP) **Inputs de nodos** (`pipeline_details.md:79,81,84,113,163`): `media@pamDP` pasa a `media_work@pamDP`. En data_preparation añadir `params:timezone` (líneas 18 y 20) y corregir "requires no parameters" (línea 13).
-- [ ] 2.6 **Pipelines sin documentar**:
+- [x] 2.6 (hecho; pamflow_gui.py no se documenta por estar en prueba) **Pipelines sin documentar**:
   - Documentar `export` (`media_gbif.csv`, `deployments_gbif.csv`, `observations_gbif.csv`).
   - Documentar `filter_media` y `deployments_filter`.
   - Añadir la lista completa de nombres válidos de `--pipeline`: `data_preparation`, `quality_control`, `graphical_soundscape`, `acoustic_indices`, `species_detection`, `detection_validation`, `export`.
-  - Documentar `pamflow_gui.py`.
   - Añadir `export/` al árbol de salidas del README.
   - Usar `pamflow run` y `kedro run` de forma coherente, y dar el comando de `kedro viz`.
 - [ ] 2.7 **Navegación y enlaces**:

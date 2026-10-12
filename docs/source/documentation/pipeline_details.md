@@ -225,7 +225,7 @@ pamflow run --pipeline detection_validation
 Estimates, per species, the probability that a detection is correct as a function of the model's confidence score, using manually annotated audio segments. It fits a logistic regression (`positive ~ classificationProbability`) per species and derives a recommended working threshold — the score above which detections meet a target precision — along with a diagnostic of whether enough annotations exist to trust that threshold.
 
 ```{note}
-Unlike the other pipelines, `detection_validation` is **not** part of the default `kedro run` flow. It depends on a manual step: the `manual_annotations` `.xlsx` files produced by `species_detection` must first be reviewed and have their `positive` column filled in by an expert. Once that's done, run this pipeline explicitly with the command above.
+Unlike the other pipelines, `detection_validation` is **not** part of the default `pamflow run` flow. It depends on a manual step: the `manual_annotations` `.xlsx` files produced by `species_detection` must first be reviewed and have their `positive` column filled in by an expert. Once that's done, run this pipeline explicitly with the command above.
 ```
 
 **Nodes**
@@ -267,3 +267,50 @@ The key output, `detection_validation_summary.csv`, reports a `status` per speci
 
 </details>
 <br>
+
+## 7. Filter media
+
+**Description**<br>
+Selects the recordings that the heavy processing pipelines will use. It reads `media@pamDP` (all the recordings found by `data_preparation`) and writes `media_work@pamDP`. `graphical_soundscape`, `acoustic_indices` and `species_detection` read `media_work@pamDP`. This lets you test the workflow on a few deployments, or process the deployments in batches, without changing the audio folder. `filter_media` has no pipeline name of its own: it runs automatically at the beginning of `pamflow run` and of those three pipelines.
+
+**Nodes**
+| Node name | Description | Inputs | Outputs |
+|------------|--------------|---------|----------|
+| `filter_media_node` | Keeps only the recordings of the deployments listed in `deployments_filter`. If the list is empty, all recordings are kept. Stops with an error if a requested deployment does not exist in `media`, and warns if it exists but has no files. | `media@pamDP`<br>`params:deployments_filter` | `media_work@pamDP` |
+
+<details>
+<summary>Parameters</summary>
+
+| Group | Name | Description | Default Value |
+|--------|------|--------------|----------------|
+| | `deployments_filter` | List of `deploymentID` to process. Empty means all deployments. Defined in `conf/base/parameters/filter_media.yml`; override it in `conf/local/parameters.yml`. | `[]` |
+
+</details>
+
+Example, in `conf/local/parameters.yml`:
+
+```yaml
+deployments_filter: ["MC-002", "MC-007"]
+```
+
+Quality control and export read `media@pamDP`, so they are not affected by the filter.
+
+<br>
+
+## 8. Export
+
+```bash
+pamflow run --pipeline export
+```
+
+**Description**<br>
+Converts the pamDP tables to the [camtrapDP/GBIF](https://camtrap-dp.tdwg.org/) format for publication or exchange. It reads the files written by `data_preparation` and `species_detection` (`media`, `deployments` and `observations`), so those pipelines must have been run first. It is not part of `pamflow run`.
+
+**Nodes**
+| Node name | Description | Inputs | Outputs |
+|------------|--------------|---------|----------|
+| `from_media_to_media_gbif_node` | Moves the audio-specific columns (`sampleRate`, `bitDepth`, `fileLength`, `numChannels`) into a JSON `exifData` column. | `media@pamDP` | `media_gbif@pandas` |
+| `from_deployments_to_deployments_gbif_node` | Renames `recorder*` columns to `camera*` and merges `recorderConfiguration` into `deploymentTags`. | `deployments@pamDP` | `deployments_gbif@pandas` |
+| `from_observations_to_observations_gbif_node` | Converts `eventStart` and `eventEnd` (seconds from the start of the recording) to absolute ISO 8601 datetimes and sets `observationLevel` to `media`. | `observations@pamDP`<br>`media@pamDP` | `observations_gbif@pandas` |
+
+This pipeline has no parameters. The outputs are written to `data/output/export/`: `media_gbif.csv`, `deployments_gbif.csv` and `observations_gbif.csv`.

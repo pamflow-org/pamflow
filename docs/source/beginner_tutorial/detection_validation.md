@@ -6,7 +6,7 @@ In the previous step, experts reviewed the audio segments and filled in the `pos
 Completed example annotation files for this tutorial's dataset are available for download at `TODO: insert Zenodo DOI`. If you're following along with your own data instead, use the annotation files you completed in the previous step.
 ```
 
-Unlike the previous steps, `detection_validation` is not run by plain `kedro run` — it depends on the manual annotation step above, so it must be run explicitly:
+Unlike the previous steps, `detection_validation` is not run by plain `pamflow run` — it depends on the manual annotation step above, so it must be run explicitly:
 
 ```bash
 pamflow run --pipeline detection_validation
