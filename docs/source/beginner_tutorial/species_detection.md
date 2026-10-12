@@ -37,7 +37,7 @@ Each row represents one detection, with the audio file name, timestamp, species 
 | ...           | ...          | ...                            | ...                  | ...        | ...      | ...           | ...                       | ... |
 
 ```{note}
-Detection confidence scores are low by default — **pamflow** reports all detections above 0.1, so results should always be reviewed carefully. For example, *Lophostrix cristata* detections in this dataset are suspicious given that the deployment site is a pasture, where this forest owl would be unexpected. The audio segments and annotation files in the following steps are designed precisely to help with this review. For further guidance on interpreting model outputs, see [Wood and Kahl (2024)](https://link.springer.com/article/10.1007/s10336-024-02144-5).
+Detection confidence scores are low by default — **pamflow** keeps all detections above 0.1 (the default minimum confidence of the `birdnetlib` package, not configurable in **pamflow**), so results should always be reviewed carefully. For example, *Lophostrix cristata* detections in this dataset are suspicious given that the deployment site is a pasture, where this forest owl would be unexpected. The audio segments and annotation files in the following steps are designed precisely to help with this review. For further guidance on interpreting model outputs, see [Wood and Kahl (2024)](https://link.springer.com/article/10.1007/s10336-024-02144-5).
 ```
 
 ## Audio segments
@@ -54,8 +54,9 @@ This makes it easy to identify the source recording, the time of the vocalizatio
 
 To make expert review straightforward, one Excel file per target species is generated in `data/output/species_detection/manual_annotations/`. Files are named after the species, e.g. `Amazona_farinosa_manual_annotations.xlsx` (see `manual_annotations_file_name` in [Pipeline details](../documentation/pipeline_details.md#3-species-detection)). Each file lists the selected audio segments for that species. Once the audio clips have been reviewed, the expert only needs to fill in two columns:
 
-- `positive` — type `true` if the detection is correct, `false` if not
+- `positive` — type `true` if the detection is correct, `false` if not, or `?` if you are unsure. Other values such as `yes`/`no` are also accepted (see `positive_values`, `negative_values` and `uncertain_values` in [Pipeline details](../documentation/pipeline_details.md#6-detection-validation)). Leave it empty for segments you have not reviewed yet
 - `detectedSpecies` — if the detection is incorrect, type the actual species name (if known)
+- `classifiedBy` and `classificationTimestamp` — optional. Type your name and the review date to keep a record of who validated each segment
 
 The completed annotation files feed back into **pamflow** in subsequent steps to refine and validate the final results.
 
