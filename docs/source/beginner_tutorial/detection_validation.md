@@ -1,4 +1,4 @@
-## Detection validation
+# Detection validation
 
 In the previous step, experts reviewed the audio segments and filled in the `positive` column of the `manual_annotations` Excel files. In this section you will use those completed annotations to run the `detection_validation` pipeline, which estimates, per species, how reliable a detection is as a function of the model's confidence score, and recommends a working threshold above which detections can be trusted.
 
@@ -12,7 +12,7 @@ Unlike the previous steps, `detection_validation` is not run by plain `pamflow r
 pamflow run --pipeline detection_validation
 ```
 
-### Validation outputs
+## Validation outputs
 
 The pipeline writes its results to `data/output/detection_validation/`.
 
