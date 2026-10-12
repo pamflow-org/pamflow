@@ -76,6 +76,10 @@ The data is stored in 3 main tables in `csv` format:
 ## Deployments
 The `deployments.csv` table tracks information about sensor placements, such as location, duration, and recording settings.
 
+```{note}
+This table follows the pamDP standard. **pamflow** does not generate or interpret fields such as `deploymentGroups`, `deploymentTags` or `baitUse`: it copies them from the field deployments sheet and leaves them empty when the sheet has no value.
+```
+
 | Field Name              | Description | Required | Unique | Type | Example |
 |-------------------------|-------------|----------|--------|------|---------|
 | **deploymentID**        | Unique identifier for the deployment. Required for tracking and referencing specific deployments. | ✅ | ✅ | `string` | DEP001 |
@@ -117,7 +121,7 @@ The `media.csv` table contains references to audio or visual recordings used for
 | **fileMediatype** | Media type following the IANA format. | ✅ |  | `string` | audio/wav |
 | **sampleRate**   | Sampling rate of the audio file in Hertz. | ✅ |  | `integer` | 44050 |
 | **bitDepth**     | Bit depth (precision) of audio samples, in bits. | ✅ |  | `integer` | 16 |
-| **fileLength**   | Duration of the audio file in seconds. | ✅ |  | `number` | 60 |
+| **fileLength**   | Duration of the audio file in seconds. | ✅ |  | `number` | 30 |
 | **numChannels**  | Number of audio channels. | ✅ |  | `integer` | 1 |
 | **favorite**     | TRUE if the media file is considered of interest (e.g., an exemplar sound). |  |  | `boolean` | TRUE |
 | **mediaComments** | Notes or remarks about the media file (e.g., "corrupted file"). |  |  | `string` | corrupted file |
@@ -149,7 +153,7 @@ The `observations.csv` table stores classified occurrences of species or events,
 | **individualID** | Identifier of the observed individual. | | | `string` | RD213 |
 | **individualPositionRadius** | Estimated distance from the recorder in meters. | | | `number` | 6.81 |
 | **classificationMethod** | Method used to classify the observation (`human`, `machine`). | | | `enum` | human |
-| **classifiedBy** | Name or ID of the person or AI algorithm that classified it. | | | `string` | BirdNET v2.3 |
+| **classifiedBy** | Name or ID of the person or AI algorithm that classified it. | | | `string` | Birdnet 2.4 |
 | **classificationTimestamp** | Date and time of the classification (ISO 8601). | | | `datetime` | 2020-08-22T10:25:19 |
 | **classificationProbability** | Degree of certainty of the classification (Range: 0-1). | | | `number` | 0.95 |
 | **observationTags** | Tag(s) associated with the observation (pipe-separated). | | | `string` | signalToNoise:high |
