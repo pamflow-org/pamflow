@@ -33,7 +33,7 @@ This main folder is referred to as the `audio_root_directory` — you will use t
 ```{important}
 Audio file names must follow the format:
 
-`DEPLOYMENTID_DATE_TIME.WAV`
+`DEPLOYMENTID_DATE_TIME.WAV` (`.wav` also works)
 
 where underscores (`_`) are reserved as field separators. Consequently, deployment identifiers must not contain underscores.
 

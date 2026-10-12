@@ -19,7 +19,7 @@ index:
 
 ```yaml
 acoustic_indices:
-  indices_settings: # List and paramters of acoustic indices
+  indices_settings: # List and parameters of acoustic indices
     ACI:
     ADI:
       fmin: 0
