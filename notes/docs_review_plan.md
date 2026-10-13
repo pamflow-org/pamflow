@@ -3,8 +3,8 @@
 Las fases 0 a 4 de la revisión están hechas (4.10 descartado). `sphinx -W` pasa sin warnings, `linkcheck` solo muestra la redirección benigna del DOI de Zenodo y `pytest` da 187 passed. Este archivo conserva únicamente lo que sigue abierto. Marcar `[x]` al terminar cada paso. Un commit por tema.
 
 ## Verificación final (en curso)
-- [ ] Resultado del run `pamflow run --env=verify` (pipeline por defecto) y de `pamflow run --env=verify --pipeline=export`, con salida en una carpeta temporal. Comprobar que las entradas y salidas coinciden con lo documentado. `detection_validation` no se incluye: requiere anotaciones manuales revisadas.
-- [ ] Borrar `conf/verify/` (carpeta temporal de esta verificación, no se commitea).
+- [x] (hecho: ambos terminan sin errores y las salidas coinciden con lo documentado) Run del pipeline por defecto y de `export` sobre los datos del tutorial, con salida temporal. `detection_validation` no se incluye: requiere anotaciones manuales revisadas.
+- [x] Borrar `conf/verify/` (carpeta temporal de esta verificación, no se commitea).
 - [ ] `git status`: `conf/local/parameters.yml` fuera de los commits (punto 0.4, precaución permanente).
 
 ## Decisiones abiertas
