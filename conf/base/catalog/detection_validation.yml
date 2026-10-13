@@ -26,9 +26,3 @@ detection_validation_plots@PartitionedDataset:
     save_args:
       format: pdf
   filename_suffix: ".pdf"
-
-detection_validation_overview@matplotlib:
-  type: matplotlib.MatplotlibWriter
-  filepath: ${globals:output_dir}/detection_validation/detection_validation_overview.pdf
-  save_args:
-    format: pdf

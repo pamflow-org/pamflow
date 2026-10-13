@@ -4,7 +4,6 @@ from .nodes import (
     compile_manual_annotations,
     fit_precision_models,
     plot_precision_models,
-    plot_validation_overview,
     recommend_thresholds,
 )
 
@@ -61,12 +60,6 @@ def create_pipeline(**kwargs):
                 ],
                 outputs="detection_validation_plots@PartitionedDataset",
                 name="plot_precision_models_node",
-            ),
-            node(  # Log
-                func=plot_validation_overview,
-                inputs="detection_validation_summary@pandas",
-                outputs="detection_validation_overview@matplotlib",
-                name="plot_validation_overview_node",
             ),
         ]
     )
