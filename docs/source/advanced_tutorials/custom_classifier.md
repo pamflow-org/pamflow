@@ -39,7 +39,7 @@ species_detection_parameters:
   classifier_labels_path: data/input/custom_classifier/frogs_labels.txt
 ```
 
-If these values are not present at `species_detection_parameters` **pamflow** uses the BirdNet model as default
+If these values are not present at `species_detection_parameters` **pamflow** uses the BirdNET model as default
 
 ```yaml
 species_detection_parameters:
@@ -53,7 +53,7 @@ species_detection_parameters:
 
 ## 3. Label Format Requirements
 
-The labels file must follow the format expected by BirdNET-Lib.
+The labels file must follow the format expected by `birdnetlib`.
 
 Each line must contain:
 
@@ -87,7 +87,7 @@ Boana cinerascens
 Demerara Falls tree frog
 ```
 
-The underlying BirdNET library expects labels in this format and may fail or produce incorrect species names if a different convention is used.
+The underlying `birdnetlib` package expects labels in this format and may fail or produce incorrect species names if a different convention is used.
 
 ---
 
