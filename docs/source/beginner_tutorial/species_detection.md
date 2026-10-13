@@ -116,4 +116,4 @@ After loading the segments, BirdNET allows users to review detections individual
 
 This workflow provides an efficient mechanism for expert validation while leveraging the detection and export capabilities of **pamflow**.
 
-![Using BirdNet GUI illustrative image](../../meta/images/birdnet_gui.png)
+![Using BirdNET GUI illustrative image](../../meta/images/birdnet_gui.png)
