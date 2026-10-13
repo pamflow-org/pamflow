@@ -1,8 +1,8 @@
-## Data preparation
+# Data preparation
 
 In the previous step you explored the three input files **pamflow** needs. Now you will configure **pamflow** to find them and run the first pipeline to extract and standardize metadata from your recordings.
 
-### Configure audio path and timezone
+## Configure audio path and timezone
 
 Open `conf/local/parameters.yml` with any text editor (e.g. Notepad on Windows, TextEdit on macOS) and set the path to your audio folder and the timezone of your recordings. For The Guaviare Project, the recordings were made in Guaviare, Colombia, so the timezone is `America/Bogota`:
 
@@ -11,19 +11,19 @@ audio_root_directory: "/media/pamResearcher/guaviare_project_external_disk/pam_d
 timezone: "America/Bogota"
 ```
 
-### Move input files to the pamflow folder
+## Move input files to the pamflow folder
 
 Copy the `field_deployments_sheet.xlsx` and `target_species.csv` files to their respective locations inside the pamflow folder:
 
 - `field_deployments_sheet.xlsx` → `data/input/field_deployments/`
 - `target_species.csv` → `data/input/target_species/`
 
-### Run the data preparation pipeline
+## Run the data preparation pipeline
 
 Now everything is ready to run **pamflow**'s first pipeline:
 
 ```bash
-kedro run --pipeline data_preparation
+pamflow run --pipeline data_preparation
 ```
 
 This pipeline generates two standardized tables stored in `data/output/data_preparation/`.

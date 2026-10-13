@@ -1,7 +1,12 @@
+import logging
 import pytest
 import pandas as pd
 import numpy as np
 from pamflow.pipelines.species_detection.nodes import filter_observations
+
+# NOTE: this file is misnamed — it currently only tests `filter_observations`,
+# not `create_manual_annotation_formats`. That function has no real test coverage.
+# Out of scope for the segment_size/minimum_observations change; tracked as a follow-up.
 
 
 @pytest.fixture
@@ -92,17 +97,21 @@ def test_filter_observations_removes_species_below_threshold(
     assert "Canis lupus" in result["scientificName"].unique()
 
 
-def test_filter_observations_raises_error_segment_size_greater_than_minimum(
-    sample_observations, sample_target_species
+def test_filter_observations_warns_when_segment_size_greater_than_minimum(
+    sample_observations, sample_target_species, caplog
 ):
-    """Test that error is raised when segment_size > minimum_observations."""
+    """Test that a warning (not an error) is logged when segment_size > minimum_observations."""
     minimum_observations = 5
     segment_size = 10
-    
-    with pytest.raises(ValueError, match="Number of segments per species"):
-        filter_observations(
+
+    with caplog.at_level(logging.WARNING, logger="pamflow.pipelines.species_detection.nodes"):
+        result = filter_observations(
             sample_observations, sample_target_species, minimum_observations, segment_size
         )
+
+    assert isinstance(result, pd.DataFrame)
+    assert not result.empty
+    assert any("Number of segments per species" in record.message for record in caplog.records)
 
 
 def test_filter_observations_with_single_target_species(

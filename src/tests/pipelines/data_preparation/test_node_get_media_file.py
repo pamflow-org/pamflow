@@ -54,11 +54,11 @@ def test_get_media_file_basic(tmp_path, monkeypatch):
     )
 
     # Monkeypatch the util.get_metadata_dir used inside the node
-    monkeypatch.setattr(nodes.util, "get_metadata_dir", lambda path, _: fake_metadata.copy())
+    monkeypatch.setattr(nodes, "get_metadata_dir", lambda path, _: fake_metadata.copy())
 
     # Call the node
     media = nodes.get_media_file(str(tmp_path), field_deployments, timezone="UTC")
-
+    
     # Basic assertions about structure and content
     assert "filePath" in media.columns
     assert "mediaID" in media.columns
