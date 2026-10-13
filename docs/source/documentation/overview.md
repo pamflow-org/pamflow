@@ -33,10 +33,9 @@ Users should normally avoid modifying this file directly. Instead, project-speci
 The `conf/local/catalog.yml` file is intentionally minimal and is intended to be edited by the user to point pamflow to the appropriate input files for a particular project.
 **Example:**
 ```yaml
-media@pamDP:
-  type:  pamflow.datasets.pamDP.media.Media
-  filepath: data/output/data_preparation/media.csv
-  timezone: Etc/GMT+5
+field_deployments_sheet@pandas:
+  type: pamflow.datasets.pamDP.field_deployments_sheet.FieldDeployments
+  filepath: data/input/field_deployments/field_deployments_sheet.xlsx
 ```
 
 Check the [Kedro documentation](https://docs.kedro.org/en/0.19.8/get_started/kedro_concepts.html) for more details.
