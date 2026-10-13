@@ -180,3 +180,6 @@ venv.bak/
 
 # Ignore Claude code context
 CLAUDE.md
+
+# ignore all local configuration
+conf/local/parameters.yml
