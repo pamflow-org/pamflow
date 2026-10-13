@@ -5,10 +5,10 @@ Las fases 0 a 4 de la revisión están hechas (4.10 descartado). `sphinx -W` pas
 ## Verificación final (en curso)
 - [x] (hecho: ambos terminan sin errores y las salidas coinciden con lo documentado) Run del pipeline por defecto y de `export` sobre los datos del tutorial, con salida temporal. `detection_validation` no se incluye: requiere anotaciones manuales revisadas.
 - [x] Borrar `conf/verify/` (carpeta temporal de esta verificación, no se commitea).
-- [ ] `git status`: `conf/local/parameters.yml` fuera de los commits (punto 0.4, precaución permanente).
+- [x] `git status`: `conf/local/parameters.yml` fuera de los commits (punto 0.4, precaución permanente).
 
 ## Decisiones abiertas
-- [ ] **DOI de Zenodo** (`beginner_tutorial/detection_validation.md:6`, texto `TODO: insert Zenodo DOI`): decidir si el archivo de anotaciones está en el DOI 10.5281/zenodo.16922848, en otro, o si se quita el tip.
+- [ ] **Anotaciones simuladas en Zenodo**: el tutorial (`detection_validation.md`) ya enlaza el DOI 10.5281/zenodo.16922848 y asume que los 7 `.xlsx` simulados (con `filePath` relativos) están incluidos en ese dataset. Subirlos al registro de Zenodo (están en `~/Downloads/pamflow_simulated_annotations/`, junto con `simulate_annotations.py`).
 - [ ] **Plantilla xlsx**: el error de `FieldDeployments` menciona una "provided template" que no existe. Incluir la plantilla o quitar la frase.
 - [ ] **`captureMethod` y `fileMediatype`** (decidido no alinear por ahora): el enum documentado en `data_exchange_format.md` (`recordingSchedule, continuous, activityDetection`) difiere del validado en `media.py:88` (`activityDetection, timeLapse`), y `data_preparation/nodes.py:151` fija `audio/WAV` en vez del valor IANA `audio/wav`.
 
