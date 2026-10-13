@@ -8,8 +8,8 @@ Las fases 0 a 4 de la revisión están hechas (4.10 descartado). `sphinx -W` pas
 - [x] `git status`: `conf/local/parameters.yml` fuera de los commits (punto 0.4, precaución permanente).
 
 ## Decisiones abiertas
-- [ ] **Anotaciones simuladas en Zenodo**: el tutorial (`detection_validation.md`) ya enlaza el DOI 10.5281/zenodo.16922848 y asume que los 7 `.xlsx` simulados (con `filePath` relativos) están incluidos en ese dataset. Subirlos al registro de Zenodo (están en `~/Downloads/pamflow_simulated_annotations/`, junto con `simulate_annotations.py`).
-- [ ] **Plantilla xlsx**: el error de `FieldDeployments` menciona una "provided template" que no existe. Incluir la plantilla o quitar la frase.
+- [x] **Anotaciones simuladas en Zenodo**: el tutorial (`detection_validation.md`) ya enlaza el DOI 10.5281/zenodo.16922848 y asume que los 7 `.xlsx` simulados (con `filePath` relativos) están incluidos en ese dataset. Subirlos al registro de Zenodo (están en `~/Downloads/pamflow_simulated_annotations/`, junto con `simulate_annotations.py`).
+- [x] **Plantilla xlsx**: el error de `FieldDeployments` menciona una "provided template" que no existe. Incluir la plantilla o quitar la frase.
 - [ ] **`captureMethod` y `fileMediatype`** (decidido no alinear por ahora): el enum documentado en `data_exchange_format.md` (`recordingSchedule, continuous, activityDetection`) difiere del validado en `media.py:88` (`activityDetection, timeLapse`), y `data_preparation/nodes.py:151` fija `audio/WAV` en vez del valor IANA `audio/wav`.
 
 ## Zona horaria (punto 1.4, detalle en `notes/timezone_cleanup_plan.md`)
