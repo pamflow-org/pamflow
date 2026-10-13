@@ -14,7 +14,7 @@ pamflow run --pipeline quality_control
 
 Recall that the {{number_of_sensors}} recorders were programmed to record 30 seconds every 30 minutes for {{number_of_days}} days, so each recorder was expected to collect 48 files per day. You can visually check this in `data/output/quality_control/deployment_timeline.pdf`:
 
-![](../../meta/images/sensor_performance.png)
+![Dot plot of recordings per day for each deployment; dot size shows the number of recordings](../../meta/images/sensor_performance.png)
 
 Each dot shows the number of recordings collected by one recorder on one day. Ideally, all dots should be the same size, representing 48 recordings. Larger values may indicate accidental activation before installation or incorrect programming; smaller values may indicate battery failure or malfunction. Unusual values require further examination. The data behind the figure is saved in `data/output/quality_control/sensor_performance_data.csv`.
 
@@ -24,14 +24,14 @@ In this figure, we can identify that deployment {{broken_sensor_1}} shows incons
 
 A map of all deployment locations is generated to help verify that coordinates are correct. Check the output at `data/output/quality_control/deployment_location.pdf`:
 
-![](../../meta/images/sensor_location.png)
+![Map of the deployment locations](../../meta/images/sensor_location.png)
 
 
 ## Check survey effort
 
 A summary card with the key details of the survey (number of deployments, recording dates and effort) is also generated in `data/output/quality_control/survey_effort.pdf`:
 
-![](../../meta/images/survey_effort.png)
+![Summary card with the number of deployments, recording dates and survey effort](../../meta/images/survey_effort.png)
 
 
 ## Check audio outliers
@@ -49,8 +49,8 @@ Even if all recorders collected the expected number of files, recording quality 
 
 Below are two example timelapse spectrogram outputs:
 
-![](../../meta/images/healthy_timelapse.png)
-![](../../meta/images/broken_timelapse.png)
+![Timelapse spectrogram of a recorder working correctly](../../meta/images/healthy_timelapse.png)
+![Timelapse spectrogram of a recorder that failed, with no acoustic activity](../../meta/images/broken_timelapse.png)
 
 The first spectrogram shows acoustic activity across different frequencies and times, as expected, with wind affecting lower frequency bands during the day. The second shows no activity, indicating that recorder was not functioning correctly. You may want to discard these recordings in further steps to save computational resources and maintain data quality.
 
