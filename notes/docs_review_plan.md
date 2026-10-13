@@ -77,8 +77,8 @@ Marcar `[x]` al terminar cada paso. Un commit por fase.
 - [x] 4.9 `multiseason_config.md`: texto residual (línea 47), "### 3." duplicado (46 y 51), mezcla `wet_2023`/`wet_2024` (17, 59, 83, 119) y árbol de `conf/base` incompleto.
 - [-] 4.10 (descartado por el usuario) `contributing_guidelines.md`: prefijos de commit (BUILD/DOC/FEAT/FIX/TEST) frente al historial real (FEATURE/DOCS), y flake8 frente a ruff.
 - [x] 4.11 Terminología: sensor/recorder/ARU/deployment, BirdNET/Birdnet, timelapse/time-lapse. Elegir un término y aplicarlo.
-- [ ] 4.12 Texto alternativo en imágenes (`quality_control.md:17,27,34,43-44`), líneas en blanco dentro de los toctree (`beginner_tutorial/index.md:29-31`, `advanced_tutorials/index.md:13-17`), y salidas de graphical soundscape (`.csv` y `.png` en la misma carpeta).
-- [ ] 4.13 Mencionar en el índice del tutorial que acoustic indices y graphical soundscapes no tienen tutorial, o crearlos.
+- [x] 4.12 Texto alternativo en imágenes (`quality_control.md:17,27,34,43-44`), líneas en blanco dentro de los toctree (`beginner_tutorial/index.md:29-31`, `advanced_tutorials/index.md:13-17`), y salidas de graphical soundscape (`.csv` y `.png` en la misma carpeta).
+- [x] 4.13 Mencionar en el índice del tutorial que acoustic indices y graphical soundscapes no tienen tutorial, o crearlos.
 
 ## Verificación final
 - [ ] `sphinx-build -W -b html docs/source /tmp/docs_out` sin warnings, y `-b linkcheck`.
