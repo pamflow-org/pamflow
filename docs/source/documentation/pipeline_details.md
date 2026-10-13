@@ -192,7 +192,7 @@ pamflow run --pipeline graphical_soundscape
 ```
 
 **Description**<br>
-Computes a representation of the most prominent spectro-temporal dynamics over a 24-hour window per each deployment.
+Computes a representation of the most prominent spectro-temporal dynamics over a 24-hour window per each deployment. For each deployment, a data file (`graph_<deploymentID>.csv`) and a figure (`graph_<deploymentID>.png`) are saved together in `data/output/graphical_soundscape/`.
 
 **Nodes**
 | Node name | Description | Inputs | Outputs |

@@ -15,6 +15,10 @@ Make sure **pamflow** is installed before you start — follow the [installation
 5. Extract and organize audio segments for expert validation.
 6. Use expert annotations to validate detections and get a recommended confidence threshold per species.
 
+```{note}
+This tutorial covers the basic workflow. **pamflow** also computes acoustic indices (`acoustic_indices`) and graphical soundscapes (`graphical_soundscape`), which are not part of this tutorial. They are described in the [Pipeline details](../documentation/pipeline_details.md) and can be customized with the [advanced tutorials](../advanced_tutorials/index.md).
+```
+
 ![The Guaviare Project illustrative image](../../meta/images/pamflow_intro.jpg)
 
 ```{toctree}
@@ -25,8 +29,4 @@ data_preparation.md
 quality_control.md
 species_detection.md
 detection_validation.md
-
-
-
-
-
+```

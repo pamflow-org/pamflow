@@ -10,9 +10,4 @@ custom_acoustic_indices.md
 custom_pipeline.md
 multiseason_config.md
 custom_classifier.md
-
-
-
-
-
-
+```

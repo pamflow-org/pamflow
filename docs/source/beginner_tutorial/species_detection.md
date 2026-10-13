@@ -17,7 +17,7 @@ The figures are stored in `data/output/species_detection/`:
 - `observations_summary.pdf` — a high-level summary showing total observations, number of species detected, and the proportion of recordings with detections
 - `observations_per_species.pdf` — a bar chart showing the number of detections per species
 
-![](../../meta/images/observations_summary.png) ![](../../meta/images/observations_per_species.png)
+![Summary card with total observations, species detected and proportion of recordings with detections](../../meta/images/observations_summary.png) ![Bar chart of the number of detections per species](../../meta/images/observations_per_species.png)
 
 The output files are also stored in `data/output/species_detection/`:
 
