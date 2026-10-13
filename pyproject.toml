@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
 [tool.kedro]
 package_name = "pamflow"
 project_name = "pamFlow"
@@ -31,7 +35,8 @@ select = [
 
 [project]
 name = "pamflow"
-version = "0.9.0"  # Add the version here
+version = "1.1.0"
+requires-python = ">=3.10,<3.12"
 description = "Simplified analysis for passive acoustic monitoring"
 
 

@@ -79,7 +79,7 @@ class AcousticIndices:
         return features.acoustic_complexity_index(self.Sxx)[2]
 
     def compute_ADI(self, params):
-        """Compute Acoustic Complexity Index (ACI)."""
+        """Compute Acoustic Diversity Index (ADI)."""
         return features.acoustic_diversity_index(self.Sxx, self.fn, **params)
 
     def compute_BI(self, params):
@@ -191,7 +191,7 @@ def compute_acoustic_indices_single_file(
     path_audio,
     params_preprocess=None,
     params_indices=None,
-    verbose=True,
+    verbose=False,
 ):
     """
     Compute acoustic indices for a single audio file.
@@ -287,7 +287,7 @@ def compute_indices_parallel(
                 file["filePath"],
                 params_preprocess,
                 params_indices,
-                verbose=True,
+                verbose=False,
             ): file["mediaID"]
             for file in files
         }

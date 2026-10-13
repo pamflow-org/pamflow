@@ -16,7 +16,12 @@ from rich.console import Console
 # Set up logging
 logger = logging.getLogger(__name__)
 
-def species_detection_parallel(media, deployments, n_jobs):
+def species_detection_parallel(
+    media,
+    deployments,
+    species_detection_parameters,
+    timezone,
+):
     """Detects species in media files using parallel processing.
 
     This node processes media files and deployment metadata to perform species
@@ -34,10 +39,12 @@ def species_detection_parallel(media, deployments, n_jobs):
         A DataFrame containing deployment metadata, including sensor locations
         (latitude and longitude). Loaded from the catalog entry `deployments@pamDP`.
 
-    n_jobs : int
-        The number of parallel jobs to use for species detection. Passed as
-        `params:species_detection_parameters.n_jobs`. If set to -1, the number of jobs will
-        be equal to the number of CPU cores.
+    species_detection_parameters : Dict
+        Dict with custom values for species detection pipeline personalization
+
+    timezone : str
+        Timezone name (e.g. 'America/Bogota') used to localize
+        classificationTimestamp, in the same way as the media timestamp.
 
     Returns
     -------
@@ -61,12 +68,33 @@ def species_detection_parallel(media, deployments, n_jobs):
 
     df = media.merge(deployments, on="deploymentID", how="left")
 
+    n_jobs=species_detection_parameters.get('n_jobs')
+    classifier_model_path=species_detection_parameters.get('classifier_model_path')
+    classifier_labels_path=species_detection_parameters.get('classifier_labels_path')
     if n_jobs == -1:
         n_jobs = os.cpu_count()
 
     logger.info(
         f"Computing species detection for {df.shape[0]} files using {n_jobs} threads"
     )
+    def validate_custom_labels(labels_path):
+        with open(labels_path) as f:
+            for line_number, line in enumerate(f, start=1):
+                label = line.strip()
+
+                if label.count("_") != 1:
+                    raise ValueError(
+                        f"Invalid label on line {line_number}: '{label}'. "
+                        "Custom BirdNET labels must have the format "
+                        "'Genus species_common name', with exactly one '_' "
+                        "separating the scientific and common names."
+                    )
+    if classifier_labels_path is not None:
+        validate_custom_labels(classifier_labels_path)
+        logger.info(
+        f"Using custom model and labels at {classifier_model_path} and {classifier_labels_path} "
+        )
+
 
     # Use concurrent.futures for parallel execution and show progress with rich
     results = []
@@ -75,13 +103,15 @@ def species_detection_parallel(media, deployments, n_jobs):
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
         futures = [
             executor.submit(
-                species_detection_single_file,
-                row["filePath"],
-                row["latitude"],
-                row["longitude"],
-                row["mediaID"],
-                row["deploymentID"],
-            )
+                            species_detection_single_file,
+                            row["filePath"],
+                            row["latitude"],
+                            row["longitude"],
+                            row["mediaID"],
+                            row["deploymentID"],
+                            classifier_model_path,
+                            classifier_labels_path,
+                        )
             for idx, row in df.iterrows()
         ]
 
@@ -134,7 +164,7 @@ def species_detection_parallel(media, deployments, n_jobs):
     observations["frequencyLow"] = None
     observations["frequencyHigh"] = None
     observations["classificationMethod"] = "machine"
-    observations["classificationTimestamp"] = pd.to_datetime("today").strftime('%Y-%m-%dT%H:%M:%S')
+    observations["classificationTimestamp"] = pd.Timestamp.now(tz=timezone).strftime('%Y-%m-%dT%H:%M:%S%z')
     observations["observationTags"] = None    
     observations["observationComments"] = None
     observations["classificationProbability"] = observations["classificationProbability"].astype(float).round(3)
@@ -177,7 +207,10 @@ def filter_observations(
         `params:species_detection_parameters.minimum_observations`.
 
     segment_size : int
-        The number of segments per species. Passed as `params:species_detection_parameters.segment_size`.
+        The upper bound on segments per species used downstream by `create_segments`.
+        Passed as `params:species_detection_parameters.segment_size`. If greater than
+        `minimum_observations`, a warning is logged (not an error), since some species
+        may end up with fewer than `segment_size` segments.
 
     Returns
     -------
@@ -186,8 +219,9 @@ def filter_observations(
         as `observations@pamDP`. The DataFrame follows the pamDP.observations format.
     """
     if segment_size > minimum_observations:
-        raise ValueError(f"""Number of segments per species ({segment_size}) is greater than minimum number of observations per species ({minimum_observations}).\n 
-                             Change the values of these parameters in conf/base/paramteres.yml  to fix this issue. 
+        logger.warning(f"""Number of segments per species ({segment_size}) is greater than minimum number of observations per species ({minimum_observations}).\n
+                             Species with an observation count between {minimum_observations} and {segment_size} will end up with fewer than {segment_size} segments. \n
+                             Change the values of these parameters in conf/base/parameters/species_detection.yml if this is not intended.
         """)
 
     target_species = target_species.drop_duplicates()
@@ -218,7 +252,7 @@ def filter_observations(
     return observations
 
 
-def create_segments(observations, media, segment_size):
+def create_segments(observations, media, segment_size, segment_length):
     """Creates audio segments for species observations.
 
     This node processes filtered species observations and media metadata to generate
@@ -238,8 +272,15 @@ def create_segments(observations, media, segment_size):
         `media@pamDP`. The DataFrame follows the pamDP.media format.
 
     segment_size : int
-        The number of segments to sample per species. Passed as
-        `params:species_detection_parameters.segment_size`.
+        The maximum number of segments to sample per species. Passed as
+        `params:species_detection_parameters.segment_size`. If a species has fewer
+        observations than `segment_size`, all of its observations are used instead
+        (no error is raised), and an info-level log entry records the capping.
+
+    segment_length : float
+        The length in seconds of each extracted segment, centered on the original
+        detection window (eventStart/eventEnd) and clipped to stay within
+        [0, fileLength]. Passed as `params:species_detection_parameters.segment_length`.
 
     Returns
     -------
@@ -249,15 +290,43 @@ def create_segments(observations, media, segment_size):
         Stored in the catalog as `segments@pandas`.
     """
 
-    # Sample segment_size rows per each species in observations
+    # Sample up to segment_size rows per each species in observations, using all
+    # available observations for species that have fewer than segment_size
     observations = observations.merge(
-        media[["mediaID", "filePath"]], on="mediaID", how="left"
+        media[["mediaID", "filePath", "fileLength"]], on="mediaID", how="left"
     )
+
+    segment_size = int(segment_size)
+
+    def _sample_capped(group):
+        n = min(segment_size, len(group))
+        if n < segment_size:
+            logger.info(
+                f"Species '{group.name}' has only {len(group)} observation(s), fewer than the "
+                f"requested segment_size ({segment_size}). Using all {n} available instead."
+            )
+        return group.sample(n)
+
     segments = (
-        observations.groupby(["scientificName"])
-        .apply(lambda x: x.sample(int(segment_size)))
+        observations.groupby(["scientificName"], group_keys=True)
+        .apply(_sample_capped, include_groups=False)
+        .reset_index(level=0)
         .reset_index(drop=True)
     )
+
+    # Center the requested segment_length on the original detection window
+    event_center = (segments["eventStart"] + segments["eventEnd"]) / 2
+    raw_start = event_center - segment_length / 2
+    raw_end = event_center + segment_length / 2
+
+    # Clip to media bounds, then shift the window to preserve segment_length
+    # where possible (instead of just truncating one side)
+    start = np.clip(raw_start, 0, segments["fileLength"] - segment_length)
+    start = np.clip(start, 0, None)  # handles segment_length > fileLength
+    end = np.clip(start + segment_length, None, segments["fileLength"])
+
+    segments["segmentStart"] = start
+    segments["segmentEnd"] = end
 
     segments["classificationProbabilityRounded"] = (
         segments["classificationProbability"].round(3).astype(str).str.ljust(5, "0")
@@ -267,6 +336,9 @@ def create_segments(observations, media, segment_size):
         lambda x: f"{x['classificationProbabilityRounded']}_{x['mediaID'].replace('.WAV', '')}_{x['eventStart']}_{x['eventEnd']}.WAV",
         axis=1,
     )
+
+    # Drop unnecesary columns
+    segments = segments.drop(columns=["fileLength"])
 
     return segments
 
@@ -304,8 +376,8 @@ def create_segments_folder(segments, n_jobs, segment_size):
     logger.info(f'Writing {segments.shape[0]} audio segments to disk...')
     for index, row in segments.iterrows():
         result = trim_audio(
-            row["eventStart"],
-            row["eventEnd"],
+            row["segmentStart"],
+            row["segmentEnd"],
             row["filePath"],
             row["segmentsFilePath"],
         )
@@ -359,9 +431,12 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
         ]
     ].copy()
 
+    # Add new columns to format
     excel_generic_format["positive"] = ""
-
     excel_generic_format["detectedSpecies"] = ""
+    excel_generic_format["classifiedBy"] = ""
+    excel_generic_format["classificationTimestamp"] = ""
+
 
     manual_annotations_partitioned_dataset = {
         excel_formats_file_names["_".join(species.split())]: excel_generic_format[

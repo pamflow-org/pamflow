@@ -7,7 +7,7 @@ Standards may seem like an added layer of complexity, but they are what make dat
 Recording files must be organized as follows:
 
 - All audio should be stored in **a single main folder**.  
-- The **required** file name format is: `DEPLOYMENTID_DATE_HOUR.wav`.
+- The **required** file name format is: `DEPLOYMENTID_DATE_HOUR.wav` (the extension can be `.wav` or `.WAV`).
 
 Optional recommendation: Within the main folder, create a subfolder for each deployment, named after the corresponding deployment.
 
@@ -24,26 +24,28 @@ Example:
 
 
 ## Field deployment sheet
-This file provides metadata collected during the field deployment. It should be an Excel file named `field_deployments_sheet.xlsx`, with the below column names in the first row. See the [tutorial data](https://doi.org/10.5281/zenodo.16922848) for an example.
+This file provides metadata collected during the field deployment. It should be an Excel file (`.xlsx`) with the column names below in the first row. By default **pamflow** looks for it at `data/input/field_deployments/field_deployments_sheet.xlsx`; the location and file name can be changed in `conf/local/catalog.yml` (entry `field_deployments_sheet@pandas`). See the [tutorial data](https://doi.org/10.5281/zenodo.16922848) for an example.
 
-The fields listed below cover a representative set useful for most research purposes. Only 7 fields are strictly required, but providing more information is strongly advised — richer metadata greatly increases the long-term value and reusability of your data. Additional fields beyond those listed here can also be included in the sheet; following the [pamDP format](#deployments) for any extra fields is recommended for interoperability. Custom fields that do not follow pamDP naming will be preserved in your sheet but will not be carried over to the standardized pamDP output.
+The fields listed below cover a representative set useful for most research purposes. **All 19 columns must be present in the sheet** (**pamflow** stops with an error listing the missing ones), but only 7 of them must also contain a value in every row: `deploymentID`, `deploymentStartDate`, `deploymentStartTime`, `deploymentEndDate`, `deploymentEndTime`, `latitude` and `longitude`. The remaining columns can be left empty, although providing more information is strongly advised — richer metadata greatly increases the long-term value and reusability of your data. Only `deploymentID` is checked for uniqueness. Additional fields beyond those listed here can also be included in the sheet; following the [pamDP format](#deployments) for any extra fields is recommended for interoperability. Custom fields that do not follow pamDP naming will be preserved in your sheet but will not be carried over to the standardized pamDP output.
+
+The `deploymentID` values must match exactly the names of the subfolders in the audio root directory (see [File organization](#file-organization)). Deployments found only in the sheet or only in the audio folder are reported with a warning and are not fully processed.
 
 | Field Name              | Description | Required | Unique | Type | Example |
 |-------------------------|-------------|----------|--------|------|---------|
 |<u>**deploymentID**</u>| Unique identifier for the deployment. Required for tracking and referencing specific deployments. | ✅ | ✅ | `string` | DEP001 |
 |<u>**deploymentStartDate**</u>| Date when the recorder was deployed in the field. Format: `YYYY-MM-DD`. | ✅ |   | `string` | 2025-05-29 |
-|**deploymentStartTime**| Time when the recorder was deployed in the field. Format: `HH:MM:SS` (24h, local time). |   |   | `string` | 13:30:00 |
+|<u>**deploymentStartTime**</u>| Time when the recorder was deployed in the field. Format: `HH:MM:SS` (24h, local time). | ✅ |   | `string` | 13:30:00 |
 |<u>**deploymentEndDate**</u>| Date when the recorder was retrieved or the deployment ended. Format: `YYYY-MM-DD`. | ✅ |   | `string` | 2025-06-29 |
-|**deploymentEndTime**| Time when the recorder was retrieved or the deployment ended. Format: `HH:MM:SS` (24h, local time). |   |   | `string` | 10:00:00 |
+|<u>**deploymentEndTime**</u>| Time when the recorder was retrieved or the deployment ended. Format: `HH:MM:SS` (24h, local time). | ✅ |   | `string` | 10:00:00 |
 |<u>**latitude**</u>| Latitude of the deployment location in decimal degrees (WGS84). Range: -90 to 90. | ✅ |   | `float` | 5.2704 |
 |<u>**longitude**</u>| Longitude of the deployment location in decimal degrees (WGS84). Range: -180 to 180. | ✅ |   | `float` | 2.3849 |
 |**coordinateUncertainty**| Uncertainty of the geographic coordinates in meters. Range: >0. |   |   | `float` | 10.0 |
-|**locationID**| Unique code that refers unambiguously to a location record. One locationID per latitude-longitude pair. |   | ✅ | `string` | LOC001 |
+|**locationID**| Unique code that refers unambiguously to a location record. One locationID per latitude-longitude pair. |   |   | `string` | LOC001 |
 |**locationName**| Name assigned to the deployment location for easy reference. |   |   | `string` | Finca La Esperanza |
 |**habitat**| Brief description of the habitat at the deployment location. |   |   | `string` | Humid tropical rainforest |
 |**recorderID**| Unique identifier of the audio recorder used. |   |   | `string` | REC01 |
-|<u>**recorderModel**</u>| Manufacturer and model of the recorder, formatted as manufacturer-model. | ✅ |   | `string` | Audiomoth v1.2.0 |
-|<u>**recorderConfiguration**</u>| Detailed settings used for data collection (e.g., microphone type, recording schedule). | ✅ |   | `string` | record 1 minute every 29 minutes, internal microphone |
+|**recorderModel**| Manufacturer and model of the recorder, formatted as manufacturer-model. |   |   | `string` | Audiomoth v1.2.0 |
+|**recorderConfiguration**| Detailed settings used for data collection (e.g., microphone type, recording schedule). |   |   | `string` | record 1 minute every 29 minutes, internal microphone |
 |**recorderHeight**| Height (in meters) at which the recorder was deployed. Not to be combined with `recorderDepth`. Range: >0. |   |   | `float` | 1.2 |
 |**setupByName**| First name of the person responsible for deploying the recorder. |   |   | `string` | Juan |
 |**setupByLastName**| Last name of the person responsible for deploying the recorder. |   |   | `string` | Gómez |
@@ -73,6 +75,10 @@ The data is stored in 3 main tables in `csv` format:
 
 ## Deployments
 The `deployments.csv` table tracks information about sensor placements, such as location, duration, and recording settings.
+
+```{note}
+This table follows the pamDP standard. **pamflow** does not generate or interpret fields such as `deploymentGroups`, `deploymentTags` or `baitUse`: it copies them from the field deployments sheet and leaves them empty when the sheet has no value.
+```
 
 | Field Name              | Description | Required | Unique | Type | Example |
 |-------------------------|-------------|----------|--------|------|---------|
@@ -115,10 +121,14 @@ The `media.csv` table contains references to audio or visual recordings used for
 | **fileMediatype** | Media type following the IANA format. | ✅ |  | `string` | audio/wav |
 | **sampleRate**   | Sampling rate of the audio file in Hertz. | ✅ |  | `integer` | 44050 |
 | **bitDepth**     | Bit depth (precision) of audio samples, in bits. | ✅ |  | `integer` | 16 |
-| **fileLength**   | Duration of the audio file in seconds. | ✅ |  | `number` | 60 |
+| **fileLength**   | Duration of the audio file in seconds. | ✅ |  | `number` | 30 |
 | **numChannels**  | Number of audio channels. | ✅ |  | `integer` | 1 |
 | **favorite**     | TRUE if the media file is considered of interest (e.g., an exemplar sound). |  |  | `boolean` | TRUE |
 | **mediaComments** | Notes or remarks about the media file (e.g., "corrupted file"). |  |  | `string` | corrupted file |
+
+```{note}
+The `data_preparation` pipeline sets `captureMethod` to `activityDetection` and `fileMediatype` to `audio/WAV` for every file, regardless of the real recording mode or file extension. Edit `media.csv` afterwards if you need other values.
+```
 
 ## Observations
 The `observations.csv` table stores classified occurrences of species or events, including metadata like behavior, vocalization details, and classification confidence. 
@@ -143,7 +153,7 @@ The `observations.csv` table stores classified occurrences of species or events,
 | **individualID** | Identifier of the observed individual. | | | `string` | RD213 |
 | **individualPositionRadius** | Estimated distance from the recorder in meters. | | | `number` | 6.81 |
 | **classificationMethod** | Method used to classify the observation (`human`, `machine`). | | | `enum` | human |
-| **classifiedBy** | Name or ID of the person or AI algorithm that classified it. | | | `string` | BirdNET v2.3 |
+| **classifiedBy** | Name or ID of the person or AI algorithm that classified it. | | | `string` | Birdnet 2.4 |
 | **classificationTimestamp** | Date and time of the classification (ISO 8601). | | | `datetime` | 2020-08-22T10:25:19 |
 | **classificationProbability** | Degree of certainty of the classification (Range: 0-1). | | | `number` | 0.95 |
 | **observationTags** | Tag(s) associated with the observation (pipe-separated). | | | `string` | signalToNoise:high |

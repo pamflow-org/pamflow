@@ -19,6 +19,13 @@ timelapse_plot:
   db_range: 90           # Dynamic range in decibels
   colormap: 'viridis'    # Colormap options: 'grey', 'viridis', 'plasma', 'inferno', 'cividis'
 
+# Parameters for detecting outliers in audio duration and sample rate
+audio_outliers:
+  z_threshold: 3.5             # Robust z-score (MAD) above which a value is an outlier
+  max_labeled_deployments: 50  # Deployment names are drawn on the x axis only up to this number
+  fig_height: 7.5             # Figure height (in inches)
+  fig_width: 12               # Figure width (in inches)
+
 # Parameters for generating timelapses
 timelapse:
   sample_length: 1       # Length of each sample for timelapse (in seconds)

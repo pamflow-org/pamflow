@@ -19,7 +19,15 @@ from matplotlib.colors import Normalize
 from matplotlib_scalebar.scalebar import ScaleBar
 from adjustText import adjust_text
 import logging
-from pamflow.pipelines.quality_control.utils import concat_audio
+from pamflow.pipelines.quality_control.utils import (
+    concat_audio,
+    flag_outliers,
+    deployment_medians,
+    place_labels,
+    VARIABLES,
+    OUTLIER_COLOR,
+    NORMAL_COLOR,
+)
 import datetime
 
 logger = logging.getLogger(__name__)
@@ -563,5 +571,101 @@ def get_timelapse(
         # Force garbage collection
         import gc
         gc.collect()
+
+
+def detect_audio_outliers(media, outlier_params):
+    """Detects outliers in audio duration and sample rate per deployment.
+
+    For each deployment and for each of `fileLength` and `sampleRate`, a robust
+    z-score (0.6745 * (x - median) / MAD) is computed and values with
+    |z| > z_threshold are flagged. If MAD is 0 (homogeneous deployment), any
+    value different from the median is flagged. The input corresponds to the
+    catalog entry `media@pamDP`. The outputs are stored in the catalog as
+    `audio_outliers_figure@matplotlib` and `audio_outliers_data@pandas`.
+
+    Parameters
+    ----------
+    media : pandas DataFrame
+        Media table with columns deploymentID, mediaID, timestamp, fileLength,
+        sampleRate and filePath.
+    outlier_params : dict
+        Parameters with keys z_threshold, max_labeled_deployments, fig_width
+        and fig_height.
+
+    Returns
+    -------
+    fig : matplotlib Figure
+        % deviation from each deployment's median, one panel per variable.
+        Outliers are labeled with the media ID.
+    listing : pandas DataFrame
+        One row per outlier file, with the variable(s) flagged and the
+        deployment medians.
+    """
+    z_threshold = outlier_params["z_threshold"]
+    max_labeled = outlier_params["max_labeled_deployments"]
+
+    df = flag_outliers(media.reset_index(drop=True), z_threshold)
+    meds = deployment_medians(df)
+    deployments = sorted(df["deploymentID"].unique())
+    n_dep = len(deployments)
+    pos = {d: i for i, d in enumerate(deployments)}
+    rng = np.random.default_rng(0)
+    x = df["deploymentID"].map(pos) + rng.uniform(-0.3, 0.3, len(df))
+
+    fig, axes = plt.subplots(
+        len(VARIABLES), 1, sharex=True,
+        figsize=(outlier_params["fig_width"], outlier_params["fig_height"]))
+    label_jobs = []
+    for ax, (col, label) in zip(axes, VARIABLES.items()):
+        med = df["deploymentID"].map(meds[col])
+        dev = (df[col] - med) / med * 100
+        out = df[f"out_{col}"]
+
+        ax.axhline(0, color="black", lw=0.9, zorder=2)
+        ax.scatter(x[~out], dev[~out], s=10, alpha=0.4, color=NORMAL_COLOR,
+                   linewidths=0, label="Within range")
+        ax.scatter(x[out], dev[out], s=60, color=OUTLIER_COLOR,
+                   edgecolor="black", linewidths=0.8, zorder=3, label="Outlier")
+        label_jobs.append((ax, [(x[i], dev[i], df.loc[i, "mediaID"])
+                                for i in df.index[out]]))
+
+        lo, hi = min(dev.min(), -5), max(dev.max(), 5)
+        pad = 0.18 * (hi - lo)
+        ax.set_ylim(lo - pad, hi + pad)
+        ax.set_xlim(-0.8, n_dep - 0.2)
+        ax.set_ylabel(f"{label}\n% deviation from deployment median", fontsize=9)
+        ax.set_title(f"{label}: {int(out.sum())} outliers", fontsize=10, loc="left")
+        ax.grid(axis="y", alpha=0.25)
+        ax.spines[["top", "right"]].set_visible(False)
+
+    if n_dep <= max_labeled:
+        axes[-1].set_xticks(range(n_dep))
+        axes[-1].set_xticklabels(deployments, rotation=90, fontsize=8)
+    else:
+        axes[-1].set_xticks([])
+    axes[-1].set_xlabel(f"Deployment (n = {n_dep})")
+    axes[0].legend(frameon=False, loc="upper left", fontsize=8)
+    fig.suptitle("Audio duration and sample rate", fontsize=13)
+    fig.text(0.5, 0.005,
+             f"Outliers: robust z-score > {z_threshold} (MAD) within each "
+             "deployment; if MAD = 0, any value != median.",
+             ha="center", fontsize=8, color="#555")
+    fig.tight_layout(rect=(0, 0.02, 1, 0.96))
+    for ax, points in label_jobs:
+        place_labels(fig, ax, points)
+
+    cols = ["deploymentID", "mediaID", "timestamp", "variable",
+            "fileLength", "median_fileLength",
+            "sampleRate", "median_sampleRate", "filePath"]
+    listing = df[df["is_outlier"]].copy()
+    listing["variable"] = [
+        "+".join(c for c in VARIABLES if r[f"out_{c}"])
+        for _, r in listing.iterrows()]
+    listing["median_fileLength"] = listing["deploymentID"].map(meds["fileLength"])
+    listing["median_sampleRate"] = listing["deploymentID"].map(meds["sampleRate"])
+    listing = listing[cols].sort_values(["deploymentID", "timestamp", "mediaID"])
+    logger.info(f"{len(df)} files, {len(listing)} audio outliers")
+
+    return fig, listing
 
 

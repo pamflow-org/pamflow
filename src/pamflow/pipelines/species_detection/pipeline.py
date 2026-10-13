@@ -17,9 +17,10 @@ def create_pipeline(**kwargs):
             node(  # Log
                 func=species_detection_parallel,
                 inputs=[
-                    "media@pamDP",
+                    "media_work@pamDP",
                     "deployments@pamDP",
-                    "params:species_detection_parameters.n_jobs",
+                    "params:species_detection_parameters",
+                    "params:timezone",
                 ],
                 outputs="unfiltered_observations@pamDP",
                 name="species_detection_node",
@@ -39,8 +40,9 @@ def create_pipeline(**kwargs):
                 func=create_segments,
                 inputs=[
                     "observations@pamDP",
-                    "media@pamDP",
+                    "media_work@pamDP",
                     "params:species_detection_parameters.segment_size",
+                    "params:species_detection_parameters.segment_length",
                 ],
                 outputs="segments@pandas",
                 name="create_segments_node",
@@ -66,7 +68,7 @@ def create_pipeline(**kwargs):
             ),
             node(  # Log
                 func=plot_observations_summary,
-                inputs=["observations@pamDP","media@pamDP"],
+                inputs=["observations@pamDP","media_work@pamDP"],
                 outputs="observations_summary@matplotlib",
                 name="plot_observations_summary_node",
             ),

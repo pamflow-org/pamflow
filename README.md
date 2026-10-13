@@ -1,21 +1,22 @@
 <div align="center">
-  <img src="https://github.com/pamflow/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="400"/>
+  <img src="https://github.com/pamflow-org/pamflow/raw/main/docs/meta/images/pamflow_logo.png" alt="pamflow logo" width="400"/>
 </div>
 
-![Python version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue.svg)
+![Python version](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue.svg)
 
 **pamflow** is a workflow for analyzing passive acoustic monitoring data using Python. It is designed to offer an easy-to-use and reproducible framework for researchers, conservation biologists, citizen scientists, and anyone interested in ecoacoustics and soundscape ecology.
 
 ## Before You Begin
 
 ### 1. Download This Repository
-On the public instance of this repository, regular github cloning is available. However, the anonymized version only allows direct ownload of the repository. Hit the `Download repository` button on the upper right corner of the page. Afterwards, change to the downloaded directory
+Clone the repository and change to its directory:
 ```bash
+git clone https://github.com/pamflow-org/pamflow.git
 cd pamflow
 ```
 
 ### 2. Set Up a Working Environment
-Ensure you have Python 3.11 installed. Then, create and activate a virtual environment using conda:
+Ensure you have Python 3.11 installed (Python 3.10 and 3.11 are supported). Then, create and activate a virtual environment using conda:
 
 ```bash
 conda create -n pamenv python=3.11
@@ -28,16 +29,15 @@ Next, install the required dependencies
 pip install .
 ```
 
-> **Trouble Shooting**
-> Some users might need to install
-> ffmpeg. For full instructions
->  visit [ffmpeg page](https://www.ffmpeg.org/about.html).
+> **Troubleshooting**
+> Some users might need to install ffmpeg. For full instructions, visit the [ffmpeg page](https://www.ffmpeg.org/about.html).
+
 ### 3. Organize PAM Data
 #### 3.1 Audio Data
 All audio files must be stored in a dedicated directory. Each subdirectory within this directory should have a unique identifier corresponding to the ID or name of each sensor. This structure ensures that recordings are properly associated with their respective sensors.
 
 For this data to be compatible with **pamflow** the file names of the audio files should meet the format 
-`{recorderID}_{date}_{time}.WAV`. Additionally, the initial part on files' name should correspond to the name of the parent folder. Your Audio data should look like this
+`{deploymentID}_{date}_{time}.WAV` (`.wav` is also accepted). Additionally, the initial part on files' name should correspond to the name of the parent folder. Your Audio data should look like this
 ```
 /audio_data
 ├── ARU001/
@@ -51,27 +51,27 @@ For this data to be compatible with **pamflow** the file names of the audio file
 └── ARU004/  
 ```
 #### 3.2 Metadata 
-Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `recorderID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files. Additonal minimal requirements for data estandardization are explained on the page of [Input data standards](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#field-deployment-sheet) of the documentation.
+Make sure you have a field deployment sheet in an Excel format. This sheet must contain a column named `deploymentID`, where each value matches the names of the subdirectories in the audio data directory. This ensures proper linking between metadata and recorded audio files. The sheet must include all the columns listed in the documentation, and `deploymentID`, start and end dates and times, `latitude` and `longitude` must have a value in every row. The file location is set in `conf/local/catalog.yml`. The full list of columns and additional requirements for data standardization are explained on the page of [Input data standards](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#field-deployment-sheet) of the documentation.
 
 #### 3.3 Target species
-For filtering out animal detections, a  custom list of species of interest can be provided to **pamflow**. It has to be a `.csv` file with a single column (`scientificName`) containing scientific names for the target species. This file is not mandatory for **pamflow** to run. If this file is not provided, **pamflow** will leave [`observations`](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#observations) file unchanged.
+For filtering out animal detections, a custom list of species of interest can be provided to **pamflow**. It has to be a `.csv` file with a single column (`scientificName`) containing scientific names for the target species. This file is not mandatory for **pamflow** to run. If this file is not provided, **pamflow** will leave [`observations`](https://pamflow.readthedocs.io/en/latest/data_standardization/data_exchange_format.html#observations) file unchanged.
 
-#### 3.3 Sample toy data
+#### 3.4 Sample toy data
 
-For an example of properly formated data or to have a sample dataset to try **pamflow**, download [pamflow's beginner tutorial dataset](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7).
+For an example of properly formatted data or to have a sample dataset to try **pamflow**, download [pamflow's beginner tutorial dataset](https://drive.google.com/drive/folders/1L74aYdZ972R96AYnw9Fe2k4Vi3Cw7uF7).
 
 ## Getting Started
 
 ### 1. Configure Local Settings
 
-Inside the folder `./conf/local/` create the files `./conf/local/parameters.yml` and `./conf/local/catalog.yml` as follows.
+The files `./conf/local/parameters.yml` and `./conf/local/catalog.yml` already exist in the repository. Edit them as follows.
 
 Edit the `./conf/local/parameters.yml` file to specify the path to your audio files:
 ```yaml
 audio_root_directory: <path to your directory with audio files>
 ```
 
-Edit the `./conf/local/parameters.yml` file to specify the timezone of your audios recordings using a valid IANA time zone in Area/City format (e.g., Europe/Berlin, America/Bogota)
+Edit the `./conf/local/parameters.yml` file to specify the timezone of your audio recordings using a valid IANA time zone in Area/City format (e.g., Europe/Berlin, America/Bogota)
 ```yaml
 timezone: <prefered timezone>
 ```
@@ -95,35 +95,48 @@ target_species@pandas:
 
 ### 2. Run Workflows
 
-The workflow can be executed entirely with the command:
+The workflow can be executed entirely with the command (`pamflow run` and `kedro run` are equivalent):
 ```bash
-kedro run
+pamflow run
 ```
 However, for the first execution, it is recommended to run one pipeline at a time for better control.
 
 #### 2.1. Prepare data
 ```bash
-kedro run --pipeline=data_preparation
+pamflow run --pipeline=data_preparation
 ```
 
 #### 2.2. Revise quality of deployments and recordings
 ```bash
-kedro run --pipeline=quality_control
+pamflow run --pipeline=quality_control
 ```
+This generates, in `data/output/quality_control/`: the deployment timeline (`deployment_timeline.pdf`), a map of deployment locations (`deployment_location.pdf`), a survey effort summary (`survey_effort.pdf`), an audio outliers report (`audio_outliers.pdf` and `audio_outliers.csv`, listing files whose duration or sample rate deviates from the rest of their deployment) and timelapse audio and spectrograms.
 
 #### 2.3. Detect species with AI
 ```bash
-kedro run --pipeline=species_detection
+pamflow run --pipeline=species_detection
 ```
 
 #### 2.4. Compute Acoustic Indices
 ```bash
-kedro run --pipeline=acoustic_indices
+pamflow run --pipeline=acoustic_indices
 ```
 
 #### 2.5. Generate Graphical Soundscapes
 ```bash
-kedro run --pipeline=graphical_soundscape
+pamflow run --pipeline=graphical_soundscape
+```
+
+#### 2.6. Validate detections
+This step requires that the `manual_annotations` Excel files generated in step 2.3 have already been reviewed, with their `positive` column filled in by an expert. It is not part of the default `pamflow run` and must be run explicitly:
+```bash
+pamflow run --pipeline=detection_validation
+```
+
+#### 2.7. Export to GBIF format
+Converts the media, deployments and observations to the camtrapDP/GBIF format. It requires `data_preparation` and `species_detection` to have been run, and is not part of the default `pamflow run`:
+```bash
+pamflow run --pipeline=export
 ```
 
 ### Access output data
@@ -135,6 +148,8 @@ data/
 └── output/ # Generated output data from pipeline runs
     ├── acoustic_indices/ 
     ├── data_preparation/ 
+    ├── detection_validation/
+    ├── export/
     ├── graphical_soundscape/ 
     ├── quality_control/
     └── species_detection/          

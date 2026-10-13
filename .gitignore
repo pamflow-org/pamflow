@@ -135,6 +135,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/source/_build/
 
 # PyBuilder
 target/
@@ -173,3 +174,12 @@ venv.bak/
 
 # Kedro Viz
 .viz/stats.json
+
+#VS Code
+.vscode
+
+# Ignore Claude code context
+CLAUDE.md
+
+# ignore all local configuration
+conf/local/parameters.yml

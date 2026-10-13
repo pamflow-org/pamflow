@@ -14,10 +14,9 @@ We welcome all contributions that help improve the code, documentation, and over
 ## Getting Started
 1. Fork the repository and clone it locally:
   ```sh
-  git clone <github link to the repo>
+  git clone https://github.com/<your-user>/pamflow.git
   cd pamflow
   ```
-The [anonymized version of the repo](https://anonymous.4open.science/r/pamflow-DC88/) cannot be clonned and thus needs to be downloaded from the button on the upper right corner inside the link.
 2. Create a new branch for your feature or bug fix:
    ```sh
    git checkout -b feature-branch
@@ -34,7 +33,7 @@ The [anonymized version of the repo](https://anonymous.4open.science/r/pamflow-D
 
 ## Code Standards
 - Follow [PEP 8](https://peps.python.org/pep-0008/) for Python coding style.
-- Use `ruff` for linting: [link](https://docs.kedro.org/en/stable/development/linting.html)
+- Use `ruff` for linting: [link](https://docs.kedro.org/en/0.19.8/development/linting.html)
 - Use type hints where possible:
   ```python
   def process_data(data: list) -> dict:
