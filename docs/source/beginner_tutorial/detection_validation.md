@@ -54,7 +54,6 @@ Alongside the summary, the pipeline also writes:
 
 - `manual_annotation_summary.csv` — annotation counts per species (including how many are still pending review)
 - `plots/` — one diagnostic plot per species, showing the annotated segments, the fitted curve, and the recommended threshold
-- `detection_validation_overview.pdf` — a single infographic summarizing validation status and recommended thresholds across all species
 
 ## Wrap-up
 
