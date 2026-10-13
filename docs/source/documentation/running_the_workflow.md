@@ -41,11 +41,14 @@ To execute a specific node:
 pamflow run --nodes <node_name>
 ```
 
-To see the available nodes and pipelines, consult the workflow visualization and pipeline documentation. The visualization is provided by Kedro-Viz, which is installed with the development dependencies (`pip install ".[dev]"`, or `pip install kedro-viz`) and opens in the browser with:
+To list the available pipelines and see the nodes of a pipeline, use the Kedro registry (no additional installation needed):
 
 ```bash
-kedro viz run
+kedro registry list
+kedro registry describe <pipeline_name>
 ```
+
+For example, `kedro registry describe species_detection` prints the node names of that pipeline. The pipeline documentation lists the inputs, outputs and parameters of each node.
 
 For a complete list of execution options, see the [Kedro command reference](https://docs.kedro.org/en/0.19.8/development/commands_reference.html#run-the-project)
 

@@ -14,7 +14,7 @@ Las fases 0 a 4 de la revisión están hechas (4.10 descartado). `sphinx -W` pas
 
 ## Zona horaria (punto 1.4, detalle en `notes/timezone_cleanup_plan.md`)
 - [ ] Parte A: quitar el argumento `timezone` sin uso de los datasets pamDP y de 5 entradas de catálogo. Decidir entre la opción completa o la compatible con aviso de deprecación.
-- [ ] Parte B: documentar `params:timezone`, la limitación de zona única por proyecto y quitar el ejemplo `Etc/GMT+5` de `overview.md:39`.
+- [ ] Parte B: documentar `params:timezone` y la limitación de zona única por proyecto. El ejemplo `Etc/GMT+5` de `overview.md` ya se sustituyó por la entrada `field_deployments_sheet@pandas`.
 - [ ] Parte C: soporte multi-zona (mejora futura, abrir como issue).
 
 ## Limpieza de código fuera de este plan
