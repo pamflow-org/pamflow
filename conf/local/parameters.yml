@@ -1,0 +1,11 @@
+# -----------------------------------------------------------------------------
+# Local parameters: edit the values below before running pamflow.
+# Anything defined here overrides conf/base/parameters/*.yml.
+# -----------------------------------------------------------------------------
+
+# Folder with your recordings: one subfolder per deployment, named after its deploymentID.
+audio_root_directory: "path/to/audio_root"  # EDIT THIS PATH
+
+# Time zone of your recordings and field sheet, IANA format Area/City
+# (e.g. America/Bogota, Europe/Berlin).
+timezone: "America/Bogota"  # EDIT THIS
