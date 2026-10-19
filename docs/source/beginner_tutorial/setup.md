@@ -5,7 +5,7 @@ To use **pamflow**, follow these steps — if you are already familiar with Pyth
 ## 1. Install miniconda
 To run **pamflow**, your computer needs Python and other required tools installed. We'll use Miniconda to install Python and related packages — it's a lightweight tool that keeps each project's environment separate and avoids conflicts.
 
-Follow the official Miniconda installation guide for your operating system: [Installing Miniconda](https://www.anaconda.com/docs/getting-started/concepts/anaconda-or-miniconda).
+Follow the official Miniconda installation guide for your operating system: [Installing Miniconda](https://www.anaconda.com/download/success?reg=skipped).
 
 ## 2. Install Git
 
@@ -56,3 +56,24 @@ conda install -c conda-forge ffmpeg
 ```
 
 Or follow the [official FFmpeg installation guide](https://ffmpeg.org/download.html) for your operating system.
+
+> **Note:** While packages are being installed, keep an eye on the terminal. Conda may ask you to confirm the installation (type `Y` and press Enter), and the process will not continue until you answer.
+
+### Troubleshooting: FFmpeg error on Windows
+
+On Windows, running FFmpeg may fail with an error similar to:
+
+```
+The procedure entry point libintl_... could not be located in the dynamic link library ...
+```
+
+To fix it, activate the environment and reinstall the conflicting libraries using strict channel priority:
+```sh
+conda activate pamflow_env
+conda install -c conda-forge --strict-channel-priority gettext libiconv gdk-pixbuf
+```
+
+Then check that FFmpeg works:
+```sh
+ffmpeg -version
+```
