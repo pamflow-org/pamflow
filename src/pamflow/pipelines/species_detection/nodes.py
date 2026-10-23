@@ -473,7 +473,7 @@ def plot_observations_summary(observations, media):
 
     #%% Get data from pamDP
     n_observations = len(observations)
-    n_observations_time = round((observations.eventEnd - observations.eventStart).sum() / 60,1)
+    n_observations_time = round((observations.eventEnd - observations.eventStart).sum() / 3600,1)
     n_species = observations['scientificName'].nunique()
     n_recordings = len(media)
     n_recordings_with_observations = media["mediaID"].isin(observations["mediaID"]).sum()
