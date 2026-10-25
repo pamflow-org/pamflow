@@ -20,7 +20,7 @@ _SEPARATION_SE_THRESHOLD = 1e3
 
 
 def _normalize_value(value):
-    """Casts a raw ``positive`` cell to a comparable string, or None if it is empty.
+    """Casts a raw ``category`` cell to a comparable string, or None if it is empty.
 
     Concatenating per-species sheets where some are still fully empty (float NaN
     column) with sheets that already hold booleans upcasts the boolean column to
@@ -43,19 +43,86 @@ def _normalize_value(value):
     return text if text != "" else None
 
 
+_LEGACY_COLUMNS = {
+    "positive": "category",
+    "label": "category",
+    "scientificName": "scientificNameModel",
+    "detectedSpecies": "scientificNameValidated",
+}
+
+_LABELS = {
+    "positive": "Positive",
+    "negative": "Negative",
+    "uncertain": "Uncertain",
+    "reassigned": "Reassigned",
+    "multitaxa": "Multitaxa",
+}
+
+
+def _split_taxa(value, separator):
+    """Splits a ``scientificNameValidated`` cell into a list of stripped names."""
+    if pd.isna(value) or str(value).strip() == "":
+        return []
+    return [name.strip() for name in str(value).split(separator) if name.strip()]
+
+
+def _check_validated_names(annotations, category, separator):
+    """Raises if Reassigned/Multitaxa rows carry an inconsistent validated name.
+
+    Reassigned requires exactly one species different from the model's; Multitaxa
+    requires at least two species separated by ``separator``. A comma in the cell
+    is rejected explicitly since it is the most likely wrong separator.
+    """
+    problems = []
+    for idx, row in annotations.iterrows():
+        label = category.loc[idx]
+        if label not in ("reassigned", "multitaxa"):
+            continue
+        raw = row["scientificNameValidated"]
+        names = _split_taxa(raw, separator)
+        if "," in ("" if pd.isna(raw) else str(raw)):
+            reason = f"use {separator!r} (not a comma) to separate species"
+        elif label == "reassigned" and (
+            len(names) != 1 or names[0] == row["scientificNameModel"]
+        ):
+            reason = (
+                "Reassigned requires exactly one species different from "
+                "scientificNameModel"
+            )
+        elif label == "multitaxa" and len(names) < 2:
+            reason = f"Multitaxa requires at least two species separated by {separator!r}"
+        else:
+            continue
+        problems.append(
+            f"  - category={label!r} scientificNameValidated={raw!r} ({reason}) "
+            f"file={row['sourceFile']} scientificNameModel={row['scientificNameModel']} "
+            f"observationID={row.get('observationID')}"
+        )
+    if problems:
+        raise ValueError(
+            f"Found {len(problems)} inconsistent scientificNameValidated value(s):\n"
+            + "\n".join(problems)
+        )
+
+
 def compile_manual_annotations(
     manual_annotations,
     positive_values,
     negative_values,
     uncertain_values,
+    reassigned_values,
+    multitaxa_values,
     uncertain_handling,
+    taxa_separator,
 ):
     """Compiles the per-species manual annotation spreadsheets into a single table.
 
     This node concatenates every sheet produced by `species_detection`'s
-    `create_manual_annotation_formats` node, normalizes the free-text `positive`
-    column into three categories (`positive` / `negative` / `uncertain`), and
-    applies `uncertain_handling`. The input corresponds to the catalog entry
+    `create_manual_annotation_formats` node, normalizes the free-text `category`
+    column into five categories (`Positive` / `Negative` / `Uncertain` /
+    `Reassigned` / `Multitaxa`), and applies `uncertain_handling`. Sheets that
+    still use the legacy columns (`positive`, `scientificName`, `detectedSpecies`)
+    are renamed on read with a warning. The input corresponds to the catalog entry
     `manual_annotations@PartitionedDataset`. The outputs are stored in the
     catalog as `validated_annotations@pandas` and
     `manual_annotation_summary@pandas`.
@@ -69,56 +136,77 @@ def compile_manual_annotations(
         `manual_annotations@PartitionedDataset`.
 
     positive_values : list of str
-        Raw `positive` cell values (case/whitespace-insensitive) that count as a
-        confirmed detection. Passed as
+        Raw `category` cell values (case/whitespace-insensitive) that count as a
+        confirmed detection. Also used to read the `favorite` column. Passed as
         `params:detection_validation_parameters.positive_values`.
 
     negative_values : list of str
-        Raw `positive` cell values that count as a confirmed non-detection. Passed as
+        Raw `category` cell values that count as a confirmed non-detection. Passed as
         `params:detection_validation_parameters.negative_values`.
 
     uncertain_values : list of str
-        Raw `positive` cell values that count as an inconclusive annotation. Passed as
+        Raw `category` cell values that count as an inconclusive annotation. Passed as
         `params:detection_validation_parameters.uncertain_values`.
 
+    reassigned_values : list of str
+        Raw `category` cell values meaning the segment holds a single species other
+        than the model's, given in `scientificNameValidated`. Passed as
+        `params:detection_validation_parameters.reassigned_values`.
+
+    multitaxa_values : list of str
+        Raw `category` cell values meaning the segment holds several species, listed
+        in `scientificNameValidated` separated by `taxa_separator`. Passed as
+        `params:detection_validation_parameters.multitaxa_values`.
+
     uncertain_handling : str
-        How to treat rows classified as `uncertain`: `exclude` (default) keeps them
-        labelled as `uncertain` in the output — they are counted and reported, but
+        How to treat rows classified as `Uncertain`: `exclude` (default) keeps them
+        labelled as `Uncertain` in the output — they are counted and reported, but
         `fit_precision_models` (Step 2) is expected to leave them out of the fit.
         `positive` / `negative` recodes them to that category instead, so the
         pipeline can be run twice to obtain lower/upper bounds on the threshold.
         Passed as `params:detection_validation_parameters.uncertain_handling`.
 
+    taxa_separator : str
+        Character separating species in `scientificNameValidated` for `Multitaxa`
+        rows (a comma is not allowed). Passed as
+        `params:detection_validation_parameters.taxa_separator`.
+
     Returns
     -------
     pandas.DataFrame
-        One row per annotated segment (rows left blank in the `.xlsx` files are
-        dropped, after being logged as pending). Carries `observationID`,
-        `scientificName`, `detectedSpecies`, `classifiedBy`,
-        `classificationTimestamp`, `classificationProbability`, `eventStart`,
-        `eventEnd`, `segmentsFilePath`, `filePath`, `sourceFile` (the originating
-        `.xlsx` partition name), and `positive` normalized to
-        `positive` / `negative` / `uncertain`. Stored in the catalog as
-        `validated_annotations@pandas`.
+        One row per annotated segment (rows with an empty `category` are dropped,
+        after being logged as pending). Columns: `observationID`, `classifiedBy`
+        (the automated model), `scientificNameModel`, `classificationProbability`,
+        `classificationTimestamp` (filled in by the reviewer in the sheet),
+        `category` (`Positive` / `Negative` / `Uncertain` / `Reassigned` /
+        `Multitaxa`), `scientificNameValidated` (the model's name for `Positive`,
+        the reviewer's name(s) for `Reassigned` / `Multitaxa`, empty otherwise),
+        and `favorite` (bool). Stored in the catalog as `validated_annotations@pandas`.
 
     pandas.DataFrame
-        One row per species with `scientificName`, `n_pending`, `n_annotated`,
-        `n_positive`, `n_negative`, `n_uncertain`. Counts reflect the raw
-        annotation categories *before* `uncertain_handling` recodes anything, so
-        `n_uncertain` always shows the true number of inconclusive annotations
-        regardless of how the fit will treat them. Stored in the catalog as
-        `manual_annotation_summary@pandas`.
+        One row per species with `scientificNameModel`, `n_pending`, `n_annotated`,
+        `n_positive`, `n_negative`, `n_uncertain`, `n_reassigned`, `n_multitaxa`.
+        Counts reflect the raw annotation categories *before* `uncertain_handling`
+        recodes anything, so `n_uncertain` always shows the true number of
+        inconclusive annotations regardless of how the fit will treat them. Stored
+        in the catalog as `manual_annotation_summary@pandas`.
     """
-    positive_set = {_normalize_value(v) for v in positive_values}
-    negative_set = {_normalize_value(v) for v in negative_values}
-    uncertain_set = {_normalize_value(v) for v in uncertain_values}
+    value_sets = {
+        "positive": {_normalize_value(v) for v in positive_values},
+        "negative": {_normalize_value(v) for v in negative_values},
+        "uncertain": {_normalize_value(v) for v in uncertain_values},
+        "reassigned": {_normalize_value(v) for v in reassigned_values},
+        "multitaxa": {_normalize_value(v) for v in multitaxa_values},
+    }
 
-    overlap = (positive_set & negative_set) | (positive_set & uncertain_set) | (
-        negative_set & uncertain_set
-    )
+    names = list(value_sets)
+    overlap = set()
+    for i, first in enumerate(names):
+        for second in names[i + 1 :]:
+            overlap |= value_sets[first] & value_sets[second]
     if overlap:
         raise ValueError(
-            "positive_values/negative_values/uncertain_values overlap on: "
+            "positive/negative/uncertain/reassigned/multitaxa values overlap on: "
             f"{sorted(overlap)}. Each raw value must map to exactly one "
             "category — fix conf/base/parameters/detection_validation.yml."
         )
@@ -127,17 +215,31 @@ def compile_manual_annotations(
     for partition_name, load_func in manual_annotations.items():
         df = load_func() if callable(load_func) else load_func
         df = df.copy()
+        legacy = {
+            old: new
+            for old, new in _LEGACY_COLUMNS.items()
+            if old in df.columns and new not in df.columns
+        }
+        if legacy:
+            logger.warning(
+                f"{partition_name}: legacy column(s) {sorted(legacy)} renamed to "
+                f"{sorted(legacy.values())}."
+            )
+            df = df.rename(columns=legacy)
+        for column in ("scientificNameValidated", "favorite", "classificationTimestamp"):
+            if column not in df.columns:
+                df[column] = np.nan
         df["sourceFile"] = partition_name
         frames.append(df)
 
     annotations = pd.concat(frames, ignore_index=True)
 
-    normalized = annotations["positive"].apply(_normalize_value)
+    normalized = annotations["category"].apply(_normalize_value)
     pending_mask = normalized.isna()
 
     pending_counts = (
         annotations.loc[pending_mask]
-        .groupby("scientificName")
+        .groupby("scientificNameModel")
         .size()
         .rename("n_pending")
         .sort_index()
@@ -145,16 +247,23 @@ def compile_manual_annotations(
     for species, n_pending in pending_counts.items():
         logger.info(
             f"{species}: {n_pending} segment(s) pending annotation "
-            "(empty 'positive' cell)."
+            "(empty 'category' cell)."
+        )
+
+    filled_without_label = pending_mask & annotations["scientificNameValidated"].apply(
+        lambda v: len(_split_taxa(v, taxa_separator)) > 0
+    )
+    if filled_without_label.any():
+        logger.warning(
+            f"{int(filled_without_label.sum())} segment(s) have a "
+            "'scientificNameValidated' but an empty 'category'; they are treated as "
+            "pending."
         )
 
     def _classify(text):
-        if text in positive_set:
-            return "positive"
-        if text in negative_set:
-            return "negative"
-        if text in uncertain_set:
-            return "uncertain"
+        for category_name, values in value_sets.items():
+            if text in values:
+                return category_name
         return "unrecognized"
 
     category = normalized.where(pending_mask, normalized.apply(_classify))
@@ -164,76 +273,121 @@ def compile_manual_annotations(
         bad_rows = annotations.loc[unrecognized_mask]
         bad_normalized = normalized.loc[unrecognized_mask]
         details = "\n".join(
-            f"  - value={row['positive']!r} (normalized={bad_normalized.loc[idx]!r}) "
-            f"file={row['sourceFile']} scientificName={row.get('scientificName')} "
+            f"  - value={row['category']!r} (normalized={bad_normalized.loc[idx]!r}) "
+            f"file={row['sourceFile']} scientificNameModel={row.get('scientificNameModel')} "
             f"observationID={row.get('observationID')}"
             for idx, row in bad_rows.iterrows()
         )
         raise ValueError(
             f"Found {unrecognized_mask.sum()} unrecognized value(s) in the "
-            f"'positive' column:\n{details}\n"
-            "Add them to positive_values/negative_values/uncertain_values in "
+            f"'category' column:\n{details}\n"
+            "Add them to positive_values/negative_values/uncertain_values/"
+            "reassigned_values/multitaxa_values in "
             "conf/base/parameters/detection_validation.yml, or fix the "
             "source .xlsx file."
         )
 
+    # A name filled in on a Positive/Negative/Uncertain row means the reviewer heard
+    # other species: promote it instead of silently discarding the name. A
+    # Positive row keeps the model's species, so extra species make it Multitaxa.
+    for idx in category.index[category.isin(["positive", "negative", "uncertain"])]:
+        row = annotations.loc[idx]
+        model_name = row["scientificNameModel"]
+        found = _split_taxa(row["scientificNameValidated"], taxa_separator)
+        if category.loc[idx] == "positive":
+            extra = [name for name in found if name != model_name]
+            if not extra:
+                continue
+            promoted = "multitaxa"
+            annotations.at[idx, "scientificNameValidated"] = taxa_separator.join(
+                [model_name] + extra
+            )
+        elif len(found) >= 2:
+            promoted = "multitaxa"
+        elif len(found) == 1 and found[0] != model_name:
+            promoted = "reassigned"
+        else:
+            continue
+        logger.info(
+            f"observationID={row.get('observationID')}: category "
+            f"'{category.loc[idx]}' with scientificNameValidated="
+            f"{row['scientificNameValidated']!r} promoted to '{promoted}'."
+        )
+        category.loc[idx] = promoted
+
+    _check_validated_names(annotations.loc[~pending_mask], category, taxa_separator)
+
     summary = pd.DataFrame(
         {
-            "scientificName": annotations["scientificName"],
+            "scientificNameModel": annotations["scientificNameModel"],
             "category": category,
             "is_pending": pending_mask,
         }
     )
-    summary = summary.groupby("scientificName").agg(
+    summary = summary.groupby("scientificNameModel").agg(
         n_pending=("is_pending", "sum"),
-        n_positive=("category", lambda s: (s == "positive").sum()),
-        n_negative=("category", lambda s: (s == "negative").sum()),
-        n_uncertain=("category", lambda s: (s == "uncertain").sum()),
+        **{
+            f"n_{name}": ("category", lambda s, name=name: (s == name).sum())
+            for name in names
+        },
     )
-    summary["n_annotated"] = (
-        summary["n_positive"] + summary["n_negative"] + summary["n_uncertain"]
+    summary["n_annotated"] = summary[[f"n_{name}" for name in names]].sum(axis=1)
+    summary = (
+        summary[["n_pending", "n_annotated"] + [f"n_{name}" for name in names]]
+        .reset_index()
+        .sort_values("scientificNameModel")
+        .reset_index(drop=True)
     )
-    summary = summary[
-        ["n_pending", "n_annotated", "n_positive", "n_negative", "n_uncertain"]
-    ].reset_index().sort_values("scientificName").reset_index(drop=True)
 
     annotations = annotations.loc[~pending_mask].copy()
-    annotations["positive"] = category.loc[~pending_mask]
+    category = category.loc[~pending_mask]
 
     if uncertain_handling == "exclude":
         pass
     elif uncertain_handling in ("positive", "negative"):
-        annotations.loc[
-            annotations["positive"] == "uncertain", "positive"
-        ] = uncertain_handling
+        category = category.where(category != "uncertain", uncertain_handling)
     else:
         raise ValueError(
             f"Unknown uncertain_handling: {uncertain_handling!r}. "
             "Expected 'exclude', 'positive', or 'negative'."
         )
 
+    annotations["category"] = category.map(_LABELS)
+    annotations["scientificNameValidated"] = [
+        model
+        if cat == "positive"
+        else separator_joined
+        if cat in ("reassigned", "multitaxa")
+        else ""
+        for cat, model, separator_joined in zip(
+            category,
+            annotations["scientificNameModel"],
+            annotations["scientificNameValidated"].apply(
+                lambda v: taxa_separator.join(_split_taxa(v, taxa_separator))
+            ),
+        )
+    ]
+    annotations["favorite"] = (
+        annotations["favorite"].apply(_normalize_value).isin(value_sets["positive"])
+    )
+
     columns = [
         "observationID",
-        "scientificName",
-        "detectedSpecies",
         "classifiedBy",
-        "classificationTimestamp",
+        "scientificNameModel",
         "classificationProbability",
-        "eventStart",
-        "eventEnd",
-        "segmentsFilePath",
-        "filePath",
-        "sourceFile",
-        "positive",
+        "classificationTimestamp",
+        "category",
+        "scientificNameValidated",
+        "favorite",
     ]
     annotations = annotations[columns].reset_index(drop=True)
 
+    counts = annotations["category"].value_counts()
     logger.info(
         f"Compiled {len(annotations)} annotated segment(s) across "
-        f"{annotations['scientificName'].nunique()} species "
-        f"({int((annotations['positive'] == 'positive').sum())} positive, "
-        f"{int((annotations['positive'] == 'negative').sum())} negative, "
-        f"{int((annotations['positive'] == 'uncertain').sum())} uncertain)."
+        f"{annotations['scientificNameModel'].nunique()} species "
+        f"({', '.join(f'{int(counts.get(label, 0))} {label.lower()}' for label in _LABELS.values())})."
     )
 
     return annotations, summary
@@ -291,10 +445,10 @@ def _fit_one_species(species, group, params, alpha):
     min_per_class = params["min_per_class"]
     score_transform = params["score_transform"]
 
-    fit_group = group[group["positive"].isin(["positive", "negative"])]
-    n_positive = int((fit_group["positive"] == "positive").sum())
-    n_negative = int((fit_group["positive"] == "negative").sum())
-    n_uncertain = int((group["positive"] == "uncertain").sum())
+    fit_group = group[group["category"].isin(["Positive", "Negative"])]
+    n_positive = int((fit_group["category"] == "Positive").sum())
+    n_negative = int((fit_group["category"] == "Negative").sum())
+    n_uncertain = int((group["category"] == "Uncertain").sum())
     n_annotated = n_positive + n_negative
 
     base_record = {
@@ -322,7 +476,7 @@ def _fit_one_species(species, group, params, alpha):
         return record, None
 
     score = fit_group["classificationProbability"].astype(float)
-    y = (fit_group["positive"] == "positive").astype(int)
+    y = (fit_group["category"] == "Positive").astype(int)
 
     perfectly_separated = (
         score[y == 1].min() > score[y == 0].max()
@@ -406,7 +560,7 @@ def _unannotated_species_record(row):
     hence `min_score`/`max_score` are `NaN`.
     """
     return {
-        "scientificName": row["scientificName"],
+        "scientificName": row["scientificNameModel"],
         "n_annotated": int(row["n_annotated"]),
         "n_positive": int(row["n_positive"]),
         "n_negative": int(row["n_negative"]),
@@ -422,8 +576,8 @@ def fit_precision_models(validated_annotations, params, manual_annotation_summar
     """Fits a per-species logistic curve of `positive ~ score`.
 
     For each species in `validated_annotations`, fits
-    `sm.Logit(y, sm.add_constant(f(score)))` where `y` is 1 for `positive` rows and
-    0 for `negative` rows (`uncertain` rows are always left out of the fit itself,
+    `sm.Logit(y, sm.add_constant(f(score)))` where `y` is 1 for `Positive` rows and
+    0 for `Negative` rows (other rows are always left out of the fit itself,
     regardless of `uncertain_handling`, since they are not a resolved 0/1 outcome).
     The inputs correspond to the catalog entries `validated_annotations@pandas` and
     `manual_annotation_summary@pandas`. The outputs are stored in the catalog as
@@ -454,9 +608,9 @@ def fit_precision_models(validated_annotations, params, manual_annotation_summar
     ----------
     validated_annotations : pandas.DataFrame
         Compiled manual annotations. Loaded from the catalog entry
-        `validated_annotations@pandas`. Must carry `scientificName`,
-        `classificationProbability`, and `positive`
-        (`positive` / `negative` / `uncertain`).
+        `validated_annotations@pandas`. Must carry `scientificNameModel`,
+        `classificationProbability`, and `category`
+        (`Positive` / `Negative` / `Uncertain` / `Reassigned` / `Multitaxa`).
 
     params : dict
         The full `detection_validation_parameters` dict. Passed as
@@ -466,7 +620,7 @@ def fit_precision_models(validated_annotations, params, manual_annotation_summar
     manual_annotation_summary : pandas.DataFrame
         Per-species annotation counts from Step 1, including species with zero
         annotated rows. Loaded from the catalog entry
-        `manual_annotation_summary@pandas`. Must carry `scientificName`,
+        `manual_annotation_summary@pandas`. Must carry `scientificNameModel`,
         `n_annotated`, `n_positive`, `n_negative`, `n_uncertain`.
 
     Returns
@@ -493,7 +647,7 @@ def fit_precision_models(validated_annotations, params, manual_annotation_summar
     curve_frames = []
     species_with_annotations = set()
 
-    for species, group in validated_annotations.groupby("scientificName"):
+    for species, group in validated_annotations.groupby("scientificNameModel"):
         species_with_annotations.add(species)
         record, curve_frame = _fit_one_species(species, group, params, alpha)
         fit_records.append(record)
@@ -501,11 +655,11 @@ def fit_precision_models(validated_annotations, params, manual_annotation_summar
             curve_frames.append(curve_frame)
 
     unannotated = manual_annotation_summary[
-        ~manual_annotation_summary["scientificName"].isin(species_with_annotations)
+        ~manual_annotation_summary["scientificNameModel"].isin(species_with_annotations)
     ]
     for _, row in unannotated.iterrows():
         logger.info(
-            f"{row['scientificName']}: insufficient_sample (n_annotated=0, "
+            f"{row['scientificNameModel']}: insufficient_sample (n_annotated=0, "
             f"{int(row['n_pending'])} segment(s) still pending)."
         )
         fit_records.append(_unannotated_species_record(row))
@@ -659,9 +813,9 @@ def _plot_one_species(species, annotations, curve, summary_row, pseudo_r2):
     # numpy/matplotlib/pandas combination, matplotlib's fill_between crashes on
     # raw pandas Series (masked_invalid can't call np.isfinite on them) even
     # though the dtype is plain float64.
-    resolved = annotations[annotations["positive"].isin(["positive", "negative"])]
-    y = (resolved["positive"] == "positive").astype(float)
-    
+    resolved = annotations[annotations["category"].isin(["Positive", "Negative"])]
+    y = (resolved["category"] == "Positive").astype(float)
+
     ax.scatter(
         resolved["classificationProbability"].to_numpy(),
         y.to_numpy(),
@@ -672,7 +826,7 @@ def _plot_one_species(species, annotations, curve, summary_row, pseudo_r2):
         label="annotated segment",
     )
 
-    uncertain = annotations[annotations["positive"] == "uncertain"]
+    uncertain = annotations[annotations["category"] == "Uncertain"]
     if not uncertain.empty:
         jitter_u = np.random.default_rng(abs(hash(species)) % (2**32) + 1).uniform(
             -0.04, 0.04, size=len(uncertain)
@@ -823,7 +977,7 @@ def plot_precision_models(
     for _, summary_row in detection_validation_summary.iterrows():
         species = summary_row["scientificName"]
         annotations = validated_annotations[
-            validated_annotations["scientificName"] == species
+            validated_annotations["scientificNameModel"] == species
         ]
         curve = precision_curves[precision_curves["scientificName"] == species]
         pseudo_r2 = pseudo_r2_by_species.get(species, np.nan)

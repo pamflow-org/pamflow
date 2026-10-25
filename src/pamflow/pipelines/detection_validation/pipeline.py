@@ -18,7 +18,10 @@ def create_pipeline(**kwargs):
                     "params:detection_validation_parameters.positive_values",
                     "params:detection_validation_parameters.negative_values",
                     "params:detection_validation_parameters.uncertain_values",
+                    "params:detection_validation_parameters.reassigned_values",
+                    "params:detection_validation_parameters.multitaxa_values",
                     "params:detection_validation_parameters.uncertain_handling",
+                    "params:detection_validation_parameters.taxa_separator",
                 ],
                 outputs=[
                     "validated_annotations@pandas",

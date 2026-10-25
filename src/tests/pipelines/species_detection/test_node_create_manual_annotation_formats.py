@@ -343,3 +343,31 @@ def test_filter_observations_single_observation_per_species(
         filter_observations(
             observations, sample_target_species, minimum_observations, segment_size
         )
+
+def test_manual_annotation_sheet_columns():
+    import pandas as pd
+    from pamflow.pipelines.species_detection.nodes import (
+        create_manual_annotation_formats,
+    )
+
+    segments = pd.DataFrame({
+        "observationID": [1, 2],
+        "segmentsFilePath": ["a.WAV", "b.WAV"],
+        "filePath": ["/x/a.WAV", "/x/b.WAV"],
+        "classifiedBy": ["Birdnet 2.4", "Birdnet 2.4"],
+        "classificationProbability": [0.9, 0.8],
+        "classificationTimestamp": ["2024-01-01T00:00:00", "2024-01-01T00:00:00"],
+        "eventStart": [1.0, 2.0],
+        "eventEnd": [3.0, 4.0],
+        "scientificName": ["Genus species", "Genus species"],
+    })
+    sheets = create_manual_annotation_formats(segments, "species_manual_annotations")
+    sheet = sheets["Genus_species_manual_annotations"]
+    assert list(sheet.columns) == [
+        "observationID", "segmentsFilePath", "filePath", "classifiedBy",
+        "classificationProbability", "classificationTimestamp", "eventStart",
+        "eventEnd", "scientificNameModel", "category", "scientificNameValidated",
+        "favorite",
+    ]
+    assert (sheet["classificationTimestamp"] == "2024-01-01T00:00:00").all()
+    assert (sheet["classifiedBy"] == "Birdnet 2.4").all()

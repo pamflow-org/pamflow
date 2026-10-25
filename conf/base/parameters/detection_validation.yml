@@ -11,3 +11,6 @@ detection_validation_parameters:
   positive_values: ["1", "x", "y", "yes", "si", "sí", "true", "verdadero", "p"]
   negative_values: ["0", "n", "no", "false", "falso"]
   uncertain_values: ["?", "d", "dudoso", "uncertain"]
+  reassigned_values: ["reassigned", "r", "reasignado"]
+  multitaxa_values: ["multitaxa", "m", "multi"]
+  taxa_separator: "|"            # separates several species in scientificNameValidated (Multitaxa)

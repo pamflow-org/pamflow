@@ -424,23 +424,27 @@ def create_manual_annotation_formats(segments, manual_annotations_file_name):
             "observationID",
             "segmentsFilePath",
             "filePath",
+            "classifiedBy",
             "classificationProbability",
+            "classificationTimestamp",
             "eventStart",
             "eventEnd",
             "scientificName",
         ]
     ].copy()
+    excel_generic_format = excel_generic_format.rename(
+        columns={"scientificName": "scientificNameModel"}
+    )
 
-    # Add new columns to format
-    excel_generic_format["positive"] = ""
-    excel_generic_format["detectedSpecies"] = ""
-    excel_generic_format["classifiedBy"] = ""
-    excel_generic_format["classificationTimestamp"] = ""
-
+    # Add new columns to format, to be filled by the reviewer (the reviewer also
+    # updates classifiedBy and classificationTimestamp, prefilled from the model)
+    excel_generic_format["category"] = ""
+    excel_generic_format["scientificNameValidated"] = ""
+    excel_generic_format["favorite"] = ""
 
     manual_annotations_partitioned_dataset = {
         excel_formats_file_names["_".join(species.split())]: excel_generic_format[
-            excel_generic_format["scientificName"] == species
+            excel_generic_format["scientificNameModel"] == species
         ].sort_values(by="segmentsFilePath", ascending=False)
         for species in segments["scientificName"].unique()
         if "_".join(species.split()) in excel_formats_file_names.keys()
