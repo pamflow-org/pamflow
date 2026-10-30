@@ -88,8 +88,8 @@ This table follows the pamDP standard. **pamflow** does not generate or interpre
 | **latitude**            | Latitude of the deployment location in decimal degrees (WGS84). Range: -90 to 90. | ✅ |   | `number` | 5.2704 |
 | **longitude**           | Longitude of the deployment location in decimal degrees (WGS84). Range: -180 to 180. | ✅ |   | `number` | 2.3849 |
 | **coordinateUncertainty** | Radius (in meters) representing the horizontal positional uncertainty of the deployment location. Leave blank if unknown. Range: > 0 |   |   | `integer`| 100 |
-| **deploymentStart**     | Date and time when the deployment started, formatted as ISO 8601 (YYYY-MM-DDThh:mm:ssZ or with timezone offset). | ✅ |   | `datetime` | 2020-03-01T22:00:00Z |
-| **deploymentEnd**       | Date and time when the deployment ended, formatted as ISO 8601 (YYYY-MM-DDThh:mm:ssZ or with timezone offset). | ✅ |   | `datetime` | 2020-04-01T22:00:00Z |
+| **deploymentStart**     | Date and time when the deployment started, formatted as ISO 8601 (YYYY-MM-DDThh:mm:ssZ or with timezone offset). pamflow writes it with the offset of the project timezone (e.g. `-05:00`). | ✅ |   | `datetime` | 2020-03-01T22:00:00Z |
+| **deploymentEnd**       | Date and time when the deployment ended, formatted as ISO 8601 (YYYY-MM-DDThh:mm:ssZ or with timezone offset). pamflow writes it with the offset of the project timezone (e.g. `-05:00`). | ✅ |   | `datetime` | 2020-04-01T22:00:00Z |
 | **setupBy**            | Name or identifier of the individual or organization responsible for deploying the recorder. |   |   | `string` | Juan Gómez |
 | **recorderID**         | Unique identifier of the audio recorder used (e.g., serial number). |   | ✅ | `string` | G02345 |
 | **recorderModel**      | Manufacturer and model of the recorder, formatted as manufacturer-model. |   |   | `string` | Audiomoth v1.2.0 |
@@ -114,7 +114,7 @@ The `media.csv` table contains references to audio or visual recordings used for
 | **mediaID**      | Unique identifier for the media file. | ✅ | ✅ | `string` | MEDIA001 |
 | **deploymentID** | Identifier of the deployment associated with the media file (foreign key to `deployments.deploymentID`). | ✅ |  | `string` | DEP001 |
 | **captureMethod** | Method used to capture the media file. |  |  | `enum: recordingSchedule, continuous, activityDetection` | recordingSchedule |
-| **timestamp**    | Date and time when the media file was recorded, formatted as ISO 8601 with a timezone. | ✅ |  | `datetime` | 2020-03-24T11:21:46Z |
+| **timestamp**    | Date and time when the media file was recorded, formatted as ISO 8601 with a timezone. pamflow writes it with the offset of the project timezone (e.g. `2024-02-29T23:00:00-05:00`). | ✅ |  | `datetime` | 2020-03-24T11:21:46Z |
 | **filePath**     | URL or relative path to the media file (external hosting or local package). | ✅ |  | `string` | https://colecciones.humboldt.org.co/rec/sonidos/IAvH-CSA-20439/G001_20211110_060000.WAV |
 | **filePublic**   | TRUE if the media file is publicly accessible; leave blank if private (e.g., for privacy protection). | ✅ |  | `boolean` | TRUE |
 | **fileName**     | Name of the media file. Useful for sorting files chronologically within a deployment (by `timestamp` first, then `fileName`). |  |  | `string` | AUDIO_001.wav |

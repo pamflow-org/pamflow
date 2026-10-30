@@ -14,7 +14,7 @@ pamflow run --pipeline data_preparation
 Reads field and audio data to standardize metadata using the pamDP standard. It outputs media and deployment formats, ensuring coherence between field sheets and collected audio files for later analysis and exchange.
 
 **Parameters**<br>
-This pipeline uses two project-level parameters, normally set in `conf/local/parameters.yml`: `audio_root_directory` (folder with one subfolder of recordings per deployment) and `timezone` (IANA name, e.g. `America/Bogota`, used to localize the timestamps of the recordings and of the deployments). The location of the field deployment sheet is set in the **Catalog** entry `field_deployments_sheet@pandas`.
+This pipeline uses two project-level parameters, normally set in `conf/local/parameters.yml`: `audio_root_directory` (folder with one subfolder of recordings per deployment) and `timezone` (IANA name, e.g. `America/Bogota`, used to localize the timestamps of the recordings and of the deployments). The timezone is a single value for the whole project: if your deployments span several time zones, split them by zone and run one project (or one season, see [multi-season configuration](../advanced_tutorials/multiseason_config.md)) per zone. The location of the field deployment sheet is set in the **Catalog** entry `field_deployments_sheet@pandas`.
 
 **Nodes**
 | Node name | Description | Inputs | Outputs |

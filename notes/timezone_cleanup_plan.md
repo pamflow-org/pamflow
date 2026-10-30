@@ -11,19 +11,19 @@ Seguimiento del punto 1.4 de `notes/docs_review_plan.md`. Marcar `[x]` al termin
 
 ## Parte A — Quitar el argumento muerto (código)
 Decidir antes de empezar:
-- [ ] A.0 Opción **completa** (quitar `timezone` de los constructores y del catálogo; rompe catálogos locales que lo declaren) u opción **compatible** (dejarlo opcional, ignorado y marcado como obsoleto, con aviso de deprecación). Recomendación: compatible primero, completa en una versión posterior.
-- [ ] A.1 Buscar usos: `grep -rn "timezone" src/ conf/ docs/ README.md` y revisar `conf/local/catalog.yml` de los usuarios conocidos.
-- [ ] A.2 Editar `CSVPamDP.py`, `media.py`, `deployments.py` y `observations.py` según A.0.
-- [ ] A.3 Borrar las 5 líneas `timezone:` de `conf/base/catalog/data_preparation.yml` y `species_detection.yml`.
-- [ ] A.4 Tests: instanciar cada dataset sin `timezone`; si es la opción compatible, comprobar que pasarlo da un aviso y no un error.
-- [ ] A.5 Verificar con `scratchpad/snap.py` (antes/después) que el catálogo cargado solo pierde esas claves, y ejecutar `pytest src/tests` (187 tests).
-- [ ] A.6 Commit aparte, p. ej. `FIX: Remove unused timezone argument from pamDP datasets`.
+- [x] A.0 Opción **completa** (quitar `timezone` de los constructores y del catálogo; rompe catálogos locales que lo declaren) u opción **compatible** (dejarlo opcional, ignorado y marcado como obsoleto, con aviso de deprecación). Recomendación: compatible primero, completa en una versión posterior.
+- [x] A.1 Buscar usos: `grep -rn "timezone" src/ conf/ docs/ README.md` y revisar `conf/local/catalog.yml` de los usuarios conocidos.
+- [x] A.2 Editar `CSVPamDP.py`, `media.py`, `deployments.py` y `observations.py` según A.0.
+- [x] A.3 Borrar las 5 líneas `timezone:` de `conf/base/catalog/data_preparation.yml` y `species_detection.yml`.
+- [x] A.4 Tests: instanciar cada dataset sin `timezone`; si es la opción compatible, comprobar que pasarlo da un aviso y no un error.
+- [x] A.5 Verificar con `scratchpad/snap.py` (antes/después) que el catálogo cargado solo pierde esas claves, y ejecutar `pytest src/tests` (187 tests).
+- [x] A.6 Commit aparte, p. ej. `FIX: Remove unused timezone argument from pamDP datasets`.
 
 ## Parte B — Documentación
-- [ ] B.1 `docs/source/documentation/overview.md:39`: quitar `timezone: Etc/GMT+5` del ejemplo de catálogo.
-- [ ] B.2 Documentar que la zona horaria se define solo en `params:timezone` (`conf/local/parameters.yml`), con nombre IANA (`America/Bogota`), en `beginner_tutorial/data_preparation.md` y README (líneas 74-76).
-- [ ] B.3 Documentar la **limitación de zona única por proyecto** y la solución provisional: separar los deployments por zona y ejecutar un proyecto (o una temporada, ver `multiseason_config.md`) por cada una.
-- [ ] B.4 Aclarar en `data_exchange_format.md` que los timestamps salen en ISO 8601 con offset (`+0100`, `-0500`).
+- [x] B.1 `docs/source/documentation/overview.md:39`: quitar `timezone: Etc/GMT+5` del ejemplo de catálogo.
+- [x] B.2 Documentar que la zona horaria se define solo en `params:timezone` (`conf/local/parameters.yml`), con nombre IANA (`America/Bogota`), en `beginner_tutorial/data_preparation.md` y README (líneas 74-76).
+- [x] B.3 Documentar la **limitación de zona única por proyecto** y la solución provisional: separar los deployments por zona y ejecutar un proyecto (o una temporada, ver `multiseason_config.md`) por cada una.
+- [x] B.4 Aclarar en `data_exchange_format.md` que los timestamps salen en ISO 8601 con offset (`+01:00`, `-05:00`).
 - [ ] B.5 Commit aparte de documentación.
 
 ## Parte C — Mejora futura (fuera de este plan)
