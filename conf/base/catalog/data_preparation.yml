@@ -1,7 +1,6 @@
 media@pamDP:
   type:  pamflow.datasets.pamDP.media.Media
   filepath: ${globals:output_dir}/data_preparation/media.csv
-  timezone: Etc/GMT+5
   load_args:
     encoding: utf-8-sig
   save_args:
@@ -10,7 +9,6 @@ media@pamDP:
 media_work@pamDP:
   type:  pamflow.datasets.pamDP.media.Media
   filepath: ${globals:output_dir}/data_preparation/media_work.csv
-  timezone: Etc/GMT+5
   load_args:
     encoding: utf-8-sig
   save_args:
@@ -35,7 +33,6 @@ field_deployments_sheet@pandas:
 deployments@pamDP:
   type: pamflow.datasets.pamDP.deployments.Deployments
   filepath: ${globals:output_dir}/data_preparation/deployments.csv
-  timezone: Etc/GMT+5
   load_args:
     encoding: utf-8-sig
   save_args:

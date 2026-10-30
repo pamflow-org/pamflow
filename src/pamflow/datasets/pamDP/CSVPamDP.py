@@ -23,7 +23,6 @@ class CSVPamDP(CSVDataset):
         schema_dictionary,
         unique_dictionary,
         filepath: str,
-        timezone: str = "UTC",
         date_columns: List[str] | None = None,
         enum_dictionary: Dict[str, Any] | None = None,
         load_args: Dict[str, Any] | None = None,
@@ -49,7 +48,6 @@ class CSVPamDP(CSVDataset):
         self.unique_dictionary = unique_dictionary
         self.enum_dictionary = enum_dictionary
         self.date_columns = date_columns
-        self.timezone = timezone
 
     def _load(self):
         df = super()._load()
