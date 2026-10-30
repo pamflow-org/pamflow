@@ -40,7 +40,10 @@ def species_detection_parallel(
         (latitude and longitude). Loaded from the catalog entry `deployments@pamDP`.
 
     species_detection_parameters : Dict
-        Dict with custom values for species detection pipeline personalization
+        Dict with custom values for species detection pipeline personalization.
+        Includes `use_location_filter` (bool, whether detections are filtered by
+        the deployment latitude and longitude) and `min_conf` (float, minimum
+        BirdNET confidence for a detection to be kept).
 
     timezone : str
         Timezone name (e.g. 'America/Bogota') used to localize
@@ -71,6 +74,8 @@ def species_detection_parallel(
     n_jobs=species_detection_parameters.get('n_jobs')
     classifier_model_path=species_detection_parameters.get('classifier_model_path')
     classifier_labels_path=species_detection_parameters.get('classifier_labels_path')
+    use_location_filter=species_detection_parameters.get('use_location_filter', True)
+    min_conf=species_detection_parameters.get('min_conf', 0.1)
     if n_jobs == -1:
         n_jobs = os.cpu_count()
 
@@ -105,12 +110,13 @@ def species_detection_parallel(
             executor.submit(
                             species_detection_single_file,
                             row["filePath"],
-                            row["latitude"],
-                            row["longitude"],
+                            row["latitude"] if use_location_filter else None,
+                            row["longitude"] if use_location_filter else None,
                             row["mediaID"],
                             row["deploymentID"],
                             classifier_model_path,
                             classifier_labels_path,
+                            min_conf,
                         )
             for idx, row in df.iterrows()
         ]

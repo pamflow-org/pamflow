@@ -14,6 +14,7 @@ def species_detection_single_file(
     deploymentID,
     classifier_model_path=None,
     classifier_labels_path=None,
+    min_conf=0.1,
 ):
     """Performs species detection on a single media file.
 
@@ -28,17 +29,22 @@ def species_detection_single_file(
     file_path : str
         The path to the media file to be processed.
 
-    latitude : float
+    latitude : float or None
         The latitude of the deployment location where the media file was recorded.
+        If None, detections are not filtered by location.
 
-    longitude : float
+    longitude : float or None
         The longitude of the deployment location where the media file was recorded.
+        If None, detections are not filtered by location.
 
     media_id : str
         A unique identifier for the media file.
 
     deployment_id : str
         A unique identifier for the deployment associated with the media file.
+
+    min_conf : float, default 0.1
+        Minimum BirdNET confidence for a detection to be kept.
 
     Returns
     -------
@@ -58,6 +64,7 @@ def species_detection_single_file(
             wav_file_path,
             lat=lat,
             lon=lon,
+            min_conf=min_conf,
         )
     
         recording.analyze()
