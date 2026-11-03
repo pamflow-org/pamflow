@@ -38,6 +38,8 @@ def fake_single_file(
 def patch_detection(monkeypatch):
     CALLS.clear()
     monkeypatch.setattr(nodes, "species_detection_single_file", fake_single_file)
+    # Do not load the BirdNET model in the worker initializer
+    monkeypatch.setattr(nodes, "init_worker", lambda *args: None)
     # Threads share the monkeypatched function, processes would not
     monkeypatch.setattr(
         nodes.concurrent.futures, "ProcessPoolExecutor", ThreadPoolExecutor
@@ -84,3 +86,29 @@ def test_defaults_keep_previous_behavior():
         media, deployments, {"n_jobs": 1}, "America/Bogota"
     )
     assert all(c["lat"] == 4.6 and c["min_conf"] == 0.1 for c in CALLS)
+
+
+@pytest.mark.parametrize("param", ["classifier_model_path", "classifier_labels_path"])
+def test_missing_custom_model_file_raises_before_processing(param, tmp_path):
+    media, deployments = make_inputs()
+    params = {"n_jobs": 1, param: str(tmp_path / "missing_file")}
+    with pytest.raises(FileNotFoundError, match=param):
+        nodes.species_detection_parallel(media, deployments, params, "America/Bogota")
+    assert CALLS == []
+
+
+def test_worker_initializer_receives_model_paths(monkeypatch, tmp_path):
+    model = tmp_path / "model.tflite"
+    labels = tmp_path / "labels.txt"
+    model.write_bytes(b"")
+    labels.write_text("Genus species_Common name\n")
+    received = []
+    monkeypatch.setattr(nodes, "init_worker", lambda *args: received.append(args))
+    media, deployments = make_inputs()
+    params = {
+        "n_jobs": 1,
+        "classifier_model_path": str(model),
+        "classifier_labels_path": str(labels),
+    }
+    nodes.species_detection_parallel(media, deployments, params, "America/Bogota")
+    assert received and received[0] == (str(model), str(labels))

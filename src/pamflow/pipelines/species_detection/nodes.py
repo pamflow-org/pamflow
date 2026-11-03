@@ -8,6 +8,7 @@ from matplotlib.patches import FancyBboxPatch
 import logging
 from pamflow.pipelines.species_detection.utils import (
     species_detection_single_file,
+    init_worker,
     trim_audio,
 )
 from pamflow.datasets.pamDP.observations import observations_pamdp_columns
@@ -94,6 +95,16 @@ def species_detection_parallel(
                         "'Genus species_common name', with exactly one '_' "
                         "separating the scientific and common names."
                     )
+    # Fail early with a clear message: a bad path would otherwise break every worker
+    # initializer and surface only as a BrokenProcessPool.
+    for name, path in (
+        ("classifier_model_path", classifier_model_path),
+        ("classifier_labels_path", classifier_labels_path),
+    ):
+        if path is not None and not os.path.isfile(path):
+            raise FileNotFoundError(
+                f"species_detection_parameters.{name} does not point to an existing file: {path}"
+            )
     if classifier_labels_path is not None:
         validate_custom_labels(classifier_labels_path)
         logger.info(
@@ -105,7 +116,11 @@ def species_detection_parallel(
     results = []
     errors = 0
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
+    with concurrent.futures.ProcessPoolExecutor(
+        max_workers=n_jobs,
+        initializer=init_worker,
+        initargs=(classifier_model_path, classifier_labels_path),
+    ) as executor:
         futures = [
             executor.submit(
                             species_detection_single_file,

@@ -5,6 +5,30 @@ from birdnetlib.analyzer import Analyzer
 from contextlib import redirect_stdout
 import concurrent.futures
 
+# BirdNET Analyzer shared by all the tasks run in a process. Loading the model is
+# expensive, so it is created once per worker (see `init_worker`) instead of once per file.
+_ANALYZER = None
+_ANALYZER_KEY = None
+
+
+def _get_analyzer(classifier_model_path=None, classifier_labels_path=None):
+    """Returns the process-level Analyzer, creating it only if needed."""
+    global _ANALYZER, _ANALYZER_KEY
+    key = (classifier_model_path, classifier_labels_path)
+    if _ANALYZER is None or _ANALYZER_KEY != key:
+        with open(os.devnull, "w") as fnull, redirect_stdout(fnull):
+            _ANALYZER = Analyzer(
+                classifier_model_path=classifier_model_path,
+                classifier_labels_path=classifier_labels_path,
+            )
+        _ANALYZER_KEY = key
+    return _ANALYZER
+
+
+def init_worker(classifier_model_path=None, classifier_labels_path=None):
+    """ProcessPoolExecutor initializer: loads the BirdNET model once per worker."""
+    _get_analyzer(classifier_model_path, classifier_labels_path)
+
 
 def species_detection_single_file(
     wav_file_path,
@@ -54,11 +78,12 @@ def species_detection_single_file(
         start time, end time, confidence score, and other relevant metadata.
     """
     with open(os.devnull, 'w') as fnull, redirect_stdout(fnull):  # Suppress print messages
-        # Load and initialize the BirdNET-Analyzer models.
-        analyzer = Analyzer(
-                        classifier_model_path=classifier_model_path,
-                        classifier_labels_path=classifier_labels_path,
-                    )
+        # Reuse the BirdNET-Analyzer loaded once per worker (loaded here if no initializer ran).
+        analyzer = _get_analyzer(classifier_model_path, classifier_labels_path)
+        # The analyzer keeps the species list of the previous recording: clear it so that
+        # each file is processed exactly as with a fresh analyzer.
+        if not analyzer.has_custom_species_list:
+            analyzer.custom_species_list = []
         recording = Recording(
             analyzer,
             wav_file_path,
