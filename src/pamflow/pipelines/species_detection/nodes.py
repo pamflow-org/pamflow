@@ -258,7 +258,58 @@ def filter_observations(
     return observations
 
 
-def create_segments(observations, media, segment_size, segment_length):
+def _allocate_per_bin(bin_sizes, n_total):
+    """Split n_total draws as evenly as possible across bins.
+
+    Bins with fewer rows than their share give the surplus to the remaining bins.
+    The total never exceeds the number of available rows.
+    """
+    bin_sizes = np.asarray(bin_sizes)
+    alloc = np.zeros_like(bin_sizes)
+    remaining = min(int(n_total), int(bin_sizes.sum()))
+    while remaining > 0:
+        open_bins = np.flatnonzero(alloc < bin_sizes)
+        share, extra = divmod(remaining, len(open_bins))
+        for i, b in enumerate(open_bins):
+            want = share + (1 if i < extra else 0)
+            take = min(want, bin_sizes[b] - alloc[b])
+            alloc[b] += take
+            remaining -= take
+    return alloc
+
+
+def _sample_species(group, n, method, n_bins, rng):
+    """Sample up to n rows from the detections of a single species."""
+    n = min(int(n), len(group))
+    seed = int(rng.integers(0, 2**32 - 1))
+    if method == "random":
+        return group.sample(n, random_state=seed)
+
+    # Stratified: equal-width probability bins spanning the species' own range
+    probs = group["classificationProbability"]
+    if probs.nunique() == 1:
+        return group.sample(n, random_state=seed)
+    bins = pd.cut(probs, bins=n_bins, labels=False)
+    labels = np.sort(bins.unique())
+    sizes = [(bins == b).sum() for b in labels]
+    alloc = _allocate_per_bin(sizes, n)
+    parts = [
+        group[bins == b].sample(int(k), random_state=seed + i)
+        for i, (b, k) in enumerate(zip(labels, alloc))
+        if k > 0
+    ]
+    return pd.concat(parts)
+
+
+def create_segments(
+    observations,
+    media,
+    segment_size,
+    segment_length,
+    sampling_method="random",
+    n_bins=5,
+    seed=None,
+):
     """Creates audio segments for species observations.
 
     This node processes filtered species observations and media metadata to generate
@@ -288,6 +339,22 @@ def create_segments(observations, media, segment_size, segment_length):
         detection window (eventStart/eventEnd) and clipped to stay within
         [0, fileLength]. Passed as `params:species_detection_parameters.segment_length`.
 
+    sampling_method : {"random", "stratified"}
+        "random" draws a uniform random sample per species. "stratified" splits each
+        species' classification probability range into `n_bins` equal-width bins and
+        draws the same number of segments from each bin (bins with too few detections
+        give their surplus to the others). Passed as
+        `params:species_detection_parameters.segment_sampling_method`.
+
+    n_bins : int
+        Number of probability bins used when `sampling_method` is "stratified".
+        Passed as `params:species_detection_parameters.segment_n_bins`.
+
+    seed : int or None
+        Seed for the random number generator. Use the same seed to reproduce a
+        sample; None gives a different sample on each run. Passed as
+        `params:species_detection_parameters.segment_seed`.
+
     Returns
     -------
     pandas.DataFrame
@@ -303,22 +370,26 @@ def create_segments(observations, media, segment_size, segment_length):
     )
 
     segment_size = int(segment_size)
+    if sampling_method not in ("random", "stratified"):
+        raise ValueError(
+            f"sampling_method must be 'random' or 'stratified', got '{sampling_method}'"
+        )
+    if sampling_method == "stratified" and int(n_bins) < 1:
+        raise ValueError(f"n_bins must be a positive integer, got {n_bins}")
 
-    def _sample_capped(group):
-        n = min(segment_size, len(group))
-        if n < segment_size:
+    rng = np.random.default_rng(seed)
+    samples = []
+    # groupby sorts species, so a given seed always yields the same sample
+    for species, group in observations.groupby("scientificName"):
+        if len(group) < segment_size:
             logger.info(
-                f"Species '{group.name}' has only {len(group)} observation(s), fewer than the "
-                f"requested segment_size ({segment_size}). Using all {n} available instead."
+                f"Species '{species}' has only {len(group)} observation(s), fewer than the "
+                f"requested segment_size ({segment_size}). Using all {len(group)} available instead."
             )
-        return group.sample(n)
-
-    segments = (
-        observations.groupby(["scientificName"], group_keys=True)
-        .apply(_sample_capped, include_groups=False)
-        .reset_index(level=0)
-        .reset_index(drop=True)
-    )
+        samples.append(
+            _sample_species(group, segment_size, sampling_method, int(n_bins), rng)
+        )
+    segments = pd.concat(samples).reset_index(drop=True)
 
     # Center the requested segment_length on the original detection window
     event_center = (segments["eventStart"] + segments["eventEnd"]) / 2
