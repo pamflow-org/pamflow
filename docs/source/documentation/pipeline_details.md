@@ -113,9 +113,9 @@ pamflow run --pipeline species_detection
 | `species_detection_parameters` | `min_conf` | Minimum BirdNET confidence for a detection to be kept. | `0.1` |
 | `species_detection_parameters` | `minimum_observations` | Minimum number of detections required for a species to be included in the observations format. | `20` |
 | `species_detection_parameters` | `segment_size` | Maximum number of sample segments generated per species (fewer are used if a species has fewer available observations). | `20` |
-| `species_detection_parameters` | `segment_sampling_method` | `random` (uniform) or `stratified` (equal draws per classification probability bin). | `random` |
-| `species_detection_parameters` | `segment_n_bins` | Number of probability bins for stratified sampling. | `5` |
-| `species_detection_parameters` | `segment_seed` | Integer seed to reproduce the sample; `null` for a different sample each run. | `null` |
+| `species_detection_parameters` | `segment_sampling_method` | `random` (uniform) or `stratified` (equal draws per classification probability bin). | `stratified` |
+| `species_detection_parameters` | `segment_n_bins` | Number of probability bins for stratified sampling. | `10` |
+| `species_detection_parameters` | `segment_seed` | Integer seed to reproduce the sample; `null` for a different sample each run. | `123` |
 | `species_detection_parameters` | `manual_annotations_file_name` | File name template for the manual annotation files, one per species. The word `species` in the template is replaced by the species name (`Genus_species`). With the default, the file for *Amazona farinosa* is `Amazona_farinosa_manual_annotations.xlsx`. | `'species_manual_annotations'` |
 | `species_detection_parameters` | `segment_length` | Length in seconds of each audio segment extracted for manual validation. | `3.0` |
 | `species_detection_parameters` | `classifier_model_path` | Path to a custom BirdNET classifier model file. `null` uses the default BirdNET model. See [Custom classifier](../advanced_tutorials/custom_classifier.md). | `null` |
