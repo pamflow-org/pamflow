@@ -1,8 +1,13 @@
 # Parameters used in species_detection pipeline
 species_detection_parameters:
   n_jobs: -1  # Number of cores used in parallelization: -1 forces to use all the cores available.
+  use_location_filter: true  # If false, lat/lon are not passed to BirdNET and detections are not filtered by location
+  min_conf: 0.1  # Minimum BirdNET confidence for a detection to be kept
   minimum_observations: 20  # Minimum number of detections for a species to be considered  in the observations format
   segment_size: 20  # Maximum number of sample segments per species (species with fewer observations use all available)
+  segment_sampling_method: stratified  # How segments are sampled per species: 'random' (uniform) or 'stratified' (equal draws per classification probability bin)
+  segment_n_bins: 10  # Number of equal-width probability bins, used only when segment_sampling_method is 'stratified'
+  segment_seed: 123  # Integer seed to reproduce the segment sample, null for a different sample each run
   manual_annotations_file_name: 'species_manual_annotations'  # Prefix in file name for manual annotations:  {manual_annotations_file_name}_{species}
   segment_length: 3.0  # Length in seconds of each extracted segment
   classifier_model_path: null  # Path to the classifier custom model file, 'null' for BirdNET model

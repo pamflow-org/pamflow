@@ -142,7 +142,6 @@ class Observations(CSVPamDP):
     def __init__(
         self,
         filepath: str,
-        timezone,
         load_args: Dict[str, Any] | None = None,
         save_args: Dict[str, Any] | None = None,
         version: Version | None = None,
@@ -157,7 +156,6 @@ class Observations(CSVPamDP):
             unique_dictionary=observations_unique_dictionary,
             enum_dictionary=observations_enum_dictionary,
             filepath=filepath,
-            timezone=timezone,
             date_columns=observations_date_columns,
             load_args=load_args,
             save_args=save_args,

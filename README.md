@@ -75,6 +75,7 @@ Edit the `./conf/local/parameters.yml` file to specify the timezone of your audi
 ```yaml
 timezone: <prefered timezone>
 ```
+The timezone applies to the whole project; for deployments in different time zones, run one project per zone (see the [pipeline details](docs/source/documentation/pipeline_details.md)).
 
 Edit the `./conf/local/catalog.yml` file to define the path to your field deployment sheet:
 ```yaml

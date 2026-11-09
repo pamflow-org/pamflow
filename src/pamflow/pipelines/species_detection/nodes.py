@@ -8,6 +8,7 @@ from matplotlib.patches import FancyBboxPatch
 import logging
 from pamflow.pipelines.species_detection.utils import (
     species_detection_single_file,
+    init_worker,
     trim_audio,
 )
 from pamflow.datasets.pamDP.observations import observations_pamdp_columns
@@ -40,7 +41,10 @@ def species_detection_parallel(
         (latitude and longitude). Loaded from the catalog entry `deployments@pamDP`.
 
     species_detection_parameters : Dict
-        Dict with custom values for species detection pipeline personalization
+        Dict with custom values for species detection pipeline personalization.
+        Includes `use_location_filter` (bool, whether detections are filtered by
+        the deployment latitude and longitude) and `min_conf` (float, minimum
+        BirdNET confidence for a detection to be kept).
 
     timezone : str
         Timezone name (e.g. 'America/Bogota') used to localize
@@ -71,6 +75,8 @@ def species_detection_parallel(
     n_jobs=species_detection_parameters.get('n_jobs')
     classifier_model_path=species_detection_parameters.get('classifier_model_path')
     classifier_labels_path=species_detection_parameters.get('classifier_labels_path')
+    use_location_filter=species_detection_parameters.get('use_location_filter', True)
+    min_conf=species_detection_parameters.get('min_conf', 0.1)
     if n_jobs == -1:
         n_jobs = os.cpu_count()
 
@@ -89,6 +95,16 @@ def species_detection_parallel(
                         "'Genus species_common name', with exactly one '_' "
                         "separating the scientific and common names."
                     )
+    # Fail early with a clear message: a bad path would otherwise break every worker
+    # initializer and surface only as a BrokenProcessPool.
+    for name, path in (
+        ("classifier_model_path", classifier_model_path),
+        ("classifier_labels_path", classifier_labels_path),
+    ):
+        if path is not None and not os.path.isfile(path):
+            raise FileNotFoundError(
+                f"species_detection_parameters.{name} does not point to an existing file: {path}"
+            )
     if classifier_labels_path is not None:
         validate_custom_labels(classifier_labels_path)
         logger.info(
@@ -100,17 +116,22 @@ def species_detection_parallel(
     results = []
     errors = 0
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
+    with concurrent.futures.ProcessPoolExecutor(
+        max_workers=n_jobs,
+        initializer=init_worker,
+        initargs=(classifier_model_path, classifier_labels_path),
+    ) as executor:
         futures = [
             executor.submit(
                             species_detection_single_file,
                             row["filePath"],
-                            row["latitude"],
-                            row["longitude"],
+                            row["latitude"] if use_location_filter else None,
+                            row["longitude"] if use_location_filter else None,
                             row["mediaID"],
                             row["deploymentID"],
                             classifier_model_path,
                             classifier_labels_path,
+                            min_conf,
                         )
             for idx, row in df.iterrows()
         ]
@@ -252,7 +273,58 @@ def filter_observations(
     return observations
 
 
-def create_segments(observations, media, segment_size, segment_length):
+def _allocate_per_bin(bin_sizes, n_total):
+    """Split n_total draws as evenly as possible across bins.
+
+    Bins with fewer rows than their share give the surplus to the remaining bins.
+    The total never exceeds the number of available rows.
+    """
+    bin_sizes = np.asarray(bin_sizes)
+    alloc = np.zeros_like(bin_sizes)
+    remaining = min(int(n_total), int(bin_sizes.sum()))
+    while remaining > 0:
+        open_bins = np.flatnonzero(alloc < bin_sizes)
+        share, extra = divmod(remaining, len(open_bins))
+        for i, b in enumerate(open_bins):
+            want = share + (1 if i < extra else 0)
+            take = min(want, bin_sizes[b] - alloc[b])
+            alloc[b] += take
+            remaining -= take
+    return alloc
+
+
+def _sample_species(group, n, method, n_bins, rng):
+    """Sample up to n rows from the detections of a single species."""
+    n = min(int(n), len(group))
+    seed = int(rng.integers(0, 2**32 - 1))
+    if method == "random":
+        return group.sample(n, random_state=seed)
+
+    # Stratified: equal-width probability bins spanning the species' own range
+    probs = group["classificationProbability"]
+    if probs.nunique() == 1:
+        return group.sample(n, random_state=seed)
+    bins = pd.cut(probs, bins=n_bins, labels=False)
+    labels = np.sort(bins.unique())
+    sizes = [(bins == b).sum() for b in labels]
+    alloc = _allocate_per_bin(sizes, n)
+    parts = [
+        group[bins == b].sample(int(k), random_state=seed + i)
+        for i, (b, k) in enumerate(zip(labels, alloc))
+        if k > 0
+    ]
+    return pd.concat(parts)
+
+
+def create_segments(
+    observations,
+    media,
+    segment_size,
+    segment_length,
+    sampling_method="random",
+    n_bins=5,
+    seed=None,
+):
     """Creates audio segments for species observations.
 
     This node processes filtered species observations and media metadata to generate
@@ -282,6 +354,22 @@ def create_segments(observations, media, segment_size, segment_length):
         detection window (eventStart/eventEnd) and clipped to stay within
         [0, fileLength]. Passed as `params:species_detection_parameters.segment_length`.
 
+    sampling_method : {"random", "stratified"}
+        "random" draws a uniform random sample per species. "stratified" splits each
+        species' classification probability range into `n_bins` equal-width bins and
+        draws the same number of segments from each bin (bins with too few detections
+        give their surplus to the others). Passed as
+        `params:species_detection_parameters.segment_sampling_method`.
+
+    n_bins : int
+        Number of probability bins used when `sampling_method` is "stratified".
+        Passed as `params:species_detection_parameters.segment_n_bins`.
+
+    seed : int or None
+        Seed for the random number generator. Use the same seed to reproduce a
+        sample; None gives a different sample on each run. Passed as
+        `params:species_detection_parameters.segment_seed`.
+
     Returns
     -------
     pandas.DataFrame
@@ -297,22 +385,26 @@ def create_segments(observations, media, segment_size, segment_length):
     )
 
     segment_size = int(segment_size)
+    if sampling_method not in ("random", "stratified"):
+        raise ValueError(
+            f"sampling_method must be 'random' or 'stratified', got '{sampling_method}'"
+        )
+    if sampling_method == "stratified" and int(n_bins) < 1:
+        raise ValueError(f"n_bins must be a positive integer, got {n_bins}")
 
-    def _sample_capped(group):
-        n = min(segment_size, len(group))
-        if n < segment_size:
+    rng = np.random.default_rng(seed)
+    samples = []
+    # groupby sorts species, so a given seed always yields the same sample
+    for species, group in observations.groupby("scientificName"):
+        if len(group) < segment_size:
             logger.info(
-                f"Species '{group.name}' has only {len(group)} observation(s), fewer than the "
-                f"requested segment_size ({segment_size}). Using all {n} available instead."
+                f"Species '{species}' has only {len(group)} observation(s), fewer than the "
+                f"requested segment_size ({segment_size}). Using all {len(group)} available instead."
             )
-        return group.sample(n)
-
-    segments = (
-        observations.groupby(["scientificName"], group_keys=True)
-        .apply(_sample_capped, include_groups=False)
-        .reset_index(level=0)
-        .reset_index(drop=True)
-    )
+        samples.append(
+            _sample_species(group, segment_size, sampling_method, int(n_bins), rng)
+        )
+    segments = pd.concat(samples).reset_index(drop=True)
 
     # Center the requested segment_length on the original detection window
     event_center = (segments["eventStart"] + segments["eventEnd"]) / 2
@@ -473,7 +565,7 @@ def plot_observations_summary(observations, media):
 
     #%% Get data from pamDP
     n_observations = len(observations)
-    n_observations_time = round((observations.eventEnd - observations.eventStart).sum() / 60,1)
+    n_observations_time = round((observations.eventEnd - observations.eventStart).sum() / 3600,1)
     n_species = observations['scientificName'].nunique()
     n_recordings = len(media)
     n_recordings_with_observations = media["mediaID"].isin(observations["mediaID"]).sum()

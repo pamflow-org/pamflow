@@ -1,12 +1,10 @@
 unfiltered_observations@pamDP:
   type: pamflow.datasets.pamDP.observations.Observations
   filepath: ${globals:output_dir}/species_detection/unfiltered_observations.csv
-  timezone: Etc/GMT+5
 
 observations@pamDP:
   type: pamflow.datasets.pamDP.observations.Observations
   filepath: ${globals:output_dir}/species_detection/observations.csv
-  timezone: Etc/GMT+5
 
 target_species@pandas:
   type: pandas.CSVDataset

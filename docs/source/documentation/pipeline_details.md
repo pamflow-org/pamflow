@@ -14,7 +14,7 @@ pamflow run --pipeline data_preparation
 Reads field and audio data to standardize metadata using the pamDP standard. It outputs media and deployment formats, ensuring coherence between field sheets and collected audio files for later analysis and exchange.
 
 **Parameters**<br>
-This pipeline uses two project-level parameters, normally set in `conf/local/parameters.yml`: `audio_root_directory` (folder with one subfolder of recordings per deployment) and `timezone` (IANA name, e.g. `America/Bogota`, used to localize the timestamps of the recordings and of the deployments). The location of the field deployment sheet is set in the **Catalog** entry `field_deployments_sheet@pandas`.
+This pipeline uses two project-level parameters, normally set in `conf/local/parameters.yml`: `audio_root_directory` (folder with one subfolder of recordings per deployment) and `timezone` (IANA name, e.g. `America/Bogota`, used to localize the timestamps of the recordings and of the deployments). The timezone is a single value for the whole project: if your deployments span several time zones, split them by zone and run one project (or one season, see [multi-season configuration](../advanced_tutorials/multiseason_config.md)) per zone. The location of the field deployment sheet is set in the **Catalog** entry `field_deployments_sheet@pandas`.
 
 **Nodes**
 | Node name | Description | Inputs | Outputs |
@@ -95,9 +95,9 @@ pamflow run --pipeline species_detection
 **Nodes**
 | Node name | Description | Inputs | Outputs |
 |------------|--------------|---------|----------|
-| `species_detection_node` | Runs the species detection algorithm in parallel using media and deployment data to generate unfiltered species observations. | `media_work@pamDP`<br>`deployments@pamDP`<br>`params:species_detection_parameters` (uses `n_jobs`, `classifier_model_path` and `classifier_labels_path`)<br>`params:timezone` | `unfiltered_observations@pamDP` |
+| `species_detection_node` | Runs the species detection algorithm in parallel using media and deployment data to generate unfiltered species observations. | `media_work@pamDP`<br>`deployments@pamDP`<br>`params:species_detection_parameters` (uses `n_jobs`, `use_location_filter`, `min_conf`, `classifier_model_path` and `classifier_labels_path`)<br>`params:timezone` | `unfiltered_observations@pamDP` |
 | `filter_observations_node` | Filters unfiltered observations based on target species, minimum number of observations, and segment size parameters. | `unfiltered_observations@pamDP`<br>`target_species@pandas`<br>`params:species_detection_parameters.minimum_observations`<br>`params:species_detection_parameters.segment_size` | `observations@pamDP` |
-| `create_segments_node` | Selects up to `segment_size` observations per species and defines the audio segment of each one. | `observations@pamDP`<br>`media_work@pamDP`<br>`params:species_detection_parameters.segment_size`<br>`params:species_detection_parameters.segment_length` | `segments@pandas` |
+| `create_segments_node` | Selects up to `segment_size` observations per species and defines the audio segment of each one. | `observations@pamDP`<br>`media_work@pamDP`<br>`params:species_detection_parameters.segment_size`<br>`params:species_detection_parameters.segment_length`<br>`params:species_detection_parameters.segment_sampling_method`<br>`params:species_detection_parameters.segment_n_bins`<br>`params:species_detection_parameters.segment_seed` | `segments@pandas` |
 | `create_segments_folder_node` | Generates an audio folder dataset from created segments for downstream processing or manual validation. | `segments@pandas`<br>`params:species_detection_parameters.n_jobs`<br>`params:species_detection_parameters.segment_size` | `segments_audio_folder@AudioFolderDataset` |
 | `create_manual_annotation_formats_node` | Produces manual annotation files from segment data for human validation or annotation tools. | `segments@pandas`<br>`params:species_detection_parameters.manual_annotations_file_name` | `manual_annotations@PartitionedDataset` |
 | `plot_observations_summary_node` | Creates summary plots visualizing total and temporal patterns of species observations relative to media data. | `observations@pamDP`<br>`media_work@pamDP` | `observations_summary@matplotlib` |
@@ -109,8 +109,13 @@ pamflow run --pipeline species_detection
 | Group | Name | Description | Default Value |
 |--------|------|--------------|----------------|
 | `species_detection_parameters` | `n_jobs` | Number of cores used in parallelization. `-1` forces the use of all available cores. | `-1` |
+| `species_detection_parameters` | `use_location_filter` | If `true`, the deployment latitude and longitude are passed to BirdNET and detections are filtered by location. If `false`, all detections are kept regardless of location. | `true` |
+| `species_detection_parameters` | `min_conf` | Minimum BirdNET confidence for a detection to be kept. | `0.1` |
 | `species_detection_parameters` | `minimum_observations` | Minimum number of detections required for a species to be included in the observations format. | `20` |
 | `species_detection_parameters` | `segment_size` | Maximum number of sample segments generated per species (fewer are used if a species has fewer available observations). | `20` |
+| `species_detection_parameters` | `segment_sampling_method` | `random` (uniform) or `stratified` (equal draws per classification probability bin). | `stratified` |
+| `species_detection_parameters` | `segment_n_bins` | Number of probability bins for stratified sampling. | `10` |
+| `species_detection_parameters` | `segment_seed` | Integer seed to reproduce the sample; `null` for a different sample each run. | `123` |
 | `species_detection_parameters` | `manual_annotations_file_name` | File name template for the manual annotation files, one per species. The word `species` in the template is replaced by the species name (`Genus_species`). With the default, the file for *Amazona farinosa* is `Amazona_farinosa_manual_annotations.xlsx`. | `'species_manual_annotations'` |
 | `species_detection_parameters` | `segment_length` | Length in seconds of each audio segment extracted for manual validation. | `3.0` |
 | `species_detection_parameters` | `classifier_model_path` | Path to a custom BirdNET classifier model file. `null` uses the default BirdNET model. See [Custom classifier](../advanced_tutorials/custom_classifier.md). | `null` |

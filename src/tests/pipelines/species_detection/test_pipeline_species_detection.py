@@ -106,8 +106,11 @@ class TestSpeciesDetectionPipeline:
             "media_work@pamDP",
             "params:species_detection_parameters.segment_size",
             "params:species_detection_parameters.segment_length",
+            "params:species_detection_parameters.segment_sampling_method",
+            "params:species_detection_parameters.segment_n_bins",
+            "params:species_detection_parameters.segment_seed",
         ]
-        
+
         assert list(node.inputs) == expected_inputs
 
     def test_create_segments_node_output(self):
