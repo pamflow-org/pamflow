@@ -15,6 +15,7 @@ Despite the widespread use of Passive Acoustic Monitoring (PAM), a lack of integ
 :maxdepth: 1
 :caption: Getting Started
 
+beginner_tutorial/is_pamflow_for_me.md
 beginner_tutorial/setup.md
 beginner_tutorial/index.md
 ```
