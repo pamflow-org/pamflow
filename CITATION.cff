@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated article."
+title: "pamflow"
+type: software
+authors:
+  - family-names: Betancourt
+    given-names: N.        # complete with full given names
+  - family-names: Toro-Gómez
+    given-names: M. P.
+  - family-names: Cañas
+    given-names: J. S.
+  - family-names: Barona-Cortés
+    given-names: E.
+  - family-names: Martínez-Medina
+    given-names: D.
+  - family-names: Ulloa
+    given-names: J. S.
+repository-code: "https://github.com/pamflow-org/pamflow"
+license: MIT
+preferred-citation:
+  type: article
+  authors: []              # repeat the same authors list
+  title: "pamflow: An open-source workflow for simplified passive acoustic monitoring data analysis"
+  journal: "Methods in Ecology and Evolution"
+  year: 2026
+  start: 1
+  end: 9
+  doi: "10.1111/2041-210x.70432"

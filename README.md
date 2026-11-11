@@ -3,6 +3,7 @@
 </div>
 
 ![Python version](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue.svg)
+[![DOI](https://img.shields.io/badge/DOI-10.1111%2F2041--210x.70432-blue)](https://doi.org/10.1111/2041-210x.70432)
 
 **pamflow** is a workflow for analyzing passive acoustic monitoring data using Python. It is designed to offer an easy-to-use and reproducible framework for researchers, conservation biologists, citizen scientists, and anyone interested in ecoacoustics and soundscape ecology.
 
@@ -158,6 +159,29 @@ data/
 ```
 
 For more information on the outputs and its interpretation visit [Pipeline details page](https://pamflow.readthedocs.io/en/latest/documentation/pipeline_details.html) on the documentation.
+
+## Cite this work
+
+If you use pamflow in your research, please cite:
+
+> Betancourt, N., Toro-Gómez, M. P., Cañas, J. S., Barona-Cortés, E., Martínez-Medina, D., & Ulloa, J. S. (2026). pamflow: An open-source workflow for simplified passive acoustic monitoring data analysis. *Methods in Ecology and Evolution*, 00, 1–9. https://doi.org/10.1111/2041-210x.70432
+
+<details>
+<summary>BibTeX</summary>
+
+```bibtex
+@article{betancourt2026pamflow,
+  author  = {Betancourt, N. and Toro-G{\'o}mez, M. P. and Ca{\~n}as, J. S. and Barona-Cort{\'e}s, E. and Mart{\'i}nez-Medina, D. and Ulloa, J. S.},
+  title   = {pamflow: An open-source workflow for simplified passive acoustic monitoring data analysis},
+  journal = {Methods in Ecology and Evolution},
+  year    = {2026},
+  volume  = {00},
+  pages   = {1--9},
+  doi     = {10.1111/2041-210x.70432}
+}
+```
+</details>
+
 
 ## License
 
