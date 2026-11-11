@@ -11,6 +11,13 @@
 
 Despite the widespread use of Passive Acoustic Monitoring (PAM), a lack of integrated software and standardized data practices has hindered the effective analysis and management of valuable acoustic data. **pamflow** unifies fragmented software tools and standardizes data formats, unlocking the full potential of PAM for research and conservation.
 
+## Cite this work
+
+If you use pamflow in your research, please cite:
+
+> Betancourt, N., Toro-Gómez, M. P., Cañas, J. S., Barona-Cortés, E., Martínez-Medina, D., & Ulloa, J. S. (2026). pamflow: An open-source workflow for simplified passive acoustic monitoring data analysis. *Methods in Ecology and Evolution*, 00, 1–9. https://doi.org/10.1111/2041-210x.70432
+
+
 ```{toctree}
 :maxdepth: 1
 :caption: Getting Started
